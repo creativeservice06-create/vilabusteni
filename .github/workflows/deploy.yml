@@ -23,6 +23,12 @@ jobs:
       - name: Descarcă codul
         uses: actions/checkout@v4
 
+      - name: Test conexiune server (diagnostic)
+        run: |
+          echo "IP runner GitHub: $(curl -s https://api.ipify.org)"
+          getent hosts "${{ secrets.FTP_SERVER }}" || echo "DNS: nu se rezolvă"
+          timeout 15 bash -c 'echo > /dev/tcp/${{ secrets.FTP_SERVER }}/21' && echo "Port 21: DESCHIS" || echo "Port 21: BLOCAT / timeout"
+
       - name: Urcă site-ul prin FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
