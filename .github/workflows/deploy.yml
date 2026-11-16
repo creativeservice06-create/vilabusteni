@@ -29,7 +29,8 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
+          protocol: ftp
+          log-level: verbose
           local-dir: ./site/
           # Contul FTP dedicat (deploy@vilabusteni.ro) are directorul setat direct
           # pe public_html, deci urcăm în rădăcina lui: "./".
