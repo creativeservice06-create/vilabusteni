@@ -1,0 +1,25 @@
+# Protecții de bază pe server (Apache / LiteSpeed)
+
+# Fișierul cu parole nu se poate deschide din browser
+<Files "config.php">
+  Require all denied
+</Files>
+<Files "config.example.php">
+  Require all denied
+</Files>
+
+# Fără listarea folderelor
+Options -Indexes
+
+# HTTPS obligatoriu (după ce SSL-ul e activ)
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Pozele, CSS și JS se păstrează în cache 30 de zile
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType text/css "access plus 30 days"
+  ExpiresByType application/javascript "access plus 30 days"
+</IfModule>

@@ -1,53 +1,208 @@
-/* Stiluri generale. Culorile principale sunt definite o singură dată, aici: */
+/* ============================================================
+   STILURILE SITE-ULUI
+   Culorile și fonturile principale sunt definite o singură dată, aici:
+   ============================================================ */
 :root {
-  --culoare-principala: #2f5d3a;
-  --culoare-text: #222;
-  --fundal: #fafaf7;
+  --verde: #2e4a3b;        /* culoarea principală (brad) */
+  --verde-inchis: #1f3328;
+  --lemn: #8a5a36;         /* accent (lemnul balustradei) */
+  --crem: #f7f2e9;         /* fundal */
+  --hartie: #fffdf8;
+  --text: #2a2622;
+  --gri: #6f675e;
+  --linie: #e4dccd;
+  --ocupat: #d9d2c5;
+
+  --font-titlu: Georgia, "Times New Roman", serif;
+  --font-text: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --latime: 1080px;
+  --raza: 10px;
 }
 
 * { box-sizing: border-box; }
-
+html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  color: var(--culoare-text);
-  background: var(--fundal);
-  line-height: 1.6;
+  font-family: var(--font-text);
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--text);
+  background: var(--crem);
 }
+img { max-width: 100%; display: block; }
+a { color: var(--verde); }
+h1, h2 { font-family: var(--font-titlu); font-weight: 400; line-height: 1.15; margin: 0 0 1rem; }
+h1 { font-size: clamp(2.2rem, 6vw, 4.2rem); }
+h2 { font-size: clamp(1.7rem, 4vw, 2.6rem); }
+.mic { font-size: .875rem; color: var(--gri); }
+.supratitlu { font-size: .78rem; letter-spacing: .16em; text-transform: uppercase; color: var(--lemn); margin: 0 0 .6rem; }
 
-/* Antet și meniu */
-.antet {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background: #fff;
-  border-bottom: 1px solid #eee;
-}
-.logo { font-weight: 700; font-size: 1.25rem; color: var(--culoare-principala); text-decoration: none; }
-.antet nav a { margin-left: 1.25rem; color: var(--culoare-text); text-decoration: none; }
+.sari { position: absolute; left: -999px; }
+.sari:focus { left: 1rem; top: 1rem; background: #fff; padding: .5rem 1rem; z-index: 100; }
 
-/* Secțiunea de sus */
-.hero {
-  text-align: center;
-  padding: 6rem 1rem;
-  background: var(--culoare-principala);
-  color: #fff;
-}
-.hero h1 { font-size: 2.5rem; margin: 0 0 .5rem; }
-
-/* Secțiuni obișnuite */
-.sectiune { max-width: 960px; margin: 0 auto; padding: 3rem 1rem; }
-
+/* ---------- Butoane ---------- */
 .buton {
   display: inline-block;
-  margin-top: 1.5rem;
-  padding: .75rem 1.75rem;
-  background: #fff;
-  color: var(--culoare-principala);
-  border-radius: 6px;
+  padding: .8rem 1.6rem;
+  background: var(--verde);
+  color: #fff;
+  border: 2px solid var(--verde);
+  border-radius: 999px;
   text-decoration: none;
   font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
 }
+.buton:hover { background: var(--verde-inchis); border-color: var(--verde-inchis); }
+.buton-contur { background: transparent; border-color: #fff; }
+.buton-contur:hover { background: rgba(255,255,255,.15); border-color: #fff; }
+.buton-contur-inchis { background: transparent; color: var(--verde); }
+.buton-contur-inchis:hover { background: var(--verde); color: #fff; }
+.buton-mic { padding: .45rem 1.1rem; font-size: .9rem; }
+.buton-lat { width: 100%; text-align: center; }
 
-.subsol { text-align: center; padding: 2rem; color: #777; font-size: .9rem; }
+/* ---------- Antet și meniu ---------- */
+.antet {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: .7rem clamp(1rem, 4vw, 2.5rem);
+  background: rgba(255, 253, 248, .94);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--linie);
+}
+.logo { text-decoration: none; display: flex; flex-direction: column; line-height: 1.2; }
+.logo-nume { font-family: var(--font-titlu); font-size: 1.35rem; color: var(--verde); }
+.logo-zona { font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gri); }
+.meniu { display: flex; align-items: center; gap: 1.6rem; }
+.meniu a:not(.buton) { color: var(--text); text-decoration: none; font-size: .95rem; }
+.meniu a:not(.buton):hover { color: var(--lemn); }
+.meniu-buton { display: none; background: none; border: 0; font-size: 1.6rem; cursor: pointer; color: var(--verde); }
+
+/* ---------- Secțiunea de sus ---------- */
+.hero {
+  min-height: 88vh;
+  display: flex; align-items: flex-end;
+  padding: clamp(2rem, 6vw, 5rem);
+  background-size: cover; background-position: center 35%;
+  position: relative; color: #fff;
+}
+.hero::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(20, 30, 24, .82) 0%, rgba(20, 30, 24, .35) 55%, rgba(20, 30, 24, 0) 100%);
+}
+.hero-text { position: relative; max-width: 640px; }
+.hero .supratitlu { color: #f1dcc3; }
+.hero h1 { margin-bottom: .3rem; }
+.hero-motto { font-family: var(--font-titlu); font-style: italic; font-size: 1.35rem; margin: 0 0 1.8rem; }
+.hero-butoane { display: flex; flex-wrap: wrap; gap: .8rem; }
+
+/* ---------- Secțiuni ---------- */
+.sectiune { max-width: var(--latime); margin: 0 auto; padding: clamp(3.5rem, 8vw, 6rem) 1.25rem; }
+.poveste-text { columns: 2 320px; column-gap: 3rem; }
+.poveste-text p { margin: 0 0 1.1rem; break-inside: avoid; }
+
+.cazare { border-top: 1px solid var(--linie); }
+.cazare-grila { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; align-items: start; margin-top: 1.5rem; }
+.cifre { list-style: none; padding: 0; margin: 0 0 2rem; display: flex; gap: 2.5rem; flex-wrap: wrap; }
+.cifre li { font-size: 1rem; color: var(--gri); }
+.cifre strong { display: block; font-family: var(--font-titlu); font-size: 3rem; font-weight: 400; color: var(--verde); line-height: 1; }
+.facilitati { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: .55rem 1.5rem; }
+.facilitati li::before { content: "—"; color: var(--lemn); margin-right: .5rem; }
+
+.card-pret {
+  background: var(--hartie); border: 1px solid var(--linie); border-radius: var(--raza);
+  padding: 2rem; box-shadow: 0 10px 30px rgba(60, 45, 30, .07);
+}
+.card-pret .pret { font-family: var(--font-titlu); font-size: 2.8rem; color: var(--verde); margin: 0; line-height: 1.1; }
+.card-pret .buton { margin-top: .6rem; }
+.contact-rapid { text-align: center; margin-top: .8rem; }
+
+/* ---------- Galerie ---------- */
+.galerie { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: .75rem; margin-top: 1.5rem; }
+.galerie-poza { display: block; overflow: hidden; border-radius: var(--raza); aspect-ratio: 4 / 3; }
+.galerie-poza img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+.galerie-poza:hover img { transform: scale(1.04); }
+.galerie-poza:first-child { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+
+.lightbox {
+  position: fixed; inset: 0; z-index: 200; background: rgba(15, 15, 12, .94);
+  display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem;
+}
+.lightbox[hidden] { display: none; }
+.lightbox img { max-height: 82vh; max-width: 92vw; object-fit: contain; border-radius: 4px; }
+.lightbox-text { color: #ddd; margin-top: .8rem; }
+.lightbox button { position: absolute; background: none; border: 0; color: #fff; font-size: 2.6rem; cursor: pointer; padding: .5rem 1rem; }
+.lightbox-inchide { top: .5rem; right: .5rem; }
+.lightbox-prev { left: .5rem; top: 50%; transform: translateY(-50%); }
+.lightbox-next { right: .5rem; top: 50%; transform: translateY(-50%); }
+
+.locul { border-top: 1px solid var(--linie); }
+
+/* ---------- Rezervare ---------- */
+.rezervare .intro { color: var(--gri); margin-bottom: 2rem; }
+.rezervare-grila { display: grid; grid-template-columns: 1.35fr 1fr; gap: 2.5rem; align-items: start; }
+.capcana { position: absolute; left: -9999px; }
+
+.calendar { background: var(--hartie); border: 1px solid var(--linie); border-radius: var(--raza); padding: 1.25rem; position: relative; }
+.cal-nav { position: absolute; top: 1rem; left: 1rem; right: 1rem; display: flex; justify-content: space-between; pointer-events: none; }
+.cal-nav button { pointer-events: auto; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--linie); background: #fff; font-size: 1.3rem; cursor: pointer; color: var(--verde); }
+.cal-nav button:disabled { opacity: .3; cursor: default; }
+.cal-luni { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.cal-titlu { text-align: center; font-family: var(--font-titlu); font-size: 1.15rem; margin: .3rem 0 .8rem; }
+.cal-grila { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; text-align: center; }
+.cal-cap { font-size: .72rem; color: var(--gri); text-transform: uppercase; padding-bottom: .3rem; }
+.cal-zi { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: .92rem; border: 0; border-radius: 6px; background: none; font-family: inherit; color: var(--text); }
+button.cal-zi { cursor: pointer; }
+button.cal-zi:hover { background: #ebe4d6; }
+.cal-zi.trecut { color: #c4bcb0; }
+.cal-zi.ocupat { color: #a59d91; text-decoration: line-through; background: var(--ocupat); }
+.cal-zi.interval { background: #dfe8e1; border-radius: 0; }
+.cal-zi.ales, button.cal-zi.ales:hover { background: var(--verde); color: #fff; text-decoration: none; }
+
+.sumar { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: var(--raza); background: #efe9dc; }
+.sumar-ok { background: #e3ece5; }
+.sumar-atentie { background: #f6e3d3; }
+.sumar-total { font-size: 1.2rem; color: var(--verde); }
+
+.campuri label { display: block; margin-bottom: 1rem; font-size: .92rem; font-weight: 600; }
+.campuri input[type=text], .campuri input[type=email], .campuri input[type=tel], .campuri select, .campuri textarea {
+  display: block; width: 100%; margin-top: .35rem; padding: .7rem .85rem;
+  border: 1px solid #d3c9b8; border-radius: 8px; background: #fff; font: inherit; font-weight: 400;
+}
+.campuri input:focus, .campuri select:focus, .campuri textarea:focus { outline: 2px solid var(--verde); outline-offset: 1px; border-color: transparent; }
+.bifa { display: flex !important; gap: .6rem; align-items: flex-start; font-weight: 400 !important; }
+.bifa input { margin-top: .3rem; }
+
+.mesaj-eroare, .mesaj-succes { padding: 1rem 1.25rem; border-radius: var(--raza); margin-bottom: 1.5rem; }
+.mesaj-eroare { background: #f8e1dc; border: 1px solid #e9b9ad; }
+.mesaj-eroare p { margin: .2rem 0; }
+.mesaj-succes { background: #e3ece5; border: 1px solid #bcd2c2; }
+
+/* ---------- Pagini legale ---------- */
+.legal { max-width: 760px; }
+.legal h2 { font-size: 1.4rem; margin-top: 2rem; }
+.de-completat { background: #fff3c4; padding: 0 .25rem; }
+
+/* ---------- Subsol ---------- */
+.subsol { background: var(--verde-inchis); color: #d8dfd9; padding: 3rem 1.25rem 1.5rem; font-size: .9rem; }
+.subsol a { color: #fff; }
+.subsol-coloane { max-width: var(--latime); margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; }
+.subsol-firma { max-width: var(--latime); margin: 2rem auto 0; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.15); font-size: .8rem; color: #a9b5ac; }
+
+/* ---------- Telefon ---------- */
+@media (max-width: 820px) {
+  .meniu-buton { display: block; }
+  .meniu {
+    display: none; position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; gap: 0; background: var(--hartie); border-bottom: 1px solid var(--linie); padding: .5rem 0 1rem;
+  }
+  .meniu.deschis { display: flex; }
+  .meniu a:not(.buton) { padding: .7rem; }
+  .cazare-grila, .rezervare-grila { grid-template-columns: 1fr; }
+  .cal-luni { grid-template-columns: 1fr; }
+  .cal-luna + .cal-luna { display: none; }
+  .galerie-poza:first-child { grid-column: auto; grid-row: auto; aspect-ratio: 4 / 3; }
+  .facilitati { grid-template-columns: 1fr; }
+  .hero { min-height: 78vh; }
+}
