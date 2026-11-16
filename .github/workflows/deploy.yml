@@ -1,0 +1,41 @@
+# Deploy automat: la fiecare push pe ramura "main",
+# conținutul folderului "site/" este urcat prin FTP în public_html pe cPanel.
+#
+# Secrets necesare (GitHub → Settings → Secrets and variables → Actions):
+#   FTP_SERVER    ftp78.claus.ro
+#   FTP_USERNAME  deploy@vilabusteni.ro  (cont FTP dedicat, creat în cPanel)
+#   FTP_PASSWORD  parola contului FTP
+#
+# Se urcă doar fișierele modificate. Fișierul config.php de pe server
+# NU este suprascris (vezi "exclude").
+
+name: Deploy pe cPanel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # permite și pornirea manuală din tab-ul Actions
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descarcă codul
+        uses: actions/checkout@v4
+
+      - name: Urcă site-ul prin FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./site/
+          # Contul FTP dedicat (deploy@vilabusteni.ro) are directorul setat direct
+          # pe public_html, deci urcăm în rădăcina lui: "./".
+          # Dacă folosești contul principal cPanel, schimbă în "public_html/".
+          server-dir: ./
+          exclude: |
+            **/.git*
+            **/.git*/**
+            config.php
