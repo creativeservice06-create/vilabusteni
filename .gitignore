@@ -1,3 +1,9 @@
 # Datele reale de configurare (parole) nu intră în GitHub
 site/config.php
 .DS_Store
+
+# Fișiere create de scriptul de deploy pe server
+deploy/token.txt
+deploy/stare.json
+deploy/jurnal.log
+deploy/.lacat

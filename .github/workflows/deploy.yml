@@ -11,10 +11,11 @@
 
 name: Deploy pe cPanel
 
+# OPRIT momentan: serverul Clausweb nu acceptă FTP din afara României.
+# Site-ul se actualizează prin deploy/actualizare.php (cron job pe server).
+# Se poate porni manual din tab-ul Actions, dacă FTP-ul va fi deblocat.
 on:
-  push:
-    branches: [main]
-  workflow_dispatch: # permite și pornirea manuală din tab-ul Actions
+  workflow_dispatch:
 
 jobs:
   deploy:

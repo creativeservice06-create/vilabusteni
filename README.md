@@ -55,13 +55,22 @@ Urmează: panou de administrare, plata online cu cardul, banner cookie + Google 
 Tabelele se creează singure la prima accesare a site-ului – nu se importă nimic manual.
 Modificările viitoare ale structurii se adaugă ca pași noi în `includes/migrari.php` și se aplică tot automat.
 
-## Deploy automat
+## Deploy automat (cron job pe server)
 
-La fiecare modificare pe ramura `main`, GitHub urcă automat folderul `site/`
-în `public_html` prin FTP. Progresul se vede în tab-ul **Actions**.
+Serverul își ia singur codul din GitHub: scriptul `deploy/actualizare.php` rulează
+la 5 minute, verifică dacă pe ramura `main` e o versiune nouă și, dacă da, copiază
+folderul `site/` în `public_html`. Fișierele șterse din GitHub se șterg și de pe server.
+`config.php` nu este atins niciodată. Istoricul actualizărilor: `deploy/jurnal.log` pe server.
 
-| Secret         | Ce pui                                     |
-|----------------|--------------------------------------------|
-| `FTP_SERVER`   | `ftp78.claus.ro`                           |
-| `FTP_USERNAME` | `deploy@vilabusteni.ro` (cont FTP dedicat) |
-| `FTP_PASSWORD` | parola contului FTP dedicat                |
+Instalare (o singură dată):
+1. cPanel → File Manager → în folderul principal (lângă `public_html`) creezi folderul `deploy`
+   și urci în el `deploy/actualizare.php`.
+2. Doar dacă repository-ul e privat: în `deploy/` creezi `token.txt` cu un token GitHub
+   (fine-grained, acces doar la acest repository, permisiunea Contents: Read-only).
+3. cPanel → Cron Jobs → la 5 minute (`*/5 * * * *`), comanda:
+   `/usr/local/bin/php /home/vilabust/deploy/actualizare.php >/dev/null 2>&1`
+
+Pentru o actualizare forțată: rulezi scriptul cu parametrul `--fortat`.
+
+Varianta prin FTP din GitHub Actions (`.github/workflows/deploy.yml`) e oprită,
+pentru că serverul nu acceptă conexiuni FTP din afara României.
