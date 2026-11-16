@@ -20,6 +20,7 @@ site/                      ← tot ce e aici ajunge în public_html pe server
     footer.php             subsolul
     init.php               funcții mici folosite peste tot
     db.php                 conexiunea la baza de date
+    migrari.php            structura bazei de date – se aplică AUTOMAT
     rezervari.php          verificarea, salvarea și mailurile rezervărilor
   assets/
     css/style.css          aspectul (culorile sunt sus, în :root)
@@ -27,7 +28,6 @@ site/                      ← tot ce e aici ajunge în public_html pe server
     js/calendar.js         calendarul de rezervare
     images/                pozele mari; images/mici/ = variantele mici pentru galerie
   config.example.php       model pentru config.php (date bază de date)
-sql/schema.sql             structura bazei de date (se importă o singură dată)
 .github/workflows/
   deploy.yml               deploy automat pe cPanel
 ```
@@ -49,9 +49,11 @@ Urmează: panou de administrare, plata online cu cardul, banner cookie + Google 
 ## Instalare pe server (o singură dată)
 
 1. cPanel → **MySQL Databases**: creezi baza `rezervari` și userul `site`, apoi le legi (All Privileges).
-2. cPanel → **phpMyAdmin** → baza creată → **Import** → `sql/schema.sql`.
-3. cPanel → **File Manager** → `public_html`: copiezi `config.example.php` ca `config.php` și completezi datele.
-4. cPanel → **Email Accounts**: creezi `rezervari@vilabusteni.ro` (de pe ea pleacă mailurile automate).
+2. cPanel → **File Manager** → `public_html`: copiezi `config.example.php` ca `config.php` și completezi datele.
+3. cPanel → **Email Accounts**: creezi `rezervari@vilabusteni.ro` (de pe ea pleacă mailurile automate).
+
+Tabelele se creează singure la prima accesare a site-ului – nu se importă nimic manual.
+Modificările viitoare ale structurii se adaugă ca pași noi în `includes/migrari.php` și se aplică tot automat.
 
 ## Deploy automat
 

@@ -22,8 +22,12 @@ function db()
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]);
+        // Creează/actualizează automat tabelele (vezi includes/migrari.php)
+        require_once __DIR__ . '/migrari.php';
+        aplica_migrari($pdo);
     } catch (PDOException $ex) {
         error_log('Eroare conectare DB: ' . $ex->getMessage());
+        $pdo = null;
         return null;
     }
     return $pdo;
