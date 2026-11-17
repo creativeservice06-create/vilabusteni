@@ -85,8 +85,8 @@ p { margin: 0 0 1em; }
   height: var(--antet);
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 var(--margine);
-  background: rgba(246, 248, 248, .96);
-  backdrop-filter: blur(8px);
+  /* fără backdrop-filter aici: ar strica meniul deschis pe telefon (iPhone) */
+  background: rgba(246, 248, 248, .98);
   border-bottom: 1px solid var(--linie);
   transition: background-color .3s, border-color .3s;
 }
@@ -95,7 +95,7 @@ p { margin: 0 0 1em; }
 .logo-zona { display: block; font-size: .78rem; color: var(--piatra); }
 
 /* Pe prima pagină, meniul e transparent peste poză până începi să derulezi */
-.pagina-acasa .antet:not(.scrolat) { background: transparent; border-color: transparent; backdrop-filter: none; }
+.pagina-acasa .antet:not(.scrolat) { background: transparent; border-color: transparent; }
 .pagina-acasa .antet:not(.scrolat) .logo,
 .pagina-acasa .antet:not(.scrolat) .logo-zona,
 .pagina-acasa .antet:not(.scrolat) .meniu-buton { color: #fff; }
@@ -116,6 +116,7 @@ p { margin: 0 0 1em; }
   display: flex; flex-direction: column;
   padding: 1.5rem var(--margine) 2rem;
   background: var(--zapada);
+  overflow-y: auto; z-index: 101;
   visibility: hidden; opacity: 0; transform: translateY(-8px);
   transition: opacity .25s, transform .25s, visibility .25s;
 }

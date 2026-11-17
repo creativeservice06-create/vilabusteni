@@ -21,7 +21,7 @@ $pagina    = $pagina ?? '';
   <meta property="og:image" content="/assets/images/terasa-vedere.jpg">
   <link rel="preload" href="/assets/fonts/young-serif.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="/assets/fonts/instrument-sans.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="/assets/css/style.css?v=3">
+  <link rel="stylesheet" href="/assets/css/style.css?v=4">
 </head>
 <body class="pagina-<?= e($pagina ?: 'interioara') ?>">
 
