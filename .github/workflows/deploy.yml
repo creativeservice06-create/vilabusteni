@@ -23,19 +23,14 @@ jobs:
       - name: Descarcă codul
         uses: actions/checkout@v4
 
-      - name: Test conexiune server (diagnostic)
-        run: |
-          echo "IP runner GitHub: $(curl -s https://api.ipify.org)"
-          timeout 15 bash -c 'echo > /dev/tcp/93.113.55.2/21' && echo "Port 21: DESCHIS" || echo "Port 21: BLOCAT / timeout"
-
       - name: Urcă site-ul prin FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: 93.113.55.2   # IP-ul contului cPanel (Shared IP Address)
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          log-level: verbose
+          protocol: ftps
+          security: loose   # certificatul FTP e pe numele serverului, nu pe IP
           local-dir: ./site/
           # Contul FTP dedicat (deploy@vilabusteni.ro) are directorul setat direct
           # pe public_html, deci urcăm în rădăcina lui: "./".
@@ -45,3 +40,11 @@ jobs:
             **/.git*
             **/.git*/**
             config.php
+
+      - name: Verifică site-ul
+        run: |
+          sleep 5
+          for p in / /rezervare.php /api/disponibilitate.php; do
+            cod=$(curl -sk -o /tmp/r -w '%{http_code}' --resolve vilabusteni.ro:443:93.113.55.2 "https://vilabusteni.ro$p")
+            echo "$p → $cod"; grep -o '<title>[^<]*\|{"ocupate.*' /tmp/r | head -1 || true
+          done

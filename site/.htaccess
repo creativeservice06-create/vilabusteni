@@ -4,6 +4,9 @@
 <Files "config.php">
   Require all denied
 </Files>
+<Files ".ftp-deploy-sync-state.json">
+  Require all denied
+</Files>
 <Files "config.example.php">
   Require all denied
 </Files>
