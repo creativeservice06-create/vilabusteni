@@ -7,4 +7,4 @@ header('Cache-Control: no-store');
 echo json_encode([
     'ocupate' => nopti_ocupate(),
     'db'      => db() !== null,   // true = baza de date e conectată
-]);
+] + ($GLOBALS['db_eroare'] ? ['db_eroare' => $GLOBALS['db_eroare']] : []), JSON_UNESCAPED_UNICODE);

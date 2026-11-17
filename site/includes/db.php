@@ -2,6 +2,9 @@
 // Conexiunea la baza de date. Datele de acces vin din config.php (doar pe server).
 // Întoarce null dacă baza de date nu e încă configurată.
 
+// Motivul ultimei erori de conectare (fără date sensibile), pentru diagnostic.
+$GLOBALS['db_eroare'] = null;
+
 function db()
 {
     static $pdo = null;
@@ -11,6 +14,7 @@ function db()
 
     $fisier = __DIR__ . '/../config.php';
     if (!file_exists($fisier)) {
+        $GLOBALS['db_eroare'] = 'config.php lipsește din public_html';
         return null;
     }
     $c = require $fisier;
@@ -27,6 +31,10 @@ function db()
         aplica_migrari($pdo);
     } catch (PDOException $ex) {
         error_log('Eroare conectare DB: ' . $ex->getMessage());
+        $coduri = [1045 => 'acces refuzat (user sau parolă greșită)', 1044 => 'userul nu are drepturi pe bază',
+                   1049 => 'baza de date nu există (verifică numele)', 2002 => 'serverul MySQL nu răspunde'];
+        $cod = $ex->errorInfo[1] ?? (int) $ex->getCode();
+        $GLOBALS['db_eroare'] = 'cod ' . $cod . ': ' . ($coduri[$cod] ?? 'altă eroare');
         $pdo = null;
         return null;
     }
