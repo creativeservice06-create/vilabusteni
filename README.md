@@ -23,8 +23,9 @@ site/                      ← tot ce e aici ajunge în public_html pe server
     migrari.php            structura bazei de date – se aplică AUTOMAT
     rezervari.php          verificarea, salvarea și mailurile rezervărilor
   assets/
-    css/style.css          aspectul (culorile sunt sus, în :root)
-    js/main.js             meniul pe telefon + galeria
+    css/style.css          aspectul (culorile și fonturile sunt sus, în :root)
+    fonts/                 fonturile Young Serif (titluri) și Instrument Sans (text), găzduite local
+    js/main.js             meniul, meniul transparent de pe prima pagină, galeria
     js/calendar.js         calendarul de rezervare
     images/                pozele mari; images/mici/ = variantele mici pentru galerie
   config.example.php       model pentru config.php (date bază de date)

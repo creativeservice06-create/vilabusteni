@@ -6,7 +6,7 @@ $titlu = 'Termeni și condiții – ' . $setari['nume_vila'];
 require __DIR__ . '/includes/header.php';
 $f = $setari;
 ?>
-<section class="sectiune legal">
+<section class="interior legal">
   <h1>Termeni și condiții</h1>
   <p class="mic">Ultima actualizare: <span class="de-completat">[data]</span></p>
 

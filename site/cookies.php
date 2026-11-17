@@ -4,7 +4,7 @@ require __DIR__ . '/includes/init.php';
 $titlu = 'Politica de cookie-uri – ' . $setari['nume_vila'];
 require __DIR__ . '/includes/header.php';
 ?>
-<section class="sectiune legal">
+<section class="interior legal">
   <h1>Politica de cookie-uri</h1>
 
   <h2>Ce cookie-uri folosim acum</h2>

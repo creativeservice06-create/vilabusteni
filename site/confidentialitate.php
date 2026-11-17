@@ -5,7 +5,7 @@ $titlu = 'Politica de confidențialitate – ' . $setari['nume_vila'];
 require __DIR__ . '/includes/header.php';
 $f = $setari;
 ?>
-<section class="sectiune legal">
+<section class="interior legal">
   <h1>Politica de confidențialitate</h1>
   <p class="mic">Ultima actualizare: <span class="de-completat">[data]</span></p>
 

@@ -24,12 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $titlu = 'Rezervare – ' . $setari['nume_vila'];
-$scripturi = ['/assets/js/calendar.js?v=2'];
+$scripturi = ['/assets/js/calendar.js?v=3'];
+$pagina = 'rezervare';
 require __DIR__ . '/includes/header.php';
 ?>
 
-<section class="sectiune rezervare">
-  <p class="supratitlu">Rezervare</p>
+<section class="interior rezervare">
 
 <?php if ($trimis): ?>
 
@@ -40,13 +40,13 @@ require __DIR__ . '/includes/header.php';
     <p>Te contactăm în cel mai scurt timp pentru confirmare. Ți-am trimis și un email la <strong><?= e($date['email']) ?></strong>.</p>
     <p>Pentru orice întrebare: <a href="tel:<?= e($setari['telefon_link']) ?>"><?= e($setari['telefon']) ?></a>.</p>
   </div>
-  <p><a href="/" class="buton buton-contur-inchis">Înapoi la prima pagină</a></p>
+  <p><a href="/" class="buton buton-contur">Înapoi la prima pagină</a></p>
 
 <?php else: ?>
 
-  <h1>Alege perioada</h1>
-  <p class="intro">Toată vila: <?= lei($setari['pret_noapte']) ?> / noapte · minimum <?= (int) $setari['minim_nopti'] ?> nopți.
-     Zilele tăiate sunt deja ocupate.</p>
+  <h1>Alege datele</h1>
+  <p class="intro">Toată vila costă <?= lei($setari['pret_noapte']) ?> pe noapte, minimum <?= (int) $setari['minim_nopti'] ?> nopți.
+     Atinge ziua sosirii, apoi ziua plecării. Zilele tăiate sunt ocupate.</p>
 
   <?php if ($erori): ?>
     <div class="mesaj-eroare">
@@ -94,7 +94,7 @@ require __DIR__ . '/includes/header.php';
           <span>Am citit și accept <a href="/termeni.php" target="_blank">Termenii și condițiile</a>
             și <a href="/confidentialitate.php" target="_blank">Politica de confidențialitate</a>.</span>
         </label>
-        <button type="submit" class="buton buton-lat" id="buton-trimite">Trimite cererea de rezervare</button>
+        <button type="submit" class="buton buton-plin buton-lat" id="buton-trimite">Trimite cererea de rezervare</button>
         <p class="mic">Rezervarea devine fermă după confirmarea noastră. Plata online cu cardul va fi disponibilă în curând.</p>
       </div>
     </div>
