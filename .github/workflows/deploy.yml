@@ -46,5 +46,5 @@ jobs:
           sleep 5
           for p in / /rezervare.php /api/disponibilitate.php; do
             cod=$(curl -sk -o /tmp/r -w '%{http_code}' --resolve vilabusteni.ro:443:93.113.55.2 "https://vilabusteni.ro$p")
-            echo "$p → $cod"; grep -o '<title>[^<]*\|{"ocupate.*' /tmp/r | head -1 || true
+            echo "$p → $cod"; grep -o '<title>[^<]*\|{"ocupate[^}]*}' /tmp/r | head -1 || true
           done
