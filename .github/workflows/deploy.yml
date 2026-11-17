@@ -2,7 +2,7 @@
 # conținutul folderului "site/" este urcat prin FTP în public_html pe cPanel.
 #
 # Secrets necesare (GitHub → Settings → Secrets and variables → Actions):
-#   FTP_SERVER    ftp78.claus.ro
+#   (serverul e IP-ul găzduirii, scris mai jos – nu e secret)
 #   FTP_USERNAME  deploy@vilabusteni.ro  (cont FTP dedicat, creat în cPanel)
 #   FTP_PASSWORD  parola contului FTP
 #
@@ -11,11 +11,10 @@
 
 name: Deploy pe cPanel
 
-# OPRIT momentan: serverul Clausweb nu acceptă FTP din afara României.
-# Site-ul se actualizează prin deploy/actualizare.php (cron job pe server).
-# Se poate porni manual din tab-ul Actions, dacă FTP-ul va fi deblocat.
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
+  workflow_dispatch: # permite și pornirea manuală din tab-ul Actions
 
 jobs:
   deploy:
@@ -27,13 +26,12 @@ jobs:
       - name: Test conexiune server (diagnostic)
         run: |
           echo "IP runner GitHub: $(curl -s https://api.ipify.org)"
-          getent hosts "${{ secrets.FTP_SERVER }}" || echo "DNS: nu se rezolvă"
-          timeout 15 bash -c 'echo > /dev/tcp/${{ secrets.FTP_SERVER }}/21' && echo "Port 21: DESCHIS" || echo "Port 21: BLOCAT / timeout"
+          timeout 15 bash -c 'echo > /dev/tcp/93.113.55.2/21' && echo "Port 21: DESCHIS" || echo "Port 21: BLOCAT / timeout"
 
       - name: Urcă site-ul prin FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
+          server: 93.113.55.2   # IP-ul contului cPanel (Shared IP Address)
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
