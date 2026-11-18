@@ -11,10 +11,11 @@
 
 name: Deploy pe cPanel
 
+# Pornit DOAR MANUAL (tab-ul Actions → Run workflow).
+# Serverul blochează des FTP-ul de la GitHub, așa că site-ul se actualizează
+# prin deploy/actualizare.php (cron job pe server, la 5 minute).
 on:
-  push:
-    branches: [main]
-  workflow_dispatch: # permite și pornirea manuală din tab-ul Actions
+  workflow_dispatch:
 
 jobs:
   deploy:
