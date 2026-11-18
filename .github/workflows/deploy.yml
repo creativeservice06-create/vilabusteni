@@ -24,6 +24,31 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Urcă site-ul prin FTP
+        id: ftp
+        continue-on-error: true   # dacă serverul nu răspunde, mai încercăm o dată mai jos
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 93.113.55.2   # IP-ul contului cPanel (Shared IP Address)
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          security: loose   # certificatul FTP e pe numele serverului, nu pe IP
+          local-dir: ./site/
+          # Contul FTP dedicat (deploy@vilabusteni.ro) are directorul setat direct
+          # pe public_html, deci urcăm în rădăcina lui: "./".
+          # Dacă folosești contul principal cPanel, schimbă în "public_html/".
+          server-dir: ./
+          exclude: |
+            **/.git*
+            **/.git*/**
+            config.php
+
+      - name: Pauză înainte de a doua încercare
+        if: steps.ftp.outcome == 'failure'
+        run: sleep 30
+
+      - name: Urcă site-ul prin FTP (a doua încercare)
+        if: steps.ftp.outcome == 'failure'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: 93.113.55.2   # IP-ul contului cPanel (Shared IP Address)
