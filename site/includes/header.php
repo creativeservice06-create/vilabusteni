@@ -19,9 +19,10 @@ $pagina    = $pagina ?? '';
   <meta property="og:title" content="<?= e($titlu) ?>">
   <meta property="og:description" content="<?= e($descriere) ?>">
   <meta property="og:image" content="/assets/images/terasa-vedere.jpg">
+  <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
   <link rel="preload" href="/assets/fonts/young-serif.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="/assets/fonts/instrument-sans.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="/assets/css/style.css?v=4">
+  <link rel="stylesheet" href="/assets/css/style.css?v=5">
 </head>
 <body class="pagina-<?= e($pagina ?: 'interioara') ?>">
 
@@ -29,8 +30,12 @@ $pagina    = $pagina ?? '';
 
 <header class="antet" id="antet">
   <a href="/" class="logo" aria-label="<?= e($setari['nume_vila']) ?> – prima pagină">
-    <span class="logo-nume"><?= e($setari['nume_vila']) ?></span>
-    <span class="logo-zona"><?= e($setari['zona']) ?></span>
+    <img class="logo-pasare logo-pasare-verde" src="/assets/images/sigle/randunica-verde.png" alt="" width="46" height="42">
+    <img class="logo-pasare logo-pasare-alba" src="/assets/images/sigle/randunica-alb.png" alt="" width="46" height="42">
+    <span class="logo-text">
+      <span class="logo-nume"><?= e($setari['nume_vila']) ?></span>
+      <span class="logo-zona"><?= e($setari['zona']) ?></span>
+    </span>
   </a>
   <button class="meniu-buton" aria-label="Meniu" aria-expanded="false" aria-controls="meniu">
     <span></span><span></span>
@@ -40,6 +45,7 @@ $pagina    = $pagina ?? '';
     <a href="/#casa">Casa</a>
     <a href="/#galerie">Galerie</a>
     <a href="/#locul">Unde e</a>
+    <a href="#contact">Contact</a>
     <a href="/rezervare.php" class="meniu-rezerva">Rezervă</a>
   </nav>
 </header>

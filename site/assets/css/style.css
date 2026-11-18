@@ -21,8 +21,8 @@
 
 :root {
   /* Culori luate din poze: bradul, cerul de dimineață, zăpada, piatra și lemnul balustradei */
-  --brad: #1f3a33;
-  --brad-adanc: #142824;
+  --brad: #164a28;         /* verdele din sigla vilei */
+  --brad-adanc: #0f2f1b;
   --cer: #e3edf2;
   --cer-adanc: #c5d8e1;
   --zapada: #f6f8f8;
@@ -90,7 +90,13 @@ p { margin: 0 0 1em; }
   border-bottom: 1px solid var(--linie);
   transition: background-color .3s, border-color .3s;
 }
-.logo { text-decoration: none; color: var(--brad); line-height: 1.15; }
+.logo { text-decoration: none; color: var(--brad); line-height: 1.15; display: flex; align-items: center; gap: .6rem; }
+.logo-pasare { width: 42px; height: auto; }
+.logo-pasare-alba { display: none; }
+.pagina-acasa .antet:not(.scrolat) .logo-pasare-verde { display: none; }
+.pagina-acasa .antet:not(.scrolat) .logo-pasare-alba { display: block; filter: drop-shadow(0 1px 6px rgba(0,0,0,.35)); }
+body.meniu-deschis .logo-pasare-verde { display: block !important; }
+body.meniu-deschis .logo-pasare-alba { display: none !important; }
 .logo-nume { display: block; font-family: var(--font-titlu); font-size: 1.3rem; }
 .logo-zona { display: block; font-size: .78rem; color: var(--piatra); }
 
@@ -250,15 +256,37 @@ body.meniu-deschis .antet .logo, body.meniu-deschis .antet .logo-zona, body.meni
 .locul address { font-style: normal; font-weight: 600; margin: 1.2rem 0 1.5rem; }
 .locul-butoane { display: flex; flex-direction: column; gap: .7rem; max-width: 420px; }
 
-/* ---------- Subsol ---------- */
-.subsol { background: var(--brad-adanc); color: #b9cac5; font-size: .95rem; }
+/* ---------- Subsol (sigle + contact) ---------- */
+.subsol { background: var(--brad-adanc); color: #c3d3c8; font-size: .97rem; }
 .creasta-subsol { height: 60px; background: var(--zapada); }
 .creasta-subsol polyline { stroke: var(--brad-adanc); stroke-width: 1.5; }
-.subsol-interior { max-width: var(--latime); margin: 0 auto; padding: 2.5rem var(--margine) 1.5rem; display: grid; gap: 2rem; }
+.subsol-interior { max-width: var(--latime); margin: 0 auto; padding: 2.5rem var(--margine) 2rem; display: grid; gap: 2.5rem; }
 .subsol a { color: #fff; }
-.subsol-nume { font-family: var(--font-titlu); font-size: 1.5rem; color: #fff; margin-bottom: .4rem; }
-.subsol-linkuri { display: flex; flex-direction: column; gap: .55rem; }
-.subsol-firma { max-width: var(--latime); margin: 0 auto; padding: 1.2rem var(--margine) 2rem; font-size: .8rem; color: #8ea39d; border-top: 1px solid rgba(255,255,255,.08); }
+
+.subsol-sigle { display: flex; flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+.sigla-vila { width: min(260px, 70vw); height: auto; }
+.marca { display: flex; align-items: center; gap: .9rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,.12); }
+.marca img { width: 80px; height: 80px; flex: none; }
+.marca p { margin: 0; max-width: 16rem; line-height: 1.4; }
+
+.subsol-contact h2 { font-size: 1.6rem; color: #fff; margin-bottom: 1rem; }
+.contact-lista { list-style: none; margin: 0 0 1.5rem; padding: 0; }
+.contact-lista li { display: grid; gap: .1rem; padding: .65rem 0; border-bottom: 1px solid rgba(255,255,255,.1); }
+.contact-lista span { font-size: .82rem; color: #8fa898; }
+.contact-lista a { text-decoration: none; font-weight: 500; font-size: 1.05rem; overflow-wrap: anywhere; }
+.contact-lista a:hover { text-decoration: underline; }
+
+.sociale { display: flex; flex-wrap: wrap; gap: .6rem; }
+.sociale a {
+  width: 48px; height: 48px; display: grid; place-items: center;
+  border-radius: 50%; border: 1.5px solid rgba(255,255,255,.3); color: #fff;
+  transition: background-color .2s, border-color .2s, color .2s;
+}
+.sociale a:hover { background: #fff; color: var(--brad-adanc); border-color: #fff; }
+.sociale svg { width: 22px; height: 22px; }
+
+.subsol-linkuri { display: flex; flex-direction: column; gap: .6rem; }
+.subsol-firma { max-width: var(--latime); margin: 0 auto; padding: 1.2rem var(--margine) 2rem; font-size: .82rem; line-height: 1.5; color: #8fa898; border-top: 1px solid rgba(255,255,255,.08); }
 
 /* ---------- Bara de jos pe telefon ---------- */
 .bara-mobil {
@@ -385,7 +413,8 @@ button.cal-zi:hover { background: var(--cer); }
   .galerie-poza:hover img { transform: scale(1.03); }
 
   .locul { grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-  .subsol-interior { grid-template-columns: 1fr 1fr; }
+  .subsol-interior { grid-template-columns: 1.1fr 1.2fr .9fr; gap: 3rem; align-items: start; }
+  .meniu { gap: 1.6rem; }
   .rezervare-grila { grid-template-columns: 1.4fr 1fr; gap: 3rem; }
   .lightbox-prev, .lightbox-next { top: 50%; bottom: auto; transform: translateY(-50%); }
 }

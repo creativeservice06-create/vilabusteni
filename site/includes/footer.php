@@ -1,19 +1,34 @@
 </main>
 
-<footer class="subsol">
+<footer class="subsol" id="contact">
   <svg class="creasta creasta-subsol" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
     <polyline points="<?= e(CREASTA) ?>" />
   </svg>
   <div class="subsol-interior">
-    <div class="subsol-vila">
-      <p class="subsol-nume"><?= e($setari['nume_vila']) ?></p>
-      <p><?= e($setari['adresa']) ?></p>
-      <p>
-        <a href="tel:<?= e($setari['telefon_link']) ?>"><?= e($setari['telefon']) ?></a><br>
-        <a href="mailto:<?= e($setari['email_contact']) ?>"><?= e($setari['email_contact']) ?></a>
-      </p>
+
+    <!-- Siglele: Vila Rândunica + Horoscop Travel -->
+    <div class="subsol-sigle">
+      <img class="sigla-vila" src="/assets/images/sigle/vila-randunica-alb.png" alt="Vila Rândunica, Poiana Țapului, Bușteni" width="300" height="267" loading="lazy">
+      <div class="marca">
+        <img src="/assets/images/sigle/horoscop-travel.png" alt="Horoscop Travel" width="72" height="72" loading="lazy">
+        <p>Vila Rândunica este o marcă <?= e($setari['firma_marca']) ?>.</p>
+      </div>
     </div>
+
+    <!-- Toate datele de contact -->
+    <div class="subsol-contact">
+      <h2>Contact</h2>
+      <ul class="contact-lista">
+        <li><span>Telefon</span><a href="tel:<?= e($setari['telefon_link']) ?>"><?= e($setari['telefon']) ?></a></li>
+        <li><span>WhatsApp</span><a href="https://wa.me/<?= e($setari['whatsapp']) ?>" target="_blank" rel="noopener"><?= e($setari['telefon']) ?></a></li>
+        <li><span>Email</span><a href="mailto:<?= e($setari['email_contact']) ?>"><?= e($setari['email_contact']) ?></a></li>
+        <li><span>Adresa</span><a href="<?= e($setari['harta_link']) ?>" target="_blank" rel="noopener"><?= e($setari['adresa']) ?></a></li>
+      </ul>
+      <?= iconite_sociale($setari) ?>
+    </div>
+
     <nav class="subsol-linkuri" aria-label="Informații legale">
+      <a href="/rezervare.php">Rezervare</a>
       <a href="/termeni.php">Termeni și condiții</a>
       <a href="/confidentialitate.php">Politica de confidențialitate</a>
       <a href="/cookies.php">Politica de cookie-uri</a>
@@ -22,7 +37,7 @@
     </nav>
   </div>
   <p class="subsol-firma">
-    © <?= date('Y') ?> <?= e($setari['firma_nume']) ?>, CUI <?= e($setari['firma_cui']) ?>, <?= e($setari['firma_reg_com']) ?>
+    © <?= date('Y') ?> <?= e($setari['firma_nume']) ?>, CUI <?= e($setari['firma_cui']) ?>, Nr. Reg. Com. <?= e($setari['firma_reg_com']) ?>, sediul: <?= e($setari['firma_sediu']) ?>
   </p>
 </footer>
 

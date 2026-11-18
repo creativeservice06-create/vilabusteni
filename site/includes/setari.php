@@ -21,11 +21,21 @@ return [
     // Adresa de pe care pleacă mailurile automate (trebuie creată în cPanel → Email Accounts)
     'email_expeditor'  => 'rezervari@vilabusteni.ro',
 
-    // Firma (apare în subsol și în paginile legale) – DE COMPLETAT
-    'firma_nume'     => 'Horoscop Travel',
-    'firma_cui'      => '[CUI de completat]',
-    'firma_reg_com'  => '[Nr. Reg. Com. de completat]',
-    'firma_sediu'    => '[Sediul social de completat]',
+    // Firma (apare în subsol și în paginile legale)
+    'firma_nume'     => 'Horoscop Travel S.R.L.',
+    'firma_marca'    => 'Horoscop Travel',
+    'firma_cui'      => '49488410',
+    'firma_reg_com'  => 'J40/1696/2024',
+    'firma_sediu'    => 'București, Sector 4, Str. Concordiei nr. 7, camera 4',
+
+    // Rețele sociale – un link gol ("") nu apare pe site
+    'social' => [
+        'facebook'    => 'https://www.facebook.com/profile.php?id=61596796554096',
+        'instagram'   => '',   // DE COMPLETAT
+        'tiktok'      => 'https://www.tiktok.com/@horoscop.travel',
+        'youtube'     => 'https://www.youtube.com/@horoscoptravel',
+        'tripadvisor' => '',   // DE COMPLETAT
+    ],
 
     // Tarife și reguli de rezervare
     'pret_noapte'    => 1500,   // lei / noapte, pentru toată vila
