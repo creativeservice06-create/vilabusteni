@@ -23,6 +23,14 @@ jobs:
       - name: Descarcă codul
         uses: actions/checkout@v4
 
+      - name: Verifică legătura cu serverul
+        run: |
+          echo "IP-ul GitHub de acum: $(curl -s https://api.ipify.org)"
+          echo "vilabusteni.ro indică spre: $(getent hosts vilabusteni.ro | awk '{print $1}')"
+          for port in 21 443; do
+            timeout 10 bash -c "echo > /dev/tcp/93.113.55.2/$port" 2>/dev/null && echo "Port $port: deschis" || echo "Port $port: NU răspunde"
+          done
+
       - name: Urcă site-ul prin FTP
         id: ftp
         continue-on-error: true   # dacă serverul nu răspunde, mai încercăm o dată mai jos
