@@ -15,6 +15,16 @@ $spatii = [
     ['bucatarie.jpg',     'Bucătăria',    'Aragaz pe gaz, cuptor, cuptor cu microunde și tot ce trebuie pentru gătit.'],
 ];
 
+// Obiective din zonă: [nume, descriere, ce se caută pe Google Maps]
+$obiective = [
+    ['Cascada Urlătoarea', 'Una dintre cele mai cunoscute cascade de pe Valea Prahovei, la capătul unui traseu ușor prin pădure care pornește chiar din Poiana Țapului.', 'Cascada Urlătoarea Bușteni'],
+    ['Castelul Cantacuzino', 'Castel în stil neoromânesc din Bușteni, ridicat la începutul secolului XX de prințul Gheorghe Grigore Cantacuzino, cu o terasă spre Bucegi.', 'Castelul Cantacuzino Bușteni'],
+    ['Mănăstirea Caraiman', 'Mănăstire ortodoxă la poalele muntelui Caraiman, într-un loc liniștit, la marginea pădurii.', 'Mănăstirea Caraiman Bușteni'],
+    ['Telecabina Bușteni', 'Urcă din Bușteni direct pe Platoul Bucegi, la Babele, fără drumeție.', 'Telecabina Bușteni'],
+    ['Platoul Bucegi', 'Babele și Sfinxul, stâncile modelate de vânt, și Crucea Eroilor de pe Caraiman, cea pe care o vezi și de pe terasa vilei.', 'Babele Bucegi'],
+    ['Vârful Omu și Valea Cerbului', 'Cel mai înalt vârf din Bucegi, la 2.505 m. Valea Cerbului, unul dintre traseele clasice spre el, pornește din Bușteni.', 'Vârful Omu Bucegi'],
+];
+
 // Galeria: [poza, descriere]
 $galerie = [
     ['munti-panorama.jpg', 'Bucegii văzuți din curte'],
@@ -147,6 +157,23 @@ $galerie = [
       <a href="tel:<?= e($setari['telefon_link']) ?>" class="buton buton-contur">Sună: <?= e($setari['telefon']) ?></a>
     </div>
   </div>
+</section>
+
+<!-- OBIECTIVE DIN ZONĂ -->
+<section id="zona" class="zona">
+  <div class="zona-cap">
+    <h2>Ce vezi în zonă</h2>
+    <p>Locuri pe care le poți vizita într-o zi, plecând de la vilă.</p>
+  </div>
+  <ul class="obiective">
+    <?php foreach ($obiective as [$nume, $text, $cauta]): ?>
+      <li class="obiectiv">
+        <h3><?= e($nume) ?></h3>
+        <p><?= e($text) ?></p>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=<?= e(urlencode($cauta)) ?>" target="_blank" rel="noopener">Vezi pe hartă</a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
 </section>
 
 <!-- Fereastra pentru poze mari -->

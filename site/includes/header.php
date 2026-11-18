@@ -22,7 +22,7 @@ $pagina    = $pagina ?? '';
   <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
   <link rel="preload" href="/assets/fonts/young-serif.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="/assets/fonts/instrument-sans.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="/assets/css/style.css?v=5">
+  <link rel="stylesheet" href="/assets/css/style.css?v=6">
 </head>
 <body class="pagina-<?= e($pagina ?: 'interioara') ?>">
 
@@ -44,7 +44,7 @@ $pagina    = $pagina ?? '';
     <a href="/#povestea">Povestea</a>
     <a href="/#casa">Casa</a>
     <a href="/#galerie">Galerie</a>
-    <a href="/#locul">Unde e</a>
+    <a href="/#zona">Zona</a>
     <a href="#contact">Contact</a>
     <a href="/rezervare.php" class="meniu-rezerva">Rezervă</a>
   </nav>

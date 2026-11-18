@@ -256,6 +256,16 @@ body.meniu-deschis .antet .logo, body.meniu-deschis .antet .logo-zona, body.meni
 .locul address { font-style: normal; font-weight: 600; margin: 1.2rem 0 1.5rem; }
 .locul-butoane { display: flex; flex-direction: column; gap: .7rem; max-width: 420px; }
 
+/* ---------- Ce vezi în zonă ---------- */
+.zona { background: var(--cer); padding: clamp(3.5rem, 10vw, 7rem) var(--margine); }
+.zona > * { max-width: var(--latime); margin-left: auto; margin-right: auto; }
+.zona-cap p { color: #3a4845; margin-top: .8rem; max-width: 34rem; }
+.obiective { list-style: none; padding: 0; margin-top: 2rem; display: grid; gap: 0; }
+.obiectiv { padding: 1.4rem 0; border-top: 1px solid var(--cer-adanc); }
+.obiectiv h3 { font-family: var(--font-titlu); font-weight: 400; font-size: 1.4rem; line-height: 1.2; color: var(--brad); margin: 0 0 .45rem; }
+.obiectiv p { margin: 0 0 .6rem; color: #36423f; max-width: 34rem; }
+.obiectiv a { font-weight: 600; font-size: .95rem; }
+
 /* ---------- Subsol (sigle + contact) ---------- */
 .subsol { background: var(--brad-adanc); color: #c3d3c8; font-size: .97rem; }
 .creasta-subsol { height: 60px; background: var(--zapada); }
@@ -365,6 +375,7 @@ button.cal-zi:hover { background: var(--cer); }
   .hero-butoane .buton-sticla { display: inline-flex; }
   .spatii { grid-template-columns: repeat(2, 1fr); gap: 2rem 1.5rem; }
   .dotari { grid-template-columns: 1fr 1fr; }
+  .obiective { grid-template-columns: 1fr 1fr; column-gap: 2rem; }
   .galerie { grid-auto-columns: 58%; }
   .cal-luni { grid-template-columns: 1fr 1fr; }
   .cal-luna + .cal-luna { display: block; }
@@ -413,6 +424,8 @@ button.cal-zi:hover { background: var(--cer); }
   .galerie-poza:hover img { transform: scale(1.03); }
 
   .locul { grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .obiective { grid-template-columns: repeat(3, 1fr); column-gap: 2.5rem; }
+  .obiectiv { padding: 1.6rem 0 2rem; }
   .subsol-interior { grid-template-columns: 1.1fr 1.2fr .9fr; gap: 3rem; align-items: start; }
   .meniu { gap: 1.6rem; }
   .rezervare-grila { grid-template-columns: 1.4fr 1fr; gap: 3rem; }
@@ -424,3 +437,4 @@ button.cal-zi:hover { background: var(--cer); }
   *, *::before, *::after { transition: none !important; animation: none !important; }
   .creasta-hero polyline { stroke-dashoffset: 0; }
 }
+.pagina-acasa .creasta-subsol { background: var(--cer); }
