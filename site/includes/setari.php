@@ -24,7 +24,7 @@ return [
 
     // Firma (apare în subsol și în paginile legale)
     'firma_nume'     => 'Horoscop Travel S.R.L.',
-    'firma_marca'    => 'Horoscop Travel',
+    'firma_marca'    => 'Enjoy Travel',
     'firma_cui'      => '49488410',
     'firma_reg_com'  => 'J40/1696/2024',
     'firma_sediu'    => 'București, Sector 4, Str. Concordiei nr. 7, camera 4',
