@@ -20,7 +20,19 @@ $domeniu   = 'https://vilabusteni.ro';
   <meta name="description" content="<?= e($descriere) ?>">
   <meta property="og:title" content="<?= e($titlu) ?>">
   <meta property="og:description" content="<?= e($descriere) ?>">
-  <meta property="og:image" content="<?= e($domeniu) ?>/assets/images/terasa-vedere.jpg">
+  <!-- Previzualizarea când linkul e trimis pe WhatsApp, Facebook etc.: sigla vilei -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="<?= e($setari['nume_vila']) ?>">
+  <meta property="og:url" content="<?= e($domeniu . url($aici)) ?>">
+  <meta property="og:locale" content="<?= e(['ro' => 'ro_RO', 'en' => 'en_GB', 'de' => 'de_DE', 'it' => 'it_IT', 'ru' => 'ru_RU'][$LIMBA]) ?>">
+  <meta property="og:image" content="<?= e($domeniu) ?>/assets/images/sigle/previzualizare.jpg">
+  <meta property="og:image:secure_url" content="<?= e($domeniu) ?>/assets/images/sigle/previzualizare.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="600">
+  <meta property="og:image:height" content="600">
+  <meta property="og:image:alt" content="<?= e(t('sigla_alt')) ?>">
+  <meta name="twitter:card" content="summary">
+  <link rel="apple-touch-icon" href="/assets/images/sigle/previzualizare.jpg">
   <?php foreach (LIMBI as $cod => $_): ?>
   <link rel="alternate" hreflang="<?= e($cod) ?>" href="<?= e($domeniu . url($aici, $cod)) ?>">
   <?php endforeach; ?>
