@@ -14,6 +14,7 @@ site/                      ← tot ce e aici ajunge în public_html pe server
   cookies.php              Politica de cookie-uri
   api/
     disponibilitate.php    trimite calendarului zilele ocupate
+  lang/                    ⭐ TEXTELE site-ului: ro.php, en.php, de.php, it.php, ru.php
   includes/
     setari.php             ⭐ telefon, email, preț, minim nopți, date firmă – AICI se schimbă
     header.php             meniul și partea de sus
@@ -34,6 +35,8 @@ site/                      ← tot ce e aici ajunge în public_html pe server
 ```
 
 Reguli simple:
+- **un text de pe site** se schimbă în `lang/ro.php` (și în aceeași cheie din celelalte limbi);
+- adresele limbilor: `/` română, `/en/`, `/de/`, `/it/`, `/ru/` (setate în `includes/limbi.php` și `.htaccess`);
 - **o pagină = un fișier `.php`** în `site/`, cu litere mici;
 - **prețul, telefonul, emailurile** se schimbă doar în `includes/setari.php`;
 - **o poză nouă**: se pune în `images/` și (mai mică) în `images/mici/`, apoi se adaugă în lista `$galerie` din `index.php`.

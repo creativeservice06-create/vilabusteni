@@ -1,12 +1,13 @@
 <?php
 // POLITICA DE CONFIDENȚIALITATE (GDPR) – MODEL de verificat înainte de lansare.
 require __DIR__ . '/includes/init.php';
-$titlu = 'Politica de confidențialitate – ' . $setari['nume_vila'];
+$titlu = t('confidentialitate') . ' – ' . $setari['nume_vila'];
 require __DIR__ . '/includes/header.php';
 $f = $setari;
 ?>
-<section class="interior legal">
-  <h1>Politica de confidențialitate</h1>
+<section class="interior legal" lang="ro">
+  <h1><?= e(t('confidentialitate')) ?></h1>
+  <?php if (t('legal_doar_ro')): ?><p class="nota-limba" lang="<?= e($LIMBA) ?>"><?= e(t('legal_doar_ro')) ?></p><?php endif; ?>
   <p class="mic">Ultima actualizare: <span class="de-completat">[data]</span></p>
 
   <h2>1. Operatorul datelor</h2>

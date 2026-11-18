@@ -3,6 +3,7 @@
 // Încarcă setările și câteva funcții mici folosite peste tot.
 
 $setari = require __DIR__ . '/setari.php';
+require_once __DIR__ . '/limbi.php';
 
 // Linia crestei Bucegilor (Caraiman – Coștila), desenată ca o singură linie.
 // Apare sus pe prima pagină și ca separator. Puncte "x,y" pe o suprafață de 1200×120.
@@ -18,10 +19,19 @@ function e($text)
     return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
 }
 
-/** Formatează un preț: 4500 → "4.500 lei" */
+/** Formatează un preț în limba curentă: 4500 → "4.500 lei" / "4,500 lei" / "4 500 лей" */
 function lei($suma)
 {
-    return number_format((int) $suma, 0, ',', '.') . ' lei';
+    global $LIMBA;
+    $separator = ['en' => ',', 'ru' => ' '][$LIMBA] ?? '.';
+    return number_format((int) $suma, 0, ',', $separator) . ' ' . t('moneda');
+}
+
+/** Telefonul afișat: format românesc pe site-ul în română, cu +40 în celelalte limbi. */
+function telefon()
+{
+    global $setari, $LIMBA;
+    return $LIMBA === 'ro' ? $setari['telefon'] : $setari['telefon_int'];
 }
 
 /** Token anti-falsificare pentru formulare. */

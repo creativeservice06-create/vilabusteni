@@ -2,7 +2,8 @@
 // PAGINA DE REZERVARE
 // Clientul alege perioada în calendar, completează datele și trimite cererea.
 // Cererea se salvează în baza de date (status "in_asteptare") și se trimit două mailuri:
-// unul către proprietar, unul de confirmare a primirii către client.
+// unul către proprietar (în română), unul de confirmare a primirii către client (în limba lui).
+// Textele sunt în lang/*.php.
 require __DIR__ . '/includes/init.php';
 require __DIR__ . '/includes/db.php';
 require __DIR__ . '/includes/rezervari.php';
@@ -23,33 +24,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $trimis = empty($erori);
 }
 
-$titlu = 'Rezervare – ' . $setari['nume_vila'];
-$scripturi = ['/assets/js/calendar.js?v=3'];
+$titlu = t('rez_titlu') . ' – ' . $setari['nume_vila'];
+$scripturi = ['/assets/js/calendar.js?v=4'];
 $pagina = 'rezervare';
 require __DIR__ . '/includes/header.php';
+
+$link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon()) . '</a>';
 ?>
 
 <section class="interior rezervare">
 
 <?php if ($trimis): ?>
 
-  <h1>Mulțumim! Am primit cererea ta.</h1>
+  <h1><?= e(t('rez_multumim')) ?></h1>
   <div class="mesaj-succes">
-    <p>Perioada: <strong><?= e(date('d.m.Y', strtotime($date['sosire']))) ?> – <?= e(date('d.m.Y', strtotime($date['plecare']))) ?></strong>
-       (<?= (int) $rezultat['nopti'] ?> nopți), total <strong><?= lei($rezultat['total']) ?></strong>.</p>
-    <p>Te contactăm în cel mai scurt timp pentru confirmare. Ți-am trimis și un email la <strong><?= e($date['email']) ?></strong>.</p>
-    <p>Pentru orice întrebare: <a href="tel:<?= e($setari['telefon_link']) ?>"><?= e($setari['telefon']) ?></a>.</p>
+    <p><?= t('rez_perioada', e(date('d.m.Y', strtotime($date['sosire']))), e(date('d.m.Y', strtotime($date['plecare']))), (int) $rezultat['nopti'], e(lei($rezultat['total']))) ?></p>
+    <p><?= t('rez_contactam', e($date['email'])) ?></p>
+    <p><?= t('rez_intrebari', $link_telefon) ?></p>
   </div>
-  <p><a href="/" class="buton buton-contur">Înapoi la prima pagină</a></p>
+  <p><a href="<?= e(url('/')) ?>" class="buton buton-contur"><?= e(t('rez_inapoi')) ?></a></p>
 
 <?php else: ?>
 
-  <h1>Alege datele</h1>
-  <p class="intro">Toată vila costă <?= lei($setari['pret_noapte']) ?> pe noapte, minimum <?= (int) $setari['minim_nopti'] ?> nopți.
-     Atinge ziua sosirii, apoi ziua plecării. Zilele tăiate sunt ocupate.</p>
+  <h1><?= e(t('rez_h1')) ?></h1>
+  <p class="intro"><?= e(t('rez_intro', lei($setari['pret_noapte']), $setari['minim_nopti'])) ?></p>
 
   <?php if ($erori): ?>
-    <div class="mesaj-eroare">
+    <div class="mesaj-eroare" role="alert">
       <?php foreach ($erori as $er): ?><p><?= e($er) ?></p><?php endforeach; ?>
     </div>
   <?php endif; ?>
@@ -59,43 +60,44 @@ require __DIR__ . '/includes/header.php';
     <input type="hidden" name="sosire" id="sosire" value="<?= e($date['sosire']) ?>">
     <input type="hidden" name="plecare" id="plecare" value="<?= e($date['plecare']) ?>">
     <!-- câmp capcană pentru roboți: oamenii nu îl văd -->
-    <input type="text" name="site_web" class="capcana" tabindex="-1" autocomplete="off">
+    <input type="text" name="site_web" class="capcana" tabindex="-1" autocomplete="off" aria-hidden="true">
 
     <div class="rezervare-grila">
       <div>
         <div id="calendar" class="calendar"
              data-minim="<?= (int) $setari['minim_nopti'] ?>"
-             data-pret="<?= (int) $setari['pret_noapte'] ?>"></div>
-        <div id="sumar" class="sumar">Alege data sosirii, apoi data plecării.</div>
+             data-pret="<?= (int) $setari['pret_noapte'] ?>"
+             data-moneda="<?= e(t('moneda')) ?>"
+             data-texte="<?= e(json_encode(t('calendar'), JSON_UNESCAPED_UNICODE)) ?>"></div>
+        <div id="sumar" class="sumar" aria-live="polite"><?= e(t('calendar')['start']) ?></div>
       </div>
 
       <div class="campuri">
-        <label>Nume și prenume
+        <label><?= e(t('f_nume')) ?>
           <input type="text" name="nume" required maxlength="120" value="<?= e($date['nume']) ?>" autocomplete="name">
         </label>
-        <label>Email
+        <label><?= e(t('f_email')) ?>
           <input type="email" name="email" required maxlength="160" value="<?= e($date['email']) ?>" autocomplete="email">
         </label>
-        <label>Telefon
+        <label><?= e(t('f_telefon')) ?>
           <input type="tel" name="telefon" required maxlength="40" value="<?= e($date['telefon']) ?>" autocomplete="tel">
         </label>
-        <label>Număr de persoane
+        <label><?= e(t('f_persoane')) ?>
           <select name="persoane">
             <?php for ($i = 1; $i <= $setari['max_persoane']; $i++): ?>
               <option value="<?= $i ?>" <?= (int) $date['persoane'] === $i ? 'selected' : '' ?>><?= $i ?></option>
             <?php endfor; ?>
           </select>
         </label>
-        <label>Mesaj (opțional)
+        <label><?= e(t('f_mesaj')) ?>
           <textarea name="mesaj" rows="3" maxlength="1000"><?= e($date['mesaj']) ?></textarea>
         </label>
         <label class="bifa">
           <input type="checkbox" name="accept" value="1" required>
-          <span>Am citit și accept <a href="/termeni.php" target="_blank">Termenii și condițiile</a>
-            și <a href="/confidentialitate.php" target="_blank">Politica de confidențialitate</a>.</span>
+          <span><?= t('f_accept', e(url('/termeni.php')), e(url('/confidentialitate.php'))) ?></span>
         </label>
-        <button type="submit" class="buton buton-plin buton-lat" id="buton-trimite">Trimite cererea de rezervare</button>
-        <p class="mic">Rezervarea devine fermă după confirmarea noastră. Plata online cu cardul va fi disponibilă în curând.</p>
+        <button type="submit" class="buton buton-plin buton-lat" id="buton-trimite"><?= e(t('f_trimite')) ?></button>
+        <p class="mic"><?= e(t('f_nota')) ?></p>
       </div>
     </div>
   </form>

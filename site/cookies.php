@@ -1,11 +1,12 @@
 <?php
 // POLITICA DE COOKIE-URI. Se actualizează când adăugăm Google Ads / Facebook Pixel.
 require __DIR__ . '/includes/init.php';
-$titlu = 'Politica de cookie-uri – ' . $setari['nume_vila'];
+$titlu = t('cookies') . ' – ' . $setari['nume_vila'];
 require __DIR__ . '/includes/header.php';
 ?>
-<section class="interior legal">
-  <h1>Politica de cookie-uri</h1>
+<section class="interior legal" lang="ro">
+  <h1><?= e(t('cookies')) ?></h1>
+  <?php if (t('legal_doar_ro')): ?><p class="nota-limba" lang="<?= e($LIMBA) ?>"><?= e(t('legal_doar_ro')) ?></p><?php endif; ?>
 
   <h2>Ce cookie-uri folosim acum</h2>
   <p>Momentan folosim un singur cookie strict necesar, <code>PHPSESSID</code>, care protejează formularul de rezervare

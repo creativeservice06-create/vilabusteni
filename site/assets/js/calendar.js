@@ -7,9 +7,13 @@
 
   var MINIM = parseInt(cal.dataset.minim, 10) || 1;
   var PRET = parseInt(cal.dataset.pret, 10) || 0;
-  var LUNI = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie',
-              'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
-  var ZILE = ['Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ', 'Du'];
+  var MONEDA = cal.dataset.moneda || 'lei';
+  // Textele vin din pagină, în limba curentă (lang/*.php → 'calendar')
+  var T = JSON.parse(cal.dataset.texte || '{}');
+  var LUNI = T.luni, LUNI_MICI = T.luni_mici || T.luni, ZILE = T.zile;
+  function sablon(text, valori) {
+    return text.replace(/\{(\w+)\}/g, function (_, k) { return valori[k] !== undefined ? valori[k] : ''; });
+  }
 
   var campSosire = document.getElementById('sosire');
   var campPlecare = document.getElementById('plecare');
@@ -28,8 +32,8 @@
   function dinText(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
   function plusZile(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
   function nopti(a, b) { return Math.round((b - a) / 86400000); }
-  function frumos(d) { return d.getDate() + ' ' + LUNI[d.getMonth()].toLowerCase() + ' ' + d.getFullYear(); }
-  function lei(n) { return n.toLocaleString('ro-RO') + ' lei'; }
+  function frumos(d) { return d.getDate() + ' ' + LUNI_MICI[d.getMonth()] + ' ' + d.getFullYear(); }
+  function lei(n) { return n.toLocaleString(T.locale || 'ro-RO') + ' ' + MONEDA; }
 
   // Există vreo noapte ocupată între a (inclusiv) și b (exclusiv)?
   function intervalLiber(a, b) {
@@ -42,8 +46,8 @@
   // --- desenarea calendarului ---
   function deseneaza() {
     var html = '<div class="cal-nav">' +
-      '<button type="button" class="cal-prev" aria-label="Luna anterioară">‹</button>' +
-      '<button type="button" class="cal-next" aria-label="Luna următoare">›</button></div>' +
+      '<button type="button" class="cal-prev" aria-label="' + T.prev + '">‹</button>' +
+      '<button type="button" class="cal-next" aria-label="' + T.next + '">›</button></div>' +
       '<div class="cal-luni">';
     for (var i = 0; i < 2; i++) {
       html += lunaHtml(new Date(lunaAfisata.getFullYear(), lunaAfisata.getMonth() + i, 1));
@@ -110,19 +114,19 @@
 
   function actualizeazaSumar() {
     if (!sosire) {
-      sumar.innerHTML = 'Alege data sosirii, apoi data plecării.';
+      sumar.innerHTML = T.start;
       sumar.className = 'sumar';
     } else if (!plecare) {
-      sumar.innerHTML = 'Sosire: <strong>' + frumos(sosire) + '</strong>. Acum alege data plecării (minimum ' + MINIM + ' nopți).';
+      sumar.innerHTML = sablon(T.sosire, { data: frumos(sosire), minim: MINIM });
       sumar.className = 'sumar';
     } else {
       var n = nopti(sosire, plecare);
       if (n < MINIM) {
-        sumar.innerHTML = 'Ai ales ' + n + (n === 1 ? ' noapte' : ' nopți') + '. Perioada minimă este de <strong>' + MINIM + ' nopți</strong>.';
+        sumar.innerHTML = sablon(T.putin, { n: n, nopti: n === 1 ? T.noapte : T.nopti, minim: MINIM });
         sumar.className = 'sumar sumar-atentie';
       } else {
         sumar.innerHTML = '<strong>' + frumos(sosire) + ' – ' + frumos(plecare) + '</strong><br>' +
-          n + ' nopți × ' + lei(PRET) + ' = <strong class="sumar-total">' + lei(n * PRET) + '</strong>';
+          sablon(T.total, { n: n, pret: lei(PRET) }) + '<strong class="sumar-total">' + lei(n * PRET) + '</strong>';
         sumar.className = 'sumar sumar-ok';
       }
     }

@@ -11,10 +11,10 @@ function salveaza_rezervare(array $d, array $post, array $setari)
 
     // Protecții de bază
     if (($post['token'] ?? '') !== ($_SESSION['token'] ?? null)) {
-        $erori[] = 'Sesiunea a expirat. Te rugăm să reîncerci.';
+        $erori[] = t('err_sesiune');
     }
     if (!empty($post['site_web'])) {
-        $erori[] = 'Cererea nu a putut fi trimisă.'; // robot
+        $erori[] = t('err_robot'); // robot
     }
 
     // Perioada
@@ -24,36 +24,36 @@ function salveaza_rezervare(array $d, array $post, array $setari)
     $nopti   = 0;
 
     if (!$sosire || !$plecare) {
-        $erori[] = 'Alege în calendar data sosirii și data plecării.';
+        $erori[] = t('err_date');
     } else {
         $nopti = (int) $sosire->diff($plecare)->format('%r%a');
         if ($sosire < $azi) {
-            $erori[] = 'Data sosirii nu poate fi în trecut.';
+            $erori[] = t('err_trecut');
         }
         if ($nopti < $setari['minim_nopti']) {
-            $erori[] = "Perioada minimă este de {$setari['minim_nopti']} nopți.";
+            $erori[] = t('err_minim', $setari['minim_nopti']);
         }
         if ($nopti > 60) {
-            $erori[] = 'Pentru sejururi mai lungi de 60 de nopți te rugăm să ne suni.';
+            $erori[] = t('err_lung');
         }
     }
 
     // Date personale
     if (mb_strlen($d['nume']) < 3) {
-        $erori[] = 'Completează numele.';
+        $erori[] = t('err_nume');
     }
     if (!filter_var($d['email'], FILTER_VALIDATE_EMAIL)) {
-        $erori[] = 'Adresa de email nu este validă.';
+        $erori[] = t('err_email');
     }
     if (strlen(preg_replace('/\D/', '', $d['telefon'])) < 9) {
-        $erori[] = 'Numărul de telefon nu este valid.';
+        $erori[] = t('err_telefon');
     }
     $persoane = (int) $d['persoane'];
     if ($persoane < 1 || $persoane > $setari['max_persoane']) {
-        $erori[] = 'Număr de persoane invalid.';
+        $erori[] = t('err_persoane');
     }
     if (empty($post['accept'])) {
-        $erori[] = 'Trebuie să accepți Termenii și condițiile.';
+        $erori[] = t('err_accept');
     }
 
     if ($erori) {
@@ -62,7 +62,7 @@ function salveaza_rezervare(array $d, array $post, array $setari)
 
     $pdo = db();
     if (!$pdo) {
-        return ['erori' => ['Rezervările online sunt momentan indisponibile. Te rugăm să ne suni la ' . $setari['telefon'] . '.'], 'nopti' => $nopti, 'total' => 0];
+        return ['erori' => [t('err_indisponibil', telefon())], 'nopti' => $nopti, 'total' => 0];
     }
 
     try {
@@ -71,23 +71,24 @@ function salveaza_rezervare(array $d, array $post, array $setari)
                          WHERE status = 'confirmata' AND sosire < :plecare AND plecare > :sosire");
     $st->execute([':sosire' => $d['sosire'], ':plecare' => $d['plecare']]);
     if ($st->fetchColumn() > 0) {
-        return ['erori' => ['Perioada aleasă nu mai este disponibilă. Te rugăm să alegi alte date.'], 'nopti' => $nopti, 'total' => 0];
+        return ['erori' => [t('err_ocupat')], 'nopti' => $nopti, 'total' => 0];
     }
 
     $total = $nopti * $setari['pret_noapte'];
 
-    $st = $pdo->prepare("INSERT INTO rezervari (sosire, plecare, nopti, persoane, nume, email, telefon, mesaj, total, status, ip)
-                         VALUES (:sosire, :plecare, :nopti, :persoane, :nume, :email, :telefon, :mesaj, :total, 'in_asteptare', :ip)");
+    $st = $pdo->prepare("INSERT INTO rezervari (sosire, plecare, nopti, persoane, nume, email, telefon, mesaj, total, status, ip, limba)
+                         VALUES (:sosire, :plecare, :nopti, :persoane, :nume, :email, :telefon, :mesaj, :total, 'in_asteptare', :ip, :limba)");
     $st->execute([
         ':sosire' => $d['sosire'], ':plecare' => $d['plecare'], ':nopti' => $nopti,
         ':persoane' => $persoane, ':nume' => $d['nume'], ':email' => $d['email'],
         ':telefon' => $d['telefon'], ':mesaj' => $d['mesaj'], ':total' => $total,
         ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+        ':limba' => $GLOBALS['LIMBA'],
     ]);
     $id = $pdo->lastInsertId();
     } catch (PDOException $ex) {
         error_log('Eroare salvare rezervare: ' . $ex->getMessage());
-        return ['erori' => ['A apărut o eroare tehnică. Te rugăm să ne suni la ' . $setari['telefon'] . '.'], 'nopti' => $nopti, 'total' => 0];
+        return ['erori' => [t('err_tehnic', telefon())], 'nopti' => $nopti, 'total' => 0];
     }
 
     trimite_mailuri($id, $d, $nopti, $total, $persoane, $setari);
@@ -96,32 +97,30 @@ function salveaza_rezervare(array $d, array $post, array $setari)
     return ['erori' => [], 'nopti' => $nopti, 'total' => $total];
 }
 
-/** Trimite mailul către proprietar și confirmarea de primire către client. */
+/** Trimite mailul către proprietar (în română) și confirmarea de primire către client (în limba lui). */
 function trimite_mailuri($id, array $d, $nopti, $total, $persoane, array $setari)
 {
+    global $LIMBA;
     $perioada = date('d.m.Y', strtotime($d['sosire'])) . ' – ' . date('d.m.Y', strtotime($d['plecare']));
 
-    // 1. Către proprietar
+    // 1. Către proprietar – mereu în română, cu limba clientului
     $text = "Cerere nouă de rezervare #$id\n\n"
           . "Perioada: $perioada ($nopti nopți)\n"
           . "Persoane: $persoane\n"
-          . "Total: " . lei($total) . "\n\n"
+          . "Total: " . number_format($total, 0, ',', '.') . " lei\n"
+          . "Limba clientului: " . LIMBI[$LIMBA] . "\n\n"
           . "Nume: {$d['nume']}\nEmail: {$d['email']}\nTelefon: {$d['telefon']}\n\n"
           . "Mesaj:\n{$d['mesaj']}\n";
     trimite_mail($setari['email_proprietar'], "Rezervare nouă #$id – $perioada", $text, $setari, $d['email']);
 
-    // 2. Către client
-    $text = "Bună ziua, {$d['nume']},\n\n"
-          . "Am primit cererea ta de rezervare la {$setari['nume_vila']}.\n\n"
-          . "Perioada: $perioada ($nopti nopți)\n"
-          . "Persoane: $persoane\n"
-          . "Total estimat: " . lei($total) . "\n"
-          . "Check-in de la {$setari['ora_check_in']}, check-out până la {$setari['ora_check_out']}.\n\n"
-          . "Rezervarea devine fermă după confirmarea noastră. Te contactăm în cel mai scurt timp.\n\n"
-          . "Adresa: {$setari['adresa']}\n"
-          . "Telefon: {$setari['telefon']}\n\n"
-          . "Cu drag,\n{$setari['nume_vila']}\n";
-    trimite_mail($d['email'], "Am primit cererea ta – {$setari['nume_vila']}", $text, $setari, $setari['email_contact']);
+    // 2. Către client – în limba în care a făcut rezervarea
+    $text = strtr(t('mail_corp'), [
+        '{nume}' => $d['nume'], '{vila}' => $setari['nume_vila'], '{perioada}' => $perioada,
+        '{nopti}' => $nopti, '{persoane}' => $persoane, '{total}' => lei($total),
+        '{check_in}' => $setari['ora_check_in'], '{check_out}' => $setari['ora_check_out'],
+        '{adresa}' => $setari['adresa'], '{telefon}' => telefon(),
+    ]);
+    trimite_mail($d['email'], t('mail_subiect', $setari['nume_vila']), $text, $setari, $setari['email_contact']);
 }
 
 function trimite_mail($catre, $subiect, $text, array $setari, $raspuns_la)

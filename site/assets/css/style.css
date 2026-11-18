@@ -136,6 +136,30 @@ body.meniu-deschis { overflow: hidden; }
 body.meniu-deschis .antet { background: var(--zapada) !important; border-color: var(--linie) !important; }
 body.meniu-deschis .antet .logo, body.meniu-deschis .antet .logo-zona, body.meniu-deschis .antet .meniu-buton { color: var(--brad) !important; text-shadow: none !important; }
 
+/* ---------- Selectorul de limbă ---------- */
+.antet-dreapta { display: flex; align-items: center; gap: .25rem; }
+.limbi { position: relative; }
+.limbi summary {
+  list-style: none; display: flex; align-items: center; gap: .35rem;
+  min-height: 44px; padding: 0 .55rem; border-radius: 6px; cursor: pointer;
+  font-weight: 600; font-size: .92rem; color: var(--brad);
+}
+.limbi summary::-webkit-details-marker { display: none; }
+.limbi summary:hover { background: rgba(22, 74, 40, .08); }
+.limbi svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.limbi ul {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 120;
+  list-style: none; margin: 0; padding: .4rem; min-width: 170px;
+  background: #fff; border: 1px solid var(--linie); border-radius: 8px;
+  box-shadow: 0 14px 34px rgba(15, 47, 27, .16);
+}
+.limbi li a { display: block; padding: .7rem .85rem; border-radius: 5px; text-decoration: none; color: var(--text); font-size: 1rem; }
+.limbi li a:hover { background: var(--cer); }
+.limbi li a[aria-current] { font-weight: 600; color: var(--brad); background: var(--cer); }
+.pagina-acasa .antet:not(.scrolat) .limbi summary { color: #fff; text-shadow: 0 1px 10px rgba(0,0,0,.35); }
+body.meniu-deschis .limbi summary { color: var(--brad) !important; text-shadow: none !important; }
+.nota-limba { background: var(--cer); padding: .85rem 1.1rem; border-radius: 6px; max-width: 46rem; }
+
 /* ---------- Creasta (linia munților) ---------- */
 .creasta { display: block; width: 100%; }
 .creasta polyline { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
@@ -276,7 +300,8 @@ body.meniu-deschis .antet .logo, body.meniu-deschis .antet .logo-zona, body.meni
 .subsol-sigle { display: flex; flex-direction: column; align-items: flex-start; gap: 1.5rem; }
 .sigla-vila { width: min(260px, 70vw); height: auto; }
 .marca { display: flex; align-items: center; gap: .9rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,.12); }
-.marca img { width: 80px; height: 80px; flex: none; }
+.marca { flex-wrap: wrap; }
+.marca img { width: 210px; height: auto; flex: none; background: #fff; border-radius: 8px; padding: .55rem .8rem; }
 .marca p { margin: 0; max-width: 16rem; line-height: 1.4; }
 
 .subsol-contact h2 { font-size: 1.6rem; color: #fff; margin-bottom: 1rem; }
@@ -395,6 +420,7 @@ button.cal-zi:hover { background: var(--cer); }
   .meniu a { font: 500 1rem var(--font-text); border: 0; padding: .3rem 0; }
   .meniu a:hover { color: var(--lemn); }
   .meniu a.meniu-rezerva { margin: 0 0 0 .5rem; padding: .7rem 1.3rem; }
+  .antet-dreapta { gap: 1rem; }
   .pagina-acasa .antet:not(.scrolat) .meniu a:not(.meniu-rezerva) { color: #fff; text-shadow: 0 1px 10px rgba(0,0,0,.35); }
 
   .pe-scurt ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }

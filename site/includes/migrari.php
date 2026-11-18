@@ -25,6 +25,9 @@ function migrari()
                 creat_la   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 INDEX (status, sosire, plecare)
               ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+        // limba în care clientul a făcut rezervarea (ro, en, de, it, ru)
+        2 => "ALTER TABLE rezervari ADD COLUMN limba VARCHAR(5) NOT NULL DEFAULT 'ro'",
     ];
 }
 

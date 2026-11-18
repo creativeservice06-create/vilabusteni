@@ -2,12 +2,13 @@
 // TERMENI ȘI CONDIȚII – MODEL. Textele marcate cu galben trebuie completate/verificate
 // de proprietar (ideal și de un jurist) înainte de lansare.
 require __DIR__ . '/includes/init.php';
-$titlu = 'Termeni și condiții – ' . $setari['nume_vila'];
+$titlu = t('termeni') . ' – ' . $setari['nume_vila'];
 require __DIR__ . '/includes/header.php';
 $f = $setari;
 ?>
-<section class="interior legal">
-  <h1>Termeni și condiții</h1>
+<section class="interior legal" lang="ro">
+  <h1><?= e(t('termeni')) ?></h1>
+  <?php if (t('legal_doar_ro')): ?><p class="nota-limba" lang="<?= e($LIMBA) ?>"><?= e(t('legal_doar_ro')) ?></p><?php endif; ?>
   <p class="mic">Ultima actualizare: <span class="de-completat">[data]</span></p>
 
   <h2>1. Cine suntem</h2>
@@ -42,6 +43,6 @@ $f = $setari;
      <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener">soluționare alternativă a litigiilor (SAL)</a>.</p>
 
   <h2>8. Date personale</h2>
-  <p>Prelucrăm datele tale conform <a href="/confidentialitate.php">Politicii de confidențialitate</a>.</p>
+  <p>Prelucrăm datele tale conform <a href="<?= e(url('/confidentialitate.php')) ?>">Politicii de confidențialitate</a>.</p>
 </section>
 <?php require __DIR__ . '/includes/footer.php'; ?>

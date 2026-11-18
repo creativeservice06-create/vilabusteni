@@ -40,7 +40,7 @@
     curent = (i + poze.length) % poze.length;
     img.src = poze[curent].href;
     img.alt = poze[curent].dataset.text;
-    textEl.textContent = poze[curent].dataset.text + '  (' + (curent + 1) + ' din ' + poze.length + ')';
+    textEl.textContent = poze[curent].dataset.text + '  (' + (curent + 1) + ' ' + (box.dataset.din || '/') + ' ' + poze.length + ')';
     box.hidden = false;
     document.body.style.overflow = 'hidden';
   }
@@ -66,4 +66,12 @@
     if (ev.key === 'ArrowLeft') arata(curent - 1);
     if (ev.key === 'ArrowRight') arata(curent + 1);
   });
+})();
+
+// Selectorul de limbă: se închide la click în afara lui sau cu Esc
+(function () {
+  var limbi = document.querySelector('.limbi');
+  if (!limbi) return;
+  document.addEventListener('click', function (ev) { if (!limbi.contains(ev.target)) limbi.open = false; });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') limbi.open = false; });
 })();

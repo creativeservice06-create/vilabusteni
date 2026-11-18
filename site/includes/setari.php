@@ -11,9 +11,10 @@ return [
     'harta_link'     => 'https://www.google.com/maps/search/?api=1&query=Strada+%C8%98oimului+4%2C+Bu%C8%99teni%2C+Prahova%2C+Rom%C3%A2nia',
 
     // Contact
-    'telefon'        => '0738 744 166',
-    'telefon_link'   => '+40738744166',
-    'whatsapp'       => '40738744166',
+    'telefon'        => '0728 986 882',
+    'telefon_int'    => '+40 728 986 882',   // afișat pe versiunile în alte limbi
+    'telefon_link'   => '+40728986882',
+    'whatsapp'       => '40728986882',
     'email_contact'  => 'contact@horoscoptravel.ro',
 
     // Unde ajung notificările despre rezervări noi

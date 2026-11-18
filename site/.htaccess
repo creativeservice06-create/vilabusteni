@@ -19,6 +19,11 @@ RewriteEngine On
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# Limbile: /en/, /de/, /it/, /ru/ deschid aceleași pagini, cu textele traduse
+# ex: /en/rezervare.php → rezervare.php?lang=en  (vezi includes/limbi.php)
+RewriteRule ^(en|de|it|ru)/?$ index.php?lang=$1 [QSA,L]
+RewriteRule ^(en|de|it|ru)/(.+)$ $2?lang=$1 [QSA,L]
+
 # Pozele, CSS și JS se păstrează în cache 30 de zile
 <IfModule mod_expires.c>
   ExpiresActive On
