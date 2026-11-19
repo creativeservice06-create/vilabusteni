@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $titlu = t('rez_titlu') . ' – ' . $setari['nume_vila'];
-$scripturi = ['/assets/js/calendar.js?v=4'];
+$scripturi = ['/assets/js/calendar.js?v=5'];
 $pagina = 'rezervare';
 require __DIR__ . '/includes/header.php';
 
@@ -50,6 +50,15 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
   <h1><?= e(t('rez_h1')) ?></h1>
   <p class="intro"><?= e(t('rez_intro', lei($setari['pret_noapte']), $setari['minim_nopti'])) ?></p>
 
+  <!-- Regula avansului: vizibilă înainte de a alege datele -->
+  <div class="info-avans">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 7v5.5l3.5 2"/></svg>
+    <div>
+      <strong><?= e(t('rez_avans_titlu')) ?></strong>
+      <p><?= e(strtr(t('rez_avans_text'), ['{procent}' => $setari['avans_procent'], '{ore}' => $setari['termen_plata_ore']])) ?></p>
+    </div>
+  </div>
+
   <?php if ($erori): ?>
     <div class="mesaj-eroare" role="alert">
       <?php foreach ($erori as $er): ?><p><?= e($er) ?></p><?php endforeach; ?>
@@ -69,6 +78,8 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
              data-minim="<?= (int) $setari['minim_nopti'] ?>"
              data-pret="<?= (int) $setari['pret_noapte'] ?>"
              data-moneda="<?= e(t('moneda')) ?>"
+             data-procent="<?= (int) $setari['avans_procent'] ?>"
+             data-ore="<?= (int) $setari['termen_plata_ore'] ?>"
              data-texte="<?= e(json_encode(t('calendar'), JSON_UNESCAPED_UNICODE)) ?>"></div>
         <div id="sumar" class="sumar" aria-live="polite"><?= e(t('calendar')['start']) ?></div>
       </div>

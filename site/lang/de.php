@@ -116,6 +116,8 @@ return [
     'rez_titlu'       => 'Buchung',
     'rez_h1'          => 'Termin wählen',
     'rez_intro'       => 'Die ganze Villa kostet %s pro Nacht, mindestens %d Nächte. Tippen Sie auf den Anreisetag und dann auf den Abreisetag. Durchgestrichene Tage sind bereits belegt.',
+    'rez_avans_titlu' => 'So wird Ihre Buchung bestätigt',
+    'rez_avans_text'  => 'Zur Bestätigung zahlen Sie innerhalb von {ore} Stunden nach Ihrer Anfrage eine Anzahlung von mindestens {procent}% des Gesamtbetrags. Geht die Anzahlung nicht rechtzeitig ein, wird die Buchung automatisch storniert.',
     'f_nume'          => 'Vor- und Nachname',
     'f_email'         => 'E-Mail',
     'f_telefon'       => 'Telefon',
@@ -158,6 +160,7 @@ return [
         'noapte'   => 'Nacht',
         'nopti'    => 'Nächte',
         'total'    => '{n} Nächte × {pret} = ',
+        'avans'    => 'Anzahlung zur Bestätigung ({procent}%): <strong>{avans}</strong>, zahlbar innerhalb von {ore} Stunden.',
         'locale'   => 'de-DE',
     ],
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)

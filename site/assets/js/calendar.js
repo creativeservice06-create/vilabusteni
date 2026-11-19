@@ -8,6 +8,8 @@
   var MINIM = parseInt(cal.dataset.minim, 10) || 1;
   var PRET = parseInt(cal.dataset.pret, 10) || 0;
   var MONEDA = cal.dataset.moneda || 'lei';
+  var PROCENT = parseInt(cal.dataset.procent, 10) || 0;
+  var ORE = parseInt(cal.dataset.ore, 10) || 48;
   // Textele vin din pagină, în limba curentă (lang/*.php → 'calendar')
   var T = JSON.parse(cal.dataset.texte || '{}');
   var LUNI = T.luni, LUNI_MICI = T.luni_mici || T.luni, ZILE = T.zile;
@@ -126,7 +128,8 @@
         sumar.className = 'sumar sumar-atentie';
       } else {
         sumar.innerHTML = '<strong>' + frumos(sosire) + ' – ' + frumos(plecare) + '</strong><br>' +
-          sablon(T.total, { n: n, pret: lei(PRET) }) + '<strong class="sumar-total">' + lei(n * PRET) + '</strong>';
+          sablon(T.total, { n: n, pret: lei(PRET) }) + '<strong class="sumar-total">' + lei(n * PRET) + '</strong>' +
+          (PROCENT > 0 && T.avans ? '<span class="sumar-avans">' + sablon(T.avans, { procent: PROCENT, avans: lei(Math.round(n * PRET * PROCENT / 100)), ore: ORE }) + '</span>' : '');
         sumar.className = 'sumar sumar-ok';
       }
     }

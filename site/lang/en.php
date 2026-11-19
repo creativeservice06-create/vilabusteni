@@ -116,6 +116,8 @@ return [
     'rez_titlu'       => 'Booking',
     'rez_h1'          => 'Choose your dates',
     'rez_intro'       => 'The whole villa costs %s per night, minimum %d nights. Tap your arrival day, then your departure day. Crossed-out days are already booked.',
+    'rez_avans_titlu' => 'How your booking is confirmed',
+    'rez_avans_text'  => 'To confirm, you need to pay a deposit of at least {procent}% of the total within {ore} hours of sending your request. If the deposit does not arrive in time, the booking is cancelled automatically.',
     'f_nume'          => 'Full name',
     'f_email'         => 'Email',
     'f_telefon'       => 'Phone',
@@ -158,6 +160,7 @@ return [
         'noapte'   => 'night',
         'nopti'    => 'nights',
         'total'    => '{n} nights × {pret} = ',
+        'avans'    => 'Deposit to confirm ({procent}%): <strong>{avans}</strong>, payable within {ore} hours.',
         'locale'   => 'en-GB',
     ],
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)

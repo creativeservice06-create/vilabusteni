@@ -116,6 +116,8 @@ return [
     'rez_titlu'       => 'Prenotazione',
     'rez_h1'          => 'Scegli le date',
     'rez_intro'       => 'Tutta la villa costa %s a notte, minimo %d notti. Tocca il giorno di arrivo, poi quello di partenza. I giorni barrati sono già occupati.',
+    'rez_avans_titlu' => 'Come si conferma la prenotazione',
+    'rez_avans_text'  => 'Per confermare devi versare un acconto di almeno il {procent}% del totale entro {ore} ore dall’invio della richiesta. Se l’acconto non arriva entro questo termine, la prenotazione viene annullata automaticamente.',
     'f_nume'          => 'Nome e cognome',
     'f_email'         => 'Email',
     'f_telefon'       => 'Telefono',
@@ -158,6 +160,7 @@ return [
         'noapte'   => 'notte',
         'nopti'    => 'notti',
         'total'    => '{n} notti × {pret} = ',
+        'avans'    => 'Acconto per la conferma ({procent}%): <strong>{avans}</strong>, da versare entro {ore} ore.',
         'locale'   => 'it-IT',
     ],
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)

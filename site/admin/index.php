@@ -95,8 +95,25 @@ if ($pdo) {
 }
 
 $statusuri = ['in_asteptare' => 'Așteaptă plata', 'confirmata' => 'Confirmată', 'anulata' => 'Anulată', 'blocat' => 'Blocat'];
-function data_ro($d) { return date('d.m.Y', strtotime($d)); }
-function zi_sapt($d) { return ['Du', 'Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ'][(int) date('w', strtotime($d))]; }
+// ---------- Date afișate pe înțelesul tuturor ----------
+const ZILE_RO = ['Duminică', 'Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă'];
+const LUNI_RO = ['ianuarie', 'februarie', 'martie', 'aprilie', 'mai', 'iunie', 'iulie', 'august', 'septembrie', 'octombrie', 'noiembrie', 'decembrie'];
+/** "Luni" */
+function zi_lunga($d) { return ZILE_RO[(int) date('w', strtotime($d))]; }
+/** "5 ianuarie 2027" */
+function data_lunga($d) { $t = strtotime($d); return date('j', $t) . ' ' . LUNI_RO[date('n', $t) - 1] . ' ' . date('Y', $t); }
+/** "joi, 19 noiembrie 2026, ora 10:03" */
+function data_ora($d) { $t = strtotime($d); return mb_strtolower(zi_lunga($d)) . ', ' . data_lunga($d) . ', ora ' . date('H:i', $t); }
+/** Durată ușor de citit: "1 zi și 4 ore", "5 ore și 20 min", "40 min" */
+function durata($secunde)
+{
+    $secunde = abs((int) $secunde);
+    $zile = intdiv($secunde, 86400); $ore = intdiv($secunde % 86400, 3600); $min = intdiv($secunde % 3600, 60);
+    if ($zile > 0) return $zile . ($zile === 1 ? ' zi' : ' zile') . ($ore ? ' și ' . $ore . ($ore === 1 ? ' oră' : ' ore') : '');
+    if ($ore > 0)  return $ore . ($ore === 1 ? ' oră' : ' ore') . ($min ? ' și ' . $min . ' min' : '');
+    return max(1, $min) . ' min';
+}
+function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
 ?>
 <!DOCTYPE html>
 <html lang="ro">
@@ -107,7 +124,7 @@ function zi_sapt($d) { return ['Du', 'Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ'][(int) 
   <title>Administrare – <?= e($setari['nume_vila']) ?></title>
   <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
   <link rel="stylesheet" href="/assets/css/style.css?v=8">
-  <link rel="stylesheet" href="/assets/css/admin.css?v=1">
+  <link rel="stylesheet" href="/assets/css/admin.css?v=2">
 </head>
 <body class="admin">
 
@@ -183,43 +200,85 @@ function zi_sapt($d) { return ['Du', 'Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ'][(int) 
 
   <div class="admin-lista">
   <?php foreach ($lista as $r): ?>
-    <article class="admin-card status-<?= e($r['status']) ?>">
+    <?php
+      $in_asteptare = $r['status'] === 'in_asteptare';
+      $expirat      = $in_asteptare && !empty($r['termen_plata']) && strtotime($r['termen_plata']) < time();
+      $pana_la_sosire = (int) round((strtotime($r['sosire']) - strtotime('today')) / 86400);
+    ?>
+    <article class="admin-card status-<?= e($r['status']) ?><?= $expirat ? ' expirat' : '' ?>">
       <header>
-        <span class="admin-status"><?= e($statusuri[$r['status']] ?? $r['status']) ?></span>
-        <span class="admin-id">#<?= (int) $r['id'] ?><?php if ($r['status'] !== 'blocat'): ?> · <?= e(strtoupper($r['limba'] ?? 'ro')) ?><?php endif; ?></span>
+        <span class="admin-status"><?= e($expirat ? 'Termen de plată expirat' : ($statusuri[$r['status']] ?? $r['status'])) ?></span>
+        <span class="admin-id">#<?= (int) $r['id'] ?><?php if ($r['status'] !== 'blocat'): ?> · <?= e(LIMBI[$r['limba'] ?? 'ro'] ?? 'Română') ?><?php endif; ?></span>
       </header>
 
-      <p class="admin-perioada">
-        <?= zi_sapt($r['sosire']) ?> <?= data_ro($r['sosire']) ?> → <?= zi_sapt($r['plecare']) ?> <?= data_ro($r['plecare']) ?>
-        <small><?= (int) $r['nopti'] ?> <?= (int) $r['nopti'] === 1 ? 'noapte' : 'nopți' ?></small>
+      <?php if ($in_asteptare && !empty($r['termen_plata'])): ?>
+        <!-- Cât timp mai are clientul să plătească -->
+        <p class="admin-alerta<?= $expirat ? ' alerta-rosu' : '' ?>">
+          <?php if ($expirat): ?>
+            Termenul a expirat acum <?= e(durata(time() - strtotime($r['termen_plata']))) ?>. Zilele s-au eliberat pe site. Dacă nu a plătit, apasă <strong>Anulează</strong>.
+          <?php else: ?>
+            Mai are <strong><?= e(durata(strtotime($r['termen_plata']) - time())) ?></strong> să plătească avansul – până <?= e(data_ora($r['termen_plata'])) ?>.
+          <?php endif; ?>
+        </p>
+      <?php elseif ($r['status'] === 'confirmata' && !empty($r['platit_la'])): ?>
+        <p class="admin-alerta alerta-verde">Avans încasat – înregistrat <?= e(data_ora($r['platit_la'])) ?>.</p>
+      <?php endif; ?>
+
+      <!-- Sosire / plecare -->
+      <div class="admin-date">
+        <div>
+          <span class="admin-eticheta">Sosire</span>
+          <strong class="admin-zi"><?= e(zi_lunga($r['sosire'])) ?></strong>
+          <span class="admin-data"><?= e(data_lunga($r['sosire'])) ?></span>
+          <span class="admin-ora">de la <?= e($setari['ora_check_in']) ?></span>
+        </div>
+        <div class="admin-sageata" aria-hidden="true">→</div>
+        <div>
+          <span class="admin-eticheta">Plecare</span>
+          <strong class="admin-zi"><?= e(zi_lunga($r['plecare'])) ?></strong>
+          <span class="admin-data"><?= e(data_lunga($r['plecare'])) ?></span>
+          <span class="admin-ora">până la <?= e($setari['ora_check_out']) ?></span>
+        </div>
+      </div>
+      <p class="admin-nopti">
+        <?= (int) $r['nopti'] ?> <?= (int) $r['nopti'] === 1 ? 'noapte' : 'nopți' ?>
+        <?php if ($pana_la_sosire > 0): ?> · sosesc peste <?= $pana_la_sosire ?> <?= $pana_la_sosire === 1 ? 'zi' : 'zile' ?><?php elseif ($pana_la_sosire === 0): ?> · sosesc <strong>azi</strong><?php endif; ?>
       </p>
 
       <?php if ($r['status'] === 'blocat'): ?>
-        <p><?= e($r['nota'] ?: 'Fără notă') ?></p>
+        <p class="admin-bloc-nota"><?= e($r['nota'] ?: 'Fără notă') ?></p>
       <?php else: ?>
-        <dl>
-          <dt>Client</dt><dd><?= e($r['nume']) ?>, <?= (int) $r['persoane'] ?> pers.</dd>
-          <dt>Total</dt><dd><strong><?= number_format((int) $r['total'], 0, ',', '.') ?> lei</strong></dd>
-          <?php if ((int) ($r['avans'] ?? 0) > 0): ?>
-          <dt><?= $r['status'] === 'confirmata' ? 'Avans plătit' : 'Avans' ?></dt><dd><?= number_format((int) $r['avans'], 0, ',', '.') ?> lei
-            <?php if ($r['status'] === 'in_asteptare' && !empty($r['termen_plata'])): ?>
-              <?php $expirat = strtotime($r['termen_plata']) < time(); ?>
-              <br><span class="admin-termen<?= $expirat ? ' expirat' : '' ?>"><?= $expirat ? 'Termen expirat' : 'Termen' ?>: <?= e(date('d.m.Y H:i', strtotime($r['termen_plata']))) ?></span>
-            <?php endif; ?>
-            <?php if (!empty($r['platit_la'])): ?><br><span class="mic">Înregistrat: <?= e(date('d.m.Y H:i', strtotime($r['platit_la']))) ?></span><?php endif; ?>
-          </dd>
+        <!-- Clientul -->
+        <section class="admin-sectiune">
+          <h3>Client</h3>
+          <p class="admin-client"><strong><?= e($r['nume']) ?></strong> · <?= (int) $r['persoane'] ?> <?= (int) $r['persoane'] === 1 ? 'persoană' : 'persoane' ?></p>
+          <div class="admin-contact">
+            <a class="admin-chip" href="tel:<?= e(preg_replace('/[^\d+]/', '', $r['telefon'])) ?>">Sună: <?= e($r['telefon']) ?></a>
+            <a class="admin-chip" href="https://wa.me/<?= e(ltrim(preg_replace('/\D/', '', preg_replace('/^0/', '40', $r['telefon'])), '0')) ?>" target="_blank" rel="noopener">WhatsApp</a>
+            <a class="admin-chip" href="mailto:<?= e($r['email']) ?>"><?= e($r['email']) ?></a>
+          </div>
+          <?php if (trim($r['mesaj'] ?? '') !== ''): ?>
+            <blockquote class="admin-mesaj-client"><?= nl2br(e($r['mesaj'])) ?></blockquote>
           <?php endif; ?>
-          <?php if (!empty($r['cod'])): ?>
-          <dt>Proformă</dt><dd><a href="<?= e(link_proforma($r)) ?>" target="_blank"><?= e(numar_proforma($r['id'], $setari)) ?></a></dd>
-          <?php endif; ?>
-          <dt>Telefon</dt><dd>
-            <a href="tel:<?= e(preg_replace('/[^\d+]/', '', $r['telefon'])) ?>"><?= e($r['telefon']) ?></a>
-            · <a href="https://wa.me/<?= e(ltrim(preg_replace('/\D/', '', preg_replace('/^0/', '40', $r['telefon'])), '0')) ?>" target="_blank" rel="noopener">WhatsApp</a>
-          </dd>
-          <dt>Email</dt><dd><a href="mailto:<?= e($r['email']) ?>"><?= e($r['email']) ?></a></dd>
-          <?php if (trim($r['mesaj'] ?? '') !== ''): ?><dt>Mesaj</dt><dd><?= nl2br(e($r['mesaj'])) ?></dd><?php endif; ?>
-          <dt>Primită</dt><dd><?= e(date('d.m.Y H:i', strtotime($r['creat_la']))) ?></dd>
-        </dl>
+        </section>
+
+        <!-- Banii -->
+        <section class="admin-sectiune">
+          <h3>Plată</h3>
+          <div class="admin-bani">
+            <div><span>Total sejur</span><strong><?= e(lei_admin($r['total'])) ?></strong></div>
+            <div class="<?= $r['status'] === 'confirmata' ? 'bani-ok' : 'bani-asteptare' ?>">
+              <span><?= $r['status'] === 'confirmata' ? 'Avans plătit' : 'Avans de primit' ?> (<?= (int) $setari['avans_procent'] ?>%)</span>
+              <strong><?= e(lei_admin($r['avans'] ?? 0)) ?></strong>
+            </div>
+            <div><span>Rest la sosire</span><strong><?= e(lei_admin($r['total'] - (int) ($r['avans'] ?? 0))) ?></strong></div>
+          </div>
+        </section>
+
+        <p class="admin-subsol-card">
+          Cerere primită <?= e(data_ora($r['creat_la'])) ?>
+          <?php if (!empty($r['cod'])): ?> · <a href="<?= e(link_proforma($r)) ?>" target="_blank">Proforma <?= e(numar_proforma($r['id'], $setari)) ?></a><?php endif; ?>
+        </p>
       <?php endif; ?>
 
       <?php if (strtotime($r['plecare']) >= strtotime('today') && $r['status'] !== 'anulata'): ?>

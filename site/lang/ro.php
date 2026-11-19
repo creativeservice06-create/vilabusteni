@@ -130,6 +130,8 @@ return [
     'rez_titlu'       => 'Rezervare',
     'rez_h1'          => 'Alege datele',
     'rez_intro'       => 'Toată vila costă %s pe noapte, minimum %d nopți. Atinge ziua sosirii, apoi ziua plecării. Zilele tăiate sunt ocupate.',
+    'rez_avans_titlu' => 'Cum se confirmă rezervarea',
+    'rez_avans_text'  => 'Pentru confirmare trebuie să plătești un avans de cel puțin {procent}% din total în {ore} de ore de la trimiterea cererii. Dacă avansul nu ajunge în acest termen, rezervarea se anulează automat.',
     'f_nume'          => 'Nume și prenume',
     'f_email'         => 'Email',
     'f_telefon'       => 'Telefon',
@@ -174,6 +176,7 @@ return [
         'noapte'   => 'noapte',
         'nopti'    => 'nopți',
         'total'    => '{n} nopți × {pret} = ',
+        'avans'    => 'Avans pentru confirmare ({procent}%): <strong>{avans}</strong>, de plătit în {ore} de ore.',
         'locale'   => 'ro-RO',
     ],
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
