@@ -14,6 +14,9 @@ $date = [
     'sosire' => '', 'plecare' => '', 'persoane' => 2,
     'nume' => '', 'email' => '', 'telefon' => '', 'mesaj' => '',
     'plata' => 'avans', 'suma' => '',
+    // date pentru factura fiscală
+    'fact_tara' => $LIMBA === 'ro' ? 'RO' : '', 'fact_judet' => '', 'fact_localitate' => '', 'fact_adresa' => '',
+    'fact_pj' => '', 'fact_firma' => '', 'fact_cui' => '', 'fact_reg_com' => '',
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -26,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $titlu = t('rez_titlu') . ' – ' . $setari['nume_vila'];
-$scripturi = ['/assets/js/calendar.js?v=6'];
+$scripturi = ['/assets/js/calendar.js?v=6', '/assets/js/facturare.js?v=1'];
 $pagina = 'rezervare';
 require __DIR__ . '/includes/header.php';
 
@@ -41,7 +44,14 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
   <div class="mesaj-succes">
     <p><?= t('rez_perioada', e(date('d.m.Y', strtotime($date['sosire']))), e(date('d.m.Y', strtotime($date['plecare']))), (int) $rezultat['nopti'], e(lei($rezultat['total']))) ?></p>
     <p><?= t('rez_contactam', e($date['email']), e(date('d.m.Y, H:i', strtotime($rezultat['termen']))), e(lei($rezultat['avans']))) ?></p>
-    <p><a href="<?= e(url('/proforma.php')) ?>?cod=<?= e($rezultat['cod']) ?>" class="buton buton-plin" target="_blank"><?= e(t('rez_proforma')) ?></a></p>
+    <?php if (card_activ($setari)): ?>
+      <p class="succes-butoane">
+        <a href="<?= e(url('/plata-card.php')) ?>?cod=<?= e($rezultat['cod']) ?>" class="buton buton-plin"><?= e(strtr(t('rez_card'), ['{suma}' => lei($rezultat['avans'])])) ?></a>
+        <a href="<?= e(url('/proforma.php')) ?>?cod=<?= e($rezultat['cod']) ?>" class="buton buton-contur" target="_blank"><?= e(t('rez_proforma_transfer')) ?></a>
+      </p>
+    <?php else: ?>
+      <p><a href="<?= e(url('/proforma.php')) ?>?cod=<?= e($rezultat['cod']) ?>" class="buton buton-plin" target="_blank"><?= e(t('rez_proforma')) ?></a></p>
+    <?php endif; ?>
     <p><?= t('rez_intrebari', $link_telefon) ?></p>
   </div>
   <p><a href="<?= e(url('/')) ?>" class="buton buton-contur"><?= e(t('rez_inapoi')) ?></a></p>
@@ -105,6 +115,48 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
         <label><?= e(t('f_mesaj')) ?>
           <textarea name="mesaj" rows="3" maxlength="1000"><?= e($date['mesaj']) ?></textarea>
         </label>
+        <!-- Datele pentru factura fiscală -->
+        <fieldset class="facturare" id="facturare">
+          <legend><?= e(t('fact_titlu')) ?></legend>
+          <label><?= e(t('fact_tara')) ?>
+            <select name="fact_tara" id="fact-tara" autocomplete="country" required>
+              <?php if ($date['fact_tara'] === ''): ?><option value="" selected disabled><?= e(t('fact_alege')) ?></option><?php endif; ?>
+              <?php foreach (lista_tari($LIMBA) as $cod_t => $nume_t): ?>
+                <option value="<?= e($cod_t) ?>" <?= $date['fact_tara'] === $cod_t ? 'selected' : '' ?>><?= e($nume_t) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </label>
+          <label class="camp-judet" <?= $date['fact_tara'] !== 'RO' ? 'hidden' : '' ?>><?= e(t('fact_judet')) ?>
+            <select name="fact_judet" autocomplete="address-level1">
+              <option value=""><?= e(t('fact_alege')) ?></option>
+              <?php foreach (JUDETE as $cod_j => $nume_j): ?>
+                <option value="<?= e($cod_j) ?>" <?= $date['fact_judet'] === $cod_j ? 'selected' : '' ?>><?= e($nume_j) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </label>
+          <label><?= e(t('fact_localitate')) ?>
+            <input type="text" name="fact_localitate" required maxlength="100" value="<?= e($date['fact_localitate']) ?>" autocomplete="address-level2" data-bucuresti="<?= e(t('fact_sector')) ?>">
+          </label>
+          <label class="camp-lat"><?= e(t('fact_adresa')) ?>
+            <input type="text" name="fact_adresa" required maxlength="255" value="<?= e($date['fact_adresa']) ?>" autocomplete="street-address" placeholder="<?= e(t('fact_adresa_ex')) ?>">
+          </label>
+          <label class="bifa camp-lat">
+            <input type="checkbox" name="fact_pj" value="1" id="fact-pj" <?= $date['fact_pj'] ? 'checked' : '' ?>>
+            <span><?= e(t('fact_pj')) ?></span>
+          </label>
+          <div class="campuri-firma camp-lat" <?= $date['fact_pj'] ? '' : 'hidden' ?>>
+            <label class="camp-lat"><?= e(t('fact_firma')) ?>
+              <input type="text" name="fact_firma" maxlength="160" value="<?= e($date['fact_firma']) ?>" autocomplete="organization">
+            </label>
+            <label><?= e(t('fact_cui')) ?>
+              <input type="text" name="fact_cui" maxlength="20" value="<?= e($date['fact_cui']) ?>" placeholder="RO12345678">
+            </label>
+            <label><?= e(t('fact_reg_com')) ?>
+              <input type="text" name="fact_reg_com" maxlength="40" value="<?= e($date['fact_reg_com']) ?>">
+            </label>
+          </div>
+        </fieldset>
+
         <!-- Cât plătește acum: avans minim / altă sumă / integral -->
         <fieldset class="optiuni-plata" id="optiuni-plata" data-procent="<?= (int) $setari['avans_procent'] ?>">
           <legend><?= e(t('plata_titlu')) ?></legend>
@@ -125,7 +177,7 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
             <span class="optiune-text"><?= e(t('opt_integral')) ?></span>
             <span class="optiune-suma" data-suma="integral"><?= e(t('opt_alege')) ?></span>
           </label>
-          <p class="optiuni-nota"><?= e(t('plata_nota')) ?></p>
+          <p class="optiuni-nota"><?= e(t(card_activ($setari) ? 'plata_nota_card' : 'plata_nota')) ?></p>
         </fieldset>
 
         <label class="bifa">

@@ -6,6 +6,7 @@ date_default_timezone_set('Europe/Bucharest');
 $setari = require __DIR__ . '/setari.php';
 require_once __DIR__ . '/limbi.php';
 require_once __DIR__ . '/automat.php';
+require_once __DIR__ . '/netopia.php';   // plata cu cardul (butonul apare doar dacă e configurată)
 if (PHP_SAPI !== 'cli') {
     porneste_verificarea_automata();   // anulează automat cererile neplătite în termen
 }
@@ -16,6 +17,17 @@ const CREASTA = '0,112 70,96 130,62 178,24 214,38 252,33 300,66 348,54 392,84 43
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+}
+
+/** Datele secrete din config.php (doar pe server): parole, chei Netopia și FGO. */
+function config_site()
+{
+    static $config = null;
+    if ($config === null) {
+        $f = __DIR__ . '/../config.php';
+        $config = is_file($f) ? (require $f) : [];
+    }
+    return $config;
 }
 
 /** Afișează text în siguranță în HTML (evită caractere periculoase). */

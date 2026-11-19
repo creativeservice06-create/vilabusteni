@@ -414,6 +414,37 @@ button.cal-zi:hover { background: var(--cer); }
 .mesaj-eroare p { margin: .2rem 0; }
 .mesaj-succes { background: #dcebe3; border: 1px solid #b6d1c2; }
 
+/* Datele pentru factură */
+.facturare { border: 0; border-top: 1px solid var(--linie); padding: 1.2rem 0 0; margin: .4rem 0 .6rem; }
+.facturare legend { font-weight: 600; font-size: .95rem; padding: 0 .5rem 0 0; }
+.facturare [hidden] { display: none !important; }
+.campuri-firma { padding: .9rem .9rem .1rem; margin-bottom: 1.1rem; border-radius: 8px; background: var(--cer); }
+@media (min-width: 640px) {
+  .facturare { display: grid; grid-template-columns: 1fr 1fr; column-gap: 1rem; }
+  .facturare legend { grid-column: 1 / -1; }
+  .facturare .camp-lat, .campuri-firma { grid-column: 1 / -1; }
+  .campuri-firma { display: grid; grid-template-columns: 1fr 1fr; column-gap: 1rem; }
+}
+
+/* Plata cu cardul */
+.succes-butoane { display: flex; flex-wrap: wrap; gap: .75rem; }
+.plata-card { max-width: 40rem; }
+.plata-card .info-avans, .plata-card .mesaj-succes, .plata-card .mesaj-eroare { display: flex; gap: .9rem; align-items: center; }
+.plata-card .mesaj-succes p, .plata-card .mesaj-eroare p, .plata-card .info-avans p { margin: 0; }
+.plata-rezumat { margin: 1.5rem 0; border-top: 1px solid var(--linie); }
+.plata-rezumat div { display: flex; justify-content: space-between; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid var(--linie); }
+.plata-rezumat dt { color: var(--piatra); }
+.plata-rezumat dd { margin: 0; text-align: right; font-weight: 600; }
+.plata-suma dt { color: var(--text); font-weight: 600; }
+.plata-suma dd { font-family: var(--font-titlu); font-weight: 400; font-size: 1.6rem; color: var(--brad); }
+.plata-formular { margin: 1.5rem 0 .8rem; }
+.plata-sigur { display: flex; gap: .55rem; align-items: center; font-size: .9rem; color: var(--piatra); margin-bottom: 1.4rem; }
+.plata-sigur svg { flex: none; width: 20px; height: 20px; fill: none; stroke: var(--brad); stroke-width: 1.8; }
+.rotita { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 3px solid #e6cf9f; border-top-color: #8a5d0a; animation: roteste 1s linear infinite; }
+@keyframes roteste { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .rotita { animation-duration: 3s; } }
+.plati-acceptate { margin: .9rem 0 0; font-size: .85rem; opacity: .85; }
+
 /* ============================================================
    ECRANE MAI MARI
    ============================================================ */

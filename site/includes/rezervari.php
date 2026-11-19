@@ -1,6 +1,8 @@
 <?php
 // LOGICA REZERVĂRILOR: verificare date, salvare în baza de date, trimitere mailuri.
 require_once __DIR__ . '/mailuri.php';
+require_once __DIR__ . '/netopia.php';   // plata cu cardul
+require_once __DIR__ . '/fgo.php';       // facturile fiscale
 
 /**
  * Verifică și salvează o cerere de rezervare.
@@ -57,6 +59,26 @@ function salveaza_rezervare(array $d, array $post, array $setari)
         $erori[] = t('err_accept');
     }
 
+    // Datele pentru factură
+    $tara = isset(TARI[$d['fact_tara'] ?? '']) ? $d['fact_tara'] : '';
+    $judet = $tara === 'RO' && isset(JUDETE[$d['fact_judet'] ?? '']) ? $d['fact_judet'] : null;
+    $pj = !empty($d['fact_pj']);
+    $cui = strtoupper(preg_replace('/[\s.\-]/', '', (string) ($d['fact_cui'] ?? '')));
+    if ($tara === '') {
+        $erori[] = t('err_fact_tara');
+    } elseif ($tara === 'RO' && !$judet) {
+        $erori[] = t('err_fact_judet');
+    }
+    if (mb_strlen($d['fact_localitate'] ?? '') < 2) {
+        $erori[] = t('err_fact_localitate');
+    }
+    if (mb_strlen($d['fact_adresa'] ?? '') < 4) {
+        $erori[] = t('err_fact_adresa');
+    }
+    if ($pj && (mb_strlen($d['fact_firma'] ?? '') < 2 || !preg_match('/^[A-Z]{0,2}[0-9A-Z]{2,15}$/', $cui))) {
+        $erori[] = t('err_fact_firma');
+    }
+
     // Cât plătește acum: avansul minim, o sumă aleasă (cel puțin avansul) sau totul
     $total    = max(0, $nopti) * $setari['pret_noapte'];
     $minim    = avans_pentru($total, $setari);
@@ -94,8 +116,10 @@ function salveaza_rezervare(array $d, array $post, array $setari)
     $cod     = bin2hex(random_bytes(16));   // pentru linkul secret al proformei
     $avans   = $de_plata;                    // suma de plătit acum, aleasă de client
     $termen  = date('Y-m-d H:i:s', time() + $setari['termen_plata_ore'] * 3600);
-    $st = $pdo->prepare("INSERT INTO rezervari (sosire, plecare, nopti, persoane, nume, email, telefon, mesaj, total, status, ip, limba, cod, avans, termen_plata, optiune_plata)
-                         VALUES (:sosire, :plecare, :nopti, :persoane, :nume, :email, :telefon, :mesaj, :total, 'in_asteptare', :ip, :limba, :cod, :avans, :termen, :optiune)");
+    $st = $pdo->prepare("INSERT INTO rezervari (sosire, plecare, nopti, persoane, nume, email, telefon, mesaj, total, status, ip, limba, cod, avans, termen_plata, optiune_plata,
+                                                fact_tip, fact_tara, fact_judet, fact_localitate, fact_adresa, fact_firma, fact_cui, fact_reg_com)
+                         VALUES (:sosire, :plecare, :nopti, :persoane, :nume, :email, :telefon, :mesaj, :total, 'in_asteptare', :ip, :limba, :cod, :avans, :termen, :optiune,
+                                 :fact_tip, :fact_tara, :fact_judet, :fact_localitate, :fact_adresa, :fact_firma, :fact_cui, :fact_reg_com)");
     $st->execute([
         ':sosire' => $d['sosire'], ':plecare' => $d['plecare'], ':nopti' => $nopti,
         ':persoane' => $persoane, ':nume' => $d['nume'], ':email' => $d['email'],
@@ -103,6 +127,10 @@ function salveaza_rezervare(array $d, array $post, array $setari)
         ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
         ':limba' => $GLOBALS['LIMBA'],
         ':cod' => $cod, ':avans' => $avans, ':termen' => $termen, ':optiune' => $optiune,
+        ':fact_tip' => $pj ? 'PJ' : 'PF', ':fact_tara' => $tara, ':fact_judet' => $judet,
+        ':fact_localitate' => mb_substr($d['fact_localitate'], 0, 100), ':fact_adresa' => mb_substr($d['fact_adresa'], 0, 255),
+        ':fact_firma' => $pj ? mb_substr($d['fact_firma'], 0, 160) : null, ':fact_cui' => $pj ? $cui : null,
+        ':fact_reg_com' => $pj ? (mb_substr(trim($d['fact_reg_com'] ?? ''), 0, 40) ?: null) : null,
     ]);
     $id = $pdo->lastInsertId();
     } catch (PDOException $ex) {
@@ -181,11 +209,17 @@ function schimba_status(PDO $pdo, $id, $status_nou, array $setari)
     }
 
     $tip = $status_nou === 'confirmata' ? 'confirmare' : 'anulare';
+    $text_factura = '';
     if ($status_nou === 'confirmata') {
-        $pdo->prepare("UPDATE rezervari SET platit_la = $acum WHERE id = ?")->execute([$r['id']]);
+        $pdo->prepare("UPDATE rezervari SET platit_la = $acum, plata_metoda = COALESCE(plata_metoda, 'transfer') WHERE id = ?")->execute([$r['id']]);
+        // factura fiscală pentru plata prin transfer (dacă FGO e configurat)
+        if (!empty($setari['fgo_la_transfer']) && fgo_activ($setari)) {
+            [$ok_f, $msg_f] = emite_factura_plata($pdo, $r, (int) $r['avans'], $setari);
+            $text_factura = ' ' . rtrim($msg_f, '. ') . '.';
+        }
     }
     $trimis = trimite_mail_client($r, $tip, $setari);
-    $text = $status_nou === 'confirmata' ? "Plata pentru #{$r['id']} a fost înregistrată și rezervarea e confirmată." : "Rezervarea #{$r['id']} a fost anulată.";
+    $text = ($status_nou === 'confirmata' ? "Plata pentru #{$r['id']} a fost înregistrată și rezervarea e confirmată." : "Rezervarea #{$r['id']} a fost anulată.") . $text_factura;
     return $trimis
         ? ['ok', "$text Clientul a primit mail ({$r['email']})."]
         : ['eroare', "$text ATENȚIE: mailul către client nu a putut fi trimis – anunță-l telefonic ({$r['telefon']})."];
@@ -315,4 +349,39 @@ function trimite_mail_dovada(array $r, $cale, $mime, array $setari)
     ]);
     return trimite_mail_html($setari['email_proprietar'], "Dovadă de plată #{$r['id']} – {$r['nume']} – {$v['{avans}']}", $html, $setari, $r['email'],
                              [['cale' => $cale, 'nume' => basename($cale), 'tip' => $mime]]);
+}
+
+// ============================================================
+//  FACTURI DIN PANOU (FGO)
+// ============================================================
+
+/** Emite factura pentru restul încasat la sosire și o trimite clientului. */
+function factureaza_rest(PDO $pdo, $id, array $setari)
+{
+    $st = $pdo->prepare("SELECT * FROM rezervari WHERE id = ?");
+    $st->execute([(int) $id]);
+    $r = $st->fetch();
+    if (!$r || $r['status'] !== 'confirmata') return ['eroare', "Rezervarea #$id nu este confirmată."];
+    $rest = (int) $r['total'] - suma_facturata($pdo, $r['id']);
+    if ($rest <= 0) return ['info', "Pentru #$id s-a facturat deja toată suma."];
+    [$ok, $mesaj] = emite_factura($pdo, $r, 'rest', $rest, $setari);
+    if (!$ok) return ['eroare', $mesaj];
+    $trimis = trimite_mail_client($r, 'factura', $setari);
+    return ['ok', $mesaj . ($trimis ? " Clientul a primit factura pe mail ({$r['email']})." : ' ATENȚIE: mailul cu factura nu a putut fi trimis.')];
+}
+
+/** Reîncearcă o factură care a dat eroare (după ce ai corectat cauza). */
+function reincearca_factura(PDO $pdo, $id_factura, array $setari)
+{
+    $st = $pdo->prepare("SELECT f.*, r.status AS status_rez FROM facturi f JOIN rezervari r ON r.id = f.rezervare_id WHERE f.id = ?");
+    $st->execute([(int) $id_factura]);
+    $f = $st->fetch();
+    if (!$f) return ['eroare', 'Factura nu există.'];
+    $st = $pdo->prepare("SELECT * FROM rezervari WHERE id = ?");
+    $st->execute([$f['rezervare_id']]);
+    $r = $st->fetch();
+    [$ok, $mesaj] = emite_factura($pdo, $r, $f['tip'], (int) $f['suma'], $setari);
+    if (!$ok) return ['eroare', $mesaj];
+    $trimis = $r['status'] === 'confirmata' && trimite_mail_client($r, 'factura', $setari);
+    return ['ok', $mesaj . ($trimis ? " Clientul a primit factura pe mail ({$r['email']})." : '')];
 }

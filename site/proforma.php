@@ -45,8 +45,8 @@ if ($r) {
   <meta name="robots" content="noindex, nofollow">
   <title><?= e($P['titlu']) ?><?= $r ? ' ' . e($v['{nr}']) : '' ?> – <?= e($setari['nume_vila']) ?></title>
   <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
-  <link rel="stylesheet" href="/assets/css/style.css?v=8">
-  <link rel="stylesheet" href="/assets/css/proforma.css?v=2">
+  <link rel="stylesheet" href="/assets/css/style.css?v=11">
+  <link rel="stylesheet" href="/assets/css/proforma.css?v=3">
 </head>
 <body class="proforma-pagina">
 
@@ -55,10 +55,13 @@ if ($r) {
 <?php else: ?>
 
   <div class="bara-print">
+    <?php if (poate_plati_card($r, $setari)): ?>
+      <a href="<?= e(url('/plata-card.php')) ?>?cod=<?= e($r['cod']) ?>" class="buton buton-plin"><?= e(strtr($P['card_buton'], ['{suma}' => lei($r['avans'])])) ?></a>
+    <?php endif; ?>
     <?php if ($r['status'] !== 'confirmata'): ?>
       <a href="#dovada" class="buton buton-contur"><?= e($P['dov_buton_sus']) ?></a>
     <?php endif; ?>
-    <button type="button" class="buton buton-plin" onclick="window.print()"><?= e($P['print']) ?></button>
+    <button type="button" class="buton <?= poate_plati_card($r, $setari) ? 'buton-contur' : 'buton-plin' ?>" onclick="window.print()"><?= e($P['print']) ?></button>
   </div>
 
   <main class="document">
@@ -96,7 +99,16 @@ if ($r) {
       </div>
       <div>
         <h2><?= e($P['client']) ?></h2>
-        <p><strong><?= e($r['nume']) ?></strong><br>
+        <p><?php if (($r['fact_tip'] ?? 'PF') === 'PJ' && !empty($r['fact_firma'])): ?>
+            <strong><?= e($r['fact_firma']) ?></strong><br>
+            <?= e($P['cui']) ?>: <?= e($r['fact_cui']) ?><?php if (!empty($r['fact_reg_com'])): ?> · <?= e($P['reg']) ?>: <?= e($r['fact_reg_com']) ?><?php endif; ?><br>
+            <?= e($P['persoana']) ?>: <?= e($r['nume']) ?><br>
+          <?php else: ?>
+            <strong><?= e($r['nume']) ?></strong><br>
+          <?php endif; ?>
+          <?php if (!empty($r['fact_adresa'])): ?>
+            <?= e(adresa_facturare($r, $LIMBA)) ?><br>
+          <?php endif; ?>
           <?= e($P['tel']) ?>: <?= e($r['telefon']) ?><br>
           <?= e($P['email']) ?>: <?= e($r['email']) ?>
         </p>
@@ -126,7 +138,7 @@ if ($r) {
       <?php endif; ?>
     </table>
 
-    <p class="doc-plata"><?= e(strtr($P['plata'], $v)) ?></p>
+    <p class="doc-plata"><?= e(strtr(card_activ($setari) ? $P['plata_card'] : $P['plata'], $v)) ?></p>
     <p class="doc-mentiune"><?= e($P['mentiune']) ?></p>
 
     <footer class="doc-subsol">

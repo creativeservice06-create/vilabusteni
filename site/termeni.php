@@ -26,11 +26,23 @@ $f = $setari;
      check-out până la <?= e($f['ora_check_out']) ?>. Capacitatea maximă este de <?= (int) $f['max_persoane'] ?> persoane.</p>
 
   <h2>4. Prețuri și plată</h2>
-  <p>Prețurile afișate sunt în lei și sunt pentru întreaga vilă, pe noapte <span class="de-completat">[includ / nu includ TVA și taxa locală de ședere]</span>.
-     Plata se face <span class="de-completat">[online cu cardul prin procesatorul de plăți / prin transfer bancar / la sosire]</span>.</p>
+  <p>Prețurile afișate sunt în lei și sunt pentru întreaga vilă, pe noapte <span class="de-completat">[includ / nu includ TVA și taxa locală de ședere]</span>.</p>
+  <p>Pentru confirmarea rezervării se plătește, în <?= (int) $f['termen_plata_ore'] ?> de ore de la trimiterea cererii, cel puțin
+     <?= (int) $f['avans_procent'] ?>% din valoarea sejurului (sau o sumă mai mare, ori integral). Restul se plătește
+     <span class="de-completat">[la sosire / cu X zile înainte de sosire]</span>. Dacă plata nu este primită în termen, cererea se anulează automat.</p>
+  <p>Plata se poate face:</p>
+  <ul>
+    <li><strong>online, cu cardul</strong> (Visa, Mastercard), pe pagina securizată a procesatorului de plăți
+      <strong>NETOPIA Payments</strong> (NETOPIA Financial Services S.A.). Datele cardului se introduc doar pe pagina NETOPIA
+      și nu ajung la noi. Plata se face în lei (RON); dacă ai un card în altă monedă, conversia o face banca ta.
+      Rezervarea se confirmă automat după reușita plății;</li>
+    <li><strong>prin transfer bancar</strong>, în contul din factura proformă; rezervarea se confirmă după ce primim banii sau dovada plății.</li>
+  </ul>
+  <p>Factura fiscală se emite după încasare, pe numele și adresa (sau firma) completate în formularul de rezervare, și se trimite pe email.</p>
 
   <h2>5. Anulare și rambursare</h2>
   <p class="de-completat">[Politica de anulare: de ex. anulare gratuită cu X zile înainte de sosire; între X și Y zile se reține Z%; sub Y zile nu se rambursează. Termenul de rambursare: N zile lucrătoare.]</p>
+  <p>Sumele plătite cu cardul se rambursează pe același card, prin NETOPIA Payments; cele plătite prin transfer, în contul din care au fost trimise.</p>
   <p>Conform art. 16 lit. l) din OUG 34/2014, dreptul de retragere de 14 zile nu se aplică serviciilor de cazare
      prestate la o dată sau într-o perioadă anume; se aplică politica de anulare de mai sus.</p>
 

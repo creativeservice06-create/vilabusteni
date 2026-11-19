@@ -78,6 +78,17 @@ if ($logat && $pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['act
                 }
                 break;
             case 'blocheaza':   $mesaj = blocheaza_perioada($pdo, $_POST['de_la'] ?? '', $_POST['pana_la'] ?? '', $_POST['nota'] ?? ''); break;
+            case 'factura_rest':       $mesaj = factureaza_rest($pdo, $id, $setari); break;
+            case 'factura_reincearca': $mesaj = reincearca_factura($pdo, (int) ($_POST['factura'] ?? 0), $setari); break;
+            case 'factura_emite':      // factură pentru o rezervare confirmată fără factură (ex. confirmată înainte de activarea FGO)
+                $st = $pdo->prepare("SELECT * FROM rezervari WHERE id = ? AND status = 'confirmata'");
+                $st->execute([$id]);
+                $rz = $st->fetch();
+                if (!$rz) { $mesaj = ['eroare', "Rezervarea #$id nu este confirmată."]; break; }
+                [$ok_f, $msg_f] = emite_factura_plata($pdo, $rz, (int) $rz['avans'], $setari);
+                $mesaj = [$ok_f ? 'ok' : 'eroare', $msg_f];
+                if ($ok_f && trimite_mail_client($rz, 'factura', $setari)) $mesaj[1] .= " Clientul a primit factura pe mail ({$rz['email']}).";
+                break;
         }
     }
     // după acțiune revenim la pagină (fără retrimiterea formularului la refresh)
@@ -111,7 +122,20 @@ if ($pdo) {
     $st = $pdo->prepare("SELECT * FROM rezervari WHERE $conditie ORDER BY $ordine LIMIT 200");
     $st->execute([':azi' => $azi]);
     $lista = $st->fetchAll();
+
+    // plățile cu cardul și facturile rezervărilor din listă
+    $plati = $facturi = [];
+    $iduri = array_map('intval', array_column($lista, 'id'));
+    if ($iduri) {
+        $in = implode(',', $iduri);
+        foreach ($pdo->query("SELECT * FROM plati_card WHERE rezervare_id IN ($in) ORDER BY id DESC")->fetchAll() as $p) $plati[$p['rezervare_id']][] = $p;
+        foreach ($pdo->query("SELECT * FROM facturi WHERE rezervare_id IN ($in) ORDER BY id")->fetchAll() as $f) $facturi[$f['rezervare_id']][] = $f;
+    }
 }
+$fgo_activ = fgo_activ($setari);
+$netopia = config_netopia();
+$stari_card = ['pornita' => 'deschisă, neplătită', 'in_curs' => 'în curs', 'platita' => 'plătită', 'respinsa' => 'refuzată', 'anulata' => 'anulată', 'eroare' => 'eroare la pornire', 'rambursata' => 'rambursată'];
+$tipuri_factura = ['avans' => 'avans', 'integral' => 'integral', 'rest' => 'rest'];
 
 $statusuri = ['in_asteptare' => 'Așteaptă plata', 'confirmata' => 'Confirmată', 'anulata' => 'Anulată', 'blocat' => 'Blocat'];
 // ---------- Date afișate pe înțelesul tuturor ----------
@@ -142,8 +166,8 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
   <meta name="robots" content="noindex, nofollow">
   <title>Administrare – <?= e($setari['nume_vila']) ?></title>
   <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
-  <link rel="stylesheet" href="/assets/css/style.css?v=8">
-  <link rel="stylesheet" href="/assets/css/admin.css?v=4">
+  <link rel="stylesheet" href="/assets/css/style.css?v=11">
+  <link rel="stylesheet" href="/assets/css/admin.css?v=5">
 </head>
 <body class="admin">
 
@@ -252,7 +276,7 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
       <?php elseif ($r['status'] === 'anulata'): ?>
         <p class="admin-alerta alerta-rosu">Anulată<?= !empty($r['modificat_la']) ? ' ' . e(data_ora($r['modificat_la'])) : '' ?><?= !empty($r['nota']) ? ' – ' . e(mb_strtolower(mb_substr($r['nota'], 0, 1)) . mb_substr($r['nota'], 1)) : '' ?>.</p>
       <?php elseif ($r['status'] === 'confirmata' && !empty($r['platit_la'])): ?>
-        <p class="admin-alerta alerta-verde">Avans încasat – înregistrat <?= e(data_ora($r['platit_la'])) ?>.</p>
+        <p class="admin-alerta alerta-verde"><?= ($r['plata_metoda'] ?? '') === 'card' ? 'Plătit cu cardul' : 'Plată încasată' ?> – înregistrat <?= e(data_ora($r['platit_la'])) ?>.</p>
       <?php endif; ?>
 
       <!-- Sosire / plecare -->
@@ -291,6 +315,13 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
           <?php if (trim($r['mesaj'] ?? '') !== ''): ?>
             <blockquote class="admin-mesaj-client"><?= nl2br(e($r['mesaj'])) ?></blockquote>
           <?php endif; ?>
+          <?php if (!empty($r['fact_adresa'])): ?>
+            <p class="admin-factura-date">
+              <span>Factură pe:</span>
+              <?php if (($r['fact_tip'] ?? 'PF') === 'PJ'): ?><strong><?= e($r['fact_firma']) ?></strong>, CUI <?= e($r['fact_cui']) ?><?= $r['fact_reg_com'] ? ', ' . e($r['fact_reg_com']) : '' ?> · <?php else: ?>persoană fizică · <?php endif; ?>
+              <?= e(adresa_facturare($r)) ?>
+            </p>
+          <?php endif; ?>
         </section>
 
         <!-- Banii -->
@@ -305,6 +336,62 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
             <div><span>Rest la sosire</span><strong><?= e(lei_admin($r['total'] - (int) ($r['avans'] ?? 0))) ?></strong></div>
           </div>
         </section>
+
+        <?php if (!empty($plati[$r['id']])): ?>
+        <section class="admin-sectiune">
+          <h3>Plăți cu cardul</h3>
+          <ul class="admin-mini-lista">
+            <?php foreach ($plati[$r['id']] as $p): ?>
+              <li class="plata-<?= e($p['status']) ?>">
+                <strong><?= e(lei_admin($p['suma'])) ?></strong> · <?= e($stari_card[$p['status']] ?? $p['status']) ?>
+                <span><?= e(data_ora($p['actualizat_la'] ?: $p['creat_la'])) ?><?= $p['card'] ? ' · ' . e($p['card']) : '' ?><?= $p['mesaj'] ? ' · ' . e($p['mesaj']) : '' ?></span>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </section>
+        <?php endif; ?>
+
+        <?php if (!empty($facturi[$r['id']]) || ($fgo_activ && $r['status'] === 'confirmata')): ?>
+        <section class="admin-sectiune">
+          <h3>Facturi fiscale</h3>
+          <?php if (!empty($facturi[$r['id']])): ?>
+          <ul class="admin-mini-lista">
+            <?php foreach ($facturi[$r['id']] as $f): ?>
+              <li class="<?= $f['numar'] !== null ? 'plata-platita' : 'plata-respinsa' ?>">
+                <?php if ($f['numar'] !== null): ?>
+                  <strong><?= e($f['serie'] . ' ' . $f['numar']) ?></strong> · <?= e($tipuri_factura[$f['tip']] ?? $f['tip']) ?> · <?= e(lei_admin($f['suma'])) ?>
+                  <?php if ($f['link']): ?> · <a href="<?= e($f['link']) ?>" target="_blank" rel="noopener">PDF</a><?php endif; ?>
+                <?php else: ?>
+                  <strong>Neemisă</strong> (<?= e($tipuri_factura[$f['tip']] ?? $f['tip']) ?>, <?= e(lei_admin($f['suma'])) ?>)
+                  <span><?= e($f['eroare']) ?></span>
+                  <form method="post" class="admin-inline">
+                    <input type="hidden" name="token" value="<?= e(token_formular()) ?>">
+                    <input type="hidden" name="actiune" value="factura_reincearca"><input type="hidden" name="factura" value="<?= (int) $f['id'] ?>">
+                    <button class="buton buton-contur buton-mic">Reîncearcă</button>
+                  </form>
+                <?php endif; ?>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+          <?php endif; ?>
+          <?php if ($fgo_activ && $r['status'] === 'confirmata'): ?>
+            <?php $facturat = array_sum(array_map(function ($f) { return $f['numar'] !== null ? (int) $f['suma'] : 0; }, $facturi[$r['id']] ?? [])); ?>
+            <?php if (empty($facturi[$r['id']])): ?>
+              <form method="post" class="admin-inline" onsubmit="return confirm('Emiți în FGO factura pentru plata de <?= e(lei_admin($r['avans'])) ?> (#<?= (int) $r['id'] ?>)? Clientul o primește pe mail.')">
+                <input type="hidden" name="token" value="<?= e(token_formular()) ?>">
+                <input type="hidden" name="actiune" value="factura_emite"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
+                <button class="buton buton-contur buton-mic">Emite factura pentru <?= e(lei_admin($r['avans'])) ?></button>
+              </form>
+            <?php elseif ($facturat > 0 && $facturat < (int) $r['total']): ?>
+              <form method="post" class="admin-inline" onsubmit="return confirm('Ai încasat restul de <?= e(lei_admin($r['total'] - $facturat)) ?> pentru #<?= (int) $r['id'] ?>? Se emite factura în FGO și clientul o primește pe mail.')">
+                <input type="hidden" name="token" value="<?= e(token_formular()) ?>">
+                <input type="hidden" name="actiune" value="factura_rest"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
+                <button class="buton buton-contur buton-mic">Rest încasat – emite factura (<?= e(lei_admin($r['total'] - $facturat)) ?>)</button>
+              </form>
+            <?php endif; ?>
+          <?php endif; ?>
+        </section>
+        <?php endif; ?>
 
         <p class="admin-subsol-card">
           Cerere primită <?= e(data_ora($r['creat_la'])) ?>
@@ -347,6 +434,26 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
     </article>
   <?php endforeach; ?>
   </div>
+
+  <!-- Starea plăților cu cardul și a facturării -->
+  <section class="admin-integrari">
+    <p><strong>Plata cu cardul (Netopia):</strong>
+      <?php if (!$netopia): ?>neconfigurată – lipsesc cheile din config.php.
+      <?php elseif (empty($setari['plata_card'])): ?>oprită din setari.php ('plata_card' => false).
+      <?php else: ?><?= $netopia['mediu'] === 'live' ? '<span class="eticheta-ok">activă (plăți reale)</span>' : '<span class="eticheta-test">mod de test (sandbox)</span> – plățile nu sunt reale' ?><?= $netopia['publica'] === '' ? ' · ATENȚIE: lipsește netopia_cheie_publica, confirmările de plată vor fi respinse' : '' ?>.
+      <?php endif; ?>
+    </p>
+    <p><strong>Facturi automate (FGO):</strong>
+      <?php if ($fgo_activ): ?><span class="eticheta-ok">active</span> – seria <?= e($setari['fgo_serie']) ?>, TVA <?= e((float) $setari['fgo_cota_tva'] * 100) ?>%.
+      <?php else: ?>neconfigurate –
+        <?= e(implode(', ', array_filter([
+            trim((string) (config_site()['fgo_cheie_api'] ?? '')) === '' ? 'lipsește fgo_cheie_api din config.php' : '',
+            trim((string) $setari['fgo_serie']) === '' ? 'lipsește fgo_serie din setari.php' : '',
+            !isset($setari['fgo_cota_tva']) ? 'lipsește fgo_cota_tva din setari.php' : '',
+        ]))) ?>.
+      <?php endif; ?>
+    </p>
+  </section>
 
   <!-- Verificarea mailurilor -->
   <form method="post" class="admin-test-mail">

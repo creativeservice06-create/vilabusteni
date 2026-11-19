@@ -76,6 +76,24 @@ cu autentificare. Parola căsuței se pune doar pe server, în `config.php`: `'s
 Dacă serverul de mail nu răspunde, mailul pleacă de rezervă de pe `rezervari@vilabusteni.ro`, ca niciun client să nu rămână fără mail.
 Verificare: panou → jos → **Trimite mail de test**.
 
+## Plata cu cardul (Netopia) și facturile (FGO)
+
+**Fluxul:** clientul trimite cererea → apasă „Plătește cu cardul” (pe pagina de succes, în mail sau pe proformă)
+→ plătește pe pagina securizată Netopia → Netopia anunță site-ul (`api/netopia-ipn.php`, mesaj semnat, verificat cu cheia publică Netopia)
+→ rezervarea se confirmă automat → se emite factura în FGO → clientul primește confirmarea cu linkul facturii, proprietarul o notificare.
+
+Fișiere: `includes/netopia.php`, `plata-card.php`, `api/netopia-ipn.php`, `includes/fgo.php`, `includes/tari.php` (țări și județe).
+
+**Netopia** – în `config.php` pe server: `netopia_mediu` (`sandbox` / `live`), `netopia_api_key`, `netopia_pos_signature`, `netopia_cheie_publica`.
+Fără chei, butonul de card nu apare nicăieri. Cheile de test și cele live sunt diferite.
+
+**FGO** – în `config.php`: `fgo_cheie_api`; în `includes/setari.php`: `fgo_serie` și `fgo_cota_tva` (de stabilit cu contabilul).
+În FGO → Setări eCommerce → API se înregistrează adresa `https://vilabusteni.ro`.
+Facturile: la plată (card sau transfer confirmat în panou) se emite factura de **avans** sau **integral**; restul încasat la sosire
+se facturează din panou („Rest încasat – emite factura”). O factură care dă eroare apare în panou cu butonul „Reîncearcă”.
+
+În subsolul panoului se vede dacă plata cu cardul e în test sau live și dacă facturarea e activă.
+
 ## Instalare pe server (o singură dată)
 
 1. cPanel → **MySQL Databases**: creezi baza `rezervari` și userul `site`, apoi le legi (All Privileges).

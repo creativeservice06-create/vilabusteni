@@ -117,3 +117,19 @@ body.admin { padding-bottom: 0; background: #eef3f4; }
 .admin-alerta.alerta-albastru { background: #e1eef6; color: #17435c; }
 .admin-alerta a { color: inherit; }
 .admin-test-mail { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; margin-top: 2rem; padding: 1rem 1.2rem; background: #fff; border: 1px solid var(--linie); border-radius: 10px; font-size: .95rem; }
+
+/* Date de facturare, plăți cu cardul, facturi */
+.admin-factura-date { margin: .7rem 0 0; font-size: .9rem; color: var(--text); line-height: 1.5; }
+.admin-factura-date span { color: var(--piatra); margin-right: .25rem; }
+.admin-mini-lista { list-style: none; margin: 0 0 .6rem; padding: 0; }
+.admin-mini-lista li { padding: .55rem .7rem; margin-bottom: .35rem; border-radius: 8px; background: #f3f5f5; font-size: .92rem; line-height: 1.45; border-left: 3px solid var(--linie); }
+.admin-mini-lista li span { display: block; color: var(--piatra); font-size: .84rem; overflow-wrap: anywhere; }
+.admin-mini-lista .plata-platita { border-left-color: #2f7a4f; background: #eef6f1; }
+.admin-mini-lista .plata-respinsa, .admin-mini-lista .plata-eroare, .admin-mini-lista .plata-rambursata { border-left-color: #b4533c; background: #fbf0ec; }
+.admin-inline { display: inline-block; margin: .35rem 0 0; }
+.buton-mic { min-height: 38px; padding: .45rem .9rem; font-size: .88rem; }
+.admin-integrari { margin-top: 2rem; padding: 1rem 1.2rem; background: #fff; border: 1px solid var(--linie); border-radius: 10px; font-size: .95rem; line-height: 1.5; }
+.admin-integrari p { margin: .25rem 0; }
+.eticheta-ok, .eticheta-test { display: inline-block; padding: .05rem .55rem; border-radius: 999px; font-size: .85rem; font-weight: 600; }
+.eticheta-ok { background: #dcebe3; color: var(--brad); }
+.eticheta-test { background: #fbefd5; color: #7a5208; }

@@ -29,17 +29,36 @@ function trimite_mail_client(array $r, $tip, array $setari)
         $titlu   = $E['cerere_titlu'];
         $intro   = strtr($E['cerere_intro'], $v);
         $status  = ['asteptare', $E['status_asteptare']];
+        $card = function_exists('poate_plati_card') && poate_plati_card($r, $setari);
         $sectiuni[] = sectiune_detalii($r, $v, $E, true);
-        $sectiuni[] = sectiune_plata($v, $E, $setari);
-        $butoane = [[$E['buton_proforma'], link_proforma($r), 'plin'], [$E['buton_dovada'], link_proforma($r) . '#dovada', 'contur']];
+        if ($card) {
+            $sectiuni[] = ['titlu' => $E['card_titlu'], 'html' => '<p style="margin:0">' . e(strtr($E['card_text'], $v)) . '</p>'];
+        }
+        $sectiuni[] = sectiune_plata($v, $E, $setari, $card);
+        $butoane = $card
+            ? [[strtr($E['buton_card'], $v), link_plata_card($r), 'plin'], [$E['buton_proforma'], link_proforma($r), 'contur'], [$E['buton_dovada'], link_proforma($r) . '#dovada', 'contur']]
+            : [[$E['buton_proforma'], link_proforma($r), 'plin'], [$E['buton_dovada'], link_proforma($r) . '#dovada', 'contur']];
     } elseif ($tip === 'confirmare') {
+        $factura = (function_exists('factura_cu_link') && ($pdo = db())) ? factura_cu_link($pdo, $r['id']) : null;
         $subiect = strtr($E['conf_subiect'], $v);
         $titlu   = $E['conf_titlu'];
-        $intro   = strtr($E['conf_intro'], $v);
+        $intro   = strtr(($r['plata_metoda'] ?? '') === 'card' ? $E['conf_intro_card'] : $E['conf_intro'], $v);
         $status  = ['confirmata', $E['status_confirmata']];
         $sectiuni[] = sectiune_detalii($r, $v, $E, false);
         $sectiuni[] = sectiune_sosire($v, $E, $setari);
         $butoane = [[$E['buton_harta'], $setari['harta_link'], 'plin'], [$E['buton_proforma'], link_proforma($r), 'contur']];
+        if ($factura && $factura['link']) {
+            $butoane[] = [$E['buton_factura'], $factura['link'], 'contur'];
+        }
+    } elseif ($tip === 'factura') { // factura fiscală emisă ulterior (ex. pentru restul plătit la sosire)
+        $factura = (function_exists('factura_cu_link') && ($pdo = db())) ? factura_cu_link($pdo, $r['id']) : null;
+        if (!$factura) return false;
+        $v['{factura}'] = $factura['serie'] . ' ' . $factura['numar'];
+        $subiect = strtr($E['fact_subiect'], $v);
+        $titlu   = $E['fact_titlu'];
+        $intro   = strtr($E['fact_intro'], $v);
+        $status  = ['confirmata', $E['status_confirmata']];
+        $butoane = $factura['link'] ? [[$E['buton_factura'], $factura['link'], 'plin']] : [];
     } elseif ($tip === 'expirare') { // anulată automat: avansul nu a venit la timp
         $subiect = strtr($E['exp_subiect'], $v);
         $titlu   = $E['exp_titlu'];
@@ -55,10 +74,10 @@ function trimite_mail_client(array $r, $tip, array $setari)
     }
 
     $politica = trim($T['politica_anulare'] ?? '');
-    if ($politica !== '' && !in_array($tip, ['anulare', 'expirare'], true)) {
+    if ($politica !== '' && !in_array($tip, ['anulare', 'expirare', 'factura'], true)) {
         $sectiuni[] = ['titlu' => $E['anulare_titlu'], 'html' => '<p style="margin:0">' . nl2br(e($politica)) . '</p>'];
     }
-    if ($tip === 'confirmare') {
+    if ($tip === 'confirmare' && empty($factura['link'])) {
         $sectiuni[] = ['titlu' => '', 'html' => '<p style="margin:0">' . e($E['factura_nota']) . '</p>'];
     }
 
@@ -155,10 +174,11 @@ function sectiune_detalii(array $r, array $v, array $E, $cu_avans)
     return ['titlu' => $E['detalii_titlu'], 'html' => $h . '</table>'];
 }
 
-function sectiune_plata(array $v, array $E, array $setari)
+function sectiune_plata(array $v, array $E, array $setari, $cu_card = false)
 {
+    $titlu = $cu_card ? $E['transfer_titlu'] : $E['plata_titlu'];
     if ($setari['iban'] === '') {
-        return ['titlu' => $E['plata_titlu'], 'html' => '<p style="margin:0">' . e(strtr($E['plata_fara_iban'], $v)) . '</p>'];
+        return ['titlu' => $titlu, 'html' => '<p style="margin:0">' . e(strtr($E['plata_fara_iban'], $v)) . '</p>'];
     }
     $h = '<p style="margin:0 0 12px">' . e(strtr($E['plata_text'], $v)) . '</p>'
         . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="m-box" style="border-collapse:separate;background:#eef4f0;border-radius:8px">'
@@ -170,7 +190,7 @@ function sectiune_plata(array $v, array $E, array $setari)
         . rand_tabel($E['lbl_banca'], e($setari['banca']))
         . rand_tabel($E['lbl_referinta'], e($v['{nr}']))
         . '</table></td></tr></table>';
-    return ['titlu' => $E['plata_titlu'], 'html' => $h];
+    return ['titlu' => $titlu, 'html' => $h];
 }
 
 function sectiune_sosire(array $v, array $E, array $setari)

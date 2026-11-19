@@ -56,6 +56,20 @@ return [
     'termen_plata_ore' => 48,   // cât timp stau zilele rezervate provizoriu, așteptând plata
     'serie_proforma' => 'VR',   // proformele se numerotează VR-0001, VR-0002 ...
 
+    // Plata cu cardul prin Netopia. Cheile NU sunt aici, ci în config.php pe server
+    // ('netopia_api_key', 'netopia_pos_signature', 'netopia_cheie_publica', 'netopia_mediu').
+    // Butonul „Plătește cu cardul” apare singur când cheile sunt completate.
+    'plata_card'       => true,    // false = ascunde plata cu cardul chiar dacă există chei
+    'notifica_plata_card' => true, // mail către proprietar la fiecare plată cu cardul
+
+    // Facturi fiscale automate prin FGO (după fiecare plată). Cheia API NU e aici: 'fgo_cheie_api' în config.php.
+    // Facturarea pornește doar când sunt completate cheia, seria și cota de TVA.
+    'fgo_serie'        => '',      // DE COMPLETAT: seria de facturi definită în FGO (Setări → Serii documente)
+    'fgo_cota_tva'     => null,    // DE COMPLETAT cu contabilul: 0 dacă firma NU e plătitoare de TVA, 0.11 dacă este (cazare = 11%)
+    'fgo_tip_factura'  => 'F',     // F = factură
+    'fgo_um'           => 'buc',   // unitatea de măsură de pe factură
+    'fgo_la_transfer'  => true,    // true = emite factura și când confirmi în panou o plată prin transfer
+
     // Parola panoului de administrare NU e aici: se pune în config.php pe server ('admin_parola').
 
     // Tarife și reguli de rezervare

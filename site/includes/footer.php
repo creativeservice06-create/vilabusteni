@@ -25,6 +25,10 @@
         <li><span><?= e(t('adresa')) ?></span><a href="<?= e($setari['harta_link']) ?>" target="_blank" rel="noopener"><?= e($setari['adresa']) ?></a></li>
       </ul>
       <?= iconite_sociale($setari) ?>
+      <?php if (card_activ($setari)): ?>
+        <!-- Metodele de plată (cerință Netopia). Siglele oficiale se pot pune în assets/images/plati/ -->
+        <p class="plati-acceptate"><?= e(t('plati_acceptate')) ?></p>
+      <?php endif; ?>
     </div>
 
     <nav class="subsol-linkuri" aria-label="<?= e(t('info_legale')) ?>">

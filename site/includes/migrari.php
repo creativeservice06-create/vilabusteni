@@ -39,6 +39,44 @@ function migrari()
         // ce a ales clientul să plătească (avans / suma / integral) și dovada de plată încărcată
         5 => "ALTER TABLE rezervari ADD COLUMN optiune_plata VARCHAR(10) NOT NULL DEFAULT 'avans',
                                     ADD COLUMN dovada_fisier VARCHAR(255) NULL, ADD COLUMN dovada_la DATETIME NULL",
+
+        // datele pentru factura fiscală (persoană fizică sau firmă) și cum s-a plătit (transfer / card)
+        6 => "ALTER TABLE rezervari ADD COLUMN fact_tip VARCHAR(2) NOT NULL DEFAULT 'PF',
+                                    ADD COLUMN fact_tara VARCHAR(2) NULL, ADD COLUMN fact_judet VARCHAR(3) NULL,
+                                    ADD COLUMN fact_localitate VARCHAR(100) NULL, ADD COLUMN fact_adresa VARCHAR(255) NULL,
+                                    ADD COLUMN fact_firma VARCHAR(160) NULL, ADD COLUMN fact_cui VARCHAR(20) NULL,
+                                    ADD COLUMN fact_reg_com VARCHAR(40) NULL, ADD COLUMN plata_metoda VARCHAR(10) NULL",
+
+        // plățile cu cardul prin Netopia (o rezervare poate avea mai multe încercări)
+        7 => "CREATE TABLE IF NOT EXISTS plati_card (
+                id            INT AUTO_INCREMENT PRIMARY KEY,
+                rezervare_id  INT NOT NULL,
+                comanda       VARCHAR(40) NOT NULL,
+                suma          INT NOT NULL,
+                ntp_id        VARCHAR(40) NULL,
+                status        VARCHAR(12) NOT NULL DEFAULT 'pornita',
+                cod_netopia   INT NULL,
+                mesaj         VARCHAR(255) NULL,
+                card          VARCHAR(40) NULL,
+                creat_la      DATETIME NOT NULL,
+                actualizat_la DATETIME NULL,
+                UNIQUE (comanda),
+                INDEX (rezervare_id)
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+        // facturile fiscale emise prin FGO (avans / integral / rest)
+        8 => "CREATE TABLE IF NOT EXISTS facturi (
+                id            INT AUTO_INCREMENT PRIMARY KEY,
+                rezervare_id  INT NOT NULL,
+                tip           VARCHAR(10) NOT NULL,
+                suma          INT NOT NULL,
+                serie         VARCHAR(50) NULL,
+                numar         VARCHAR(50) NULL,
+                link          VARCHAR(500) NULL,
+                eroare        VARCHAR(500) NULL,
+                creat_la      DATETIME NOT NULL,
+                INDEX (rezervare_id)
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
     ];
 }
 
