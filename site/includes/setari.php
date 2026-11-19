@@ -18,7 +18,9 @@ return [
     'email_contact'  => 'contact@horoscoptravel.ro',
 
     // Unde ajung notificările despre rezervări noi
-    'email_proprietar' => 'contact@horoscoptravel.ro',
+    'email_proprietar' => 'contact@horoscoptravel.ro, rezervari@vilabusteni.ro',   // mai multe adrese: separate prin virgulă
+    // Copie ascunsă a fiecărui mail trimis clienților (istoric în Inbox-ul acestei adrese; gol = fără copie)
+    'email_arhiva'     => 'rezervari@vilabusteni.ro',
     // Adresa de pe care pleacă mailurile automate (trebuie creată în cPanel → Email Accounts)
     'email_expeditor'  => 'rezervari@vilabusteni.ro',
 

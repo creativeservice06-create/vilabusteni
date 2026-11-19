@@ -66,7 +66,7 @@ function trimite_mail_client(array $r, $tip, array $setari)
         'limba' => $limba, 'preheader' => $intro, 'titlu' => $titlu, 'intro' => $intro, 'status' => $status,
         'sectiuni' => $sectiuni, 'butoane' => $butoane, 'E' => $E, 'T' => $T, 'v' => $v, 'setari' => $setari,
     ]);
-    return trimite_mail_html($r['email'], $subiect, $html, $setari, $setari['email_contact']);
+    return trimite_mail_html($r['email'], $subiect, $html, $setari, $setari['email_contact'], [], $setari['email_arhiva'] ?? '');
 }
 
 /** Notificarea proprietarului la o cerere nouă (în română). */
@@ -316,7 +316,7 @@ function html_in_text($html)
     return trim(implode("\n", array_map('trim', explode("\n", $text))));
 }
 
-function trimite_mail_html($catre, $subiect, $html, array $setari, $raspuns_la, array $atasamente = [])
+function trimite_mail_html($catre, $subiect, $html, array $setari, $raspuns_la, array $atasamente = [], $copie_ascunsa = '')
 {
     $alt = 'vr' . bin2hex(random_bytes(8));
     $corp_alt = "--$alt\r\n"
@@ -352,6 +352,9 @@ function trimite_mail_html($catre, $subiect, $html, array $setari, $raspuns_la, 
         'MIME-Version: 1.0',
         'Content-Type: ' . $tip_continut,
     ];
+    if ($copie_ascunsa !== '') {
+        $antete[] = 'Bcc: ' . $copie_ascunsa;   // istoricul mailurilor către clienți
+    }
     $ok = @mail($catre, mb_encode_mimeheader($subiect, 'UTF-8', 'B'), $corp, implode("\r\n", $antete), '-f' . $setari['email_expeditor']);
     if (!$ok) error_log("Mailul către $catre nu a putut fi trimis.");
     return $ok;
