@@ -183,6 +183,9 @@ return [
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [
+        'exp_subiect' => 'Rezervarea {nr} a fost anulată – avansul nu a fost primit',
+        'exp_titlu' => 'Rezervarea a fost anulată automat',
+        'exp_intro' => 'Bună, {nume}. Nu am primit avansul pentru rezervarea {nr} ({perioada}) în cele {ore} de ore, așa că rezervarea a fost anulată automat și perioada a fost eliberată. Dacă ai făcut deja plata, sună-ne la {telefon} și o reactivăm imediat, dacă perioada mai este liberă.',
         'cerere_subiect' => 'Rezervarea {nr} – plătește avansul pentru confirmare',
         'cerere_titlu' => 'Perioada e rezervată pentru tine',
         'cerere_intro' => 'Mulțumim, {nume}! Ținem perioada {perioada} rezervată pentru tine până la {termen}. Rezervarea se confirmă după ce primim avansul de {avans}.',

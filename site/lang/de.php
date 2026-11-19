@@ -167,6 +167,9 @@ return [
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [
+        'exp_subiect' => 'Buchung {nr} wurde storniert – Anzahlung nicht erhalten',
+        'exp_titlu' => 'Ihre Buchung wurde automatisch storniert',
+        'exp_intro' => 'Guten Tag {nume}, wir haben die Anzahlung für die Buchung {nr} ({perioada}) nicht innerhalb von {ore} Stunden erhalten. Die Buchung wurde daher automatisch storniert und der Zeitraum freigegeben. Falls Sie bereits bezahlt haben, rufen Sie uns bitte unter {telefon} an – wir reaktivieren die Buchung sofort, sofern der Zeitraum noch frei ist.',
         'cerere_subiect' => 'Buchung {nr} – Anzahlung zur Bestätigung',
         'cerere_titlu' => 'Ihr Zeitraum ist für Sie reserviert',
         'cerere_intro' => 'Vielen Dank, {nume}! Wir halten den Zeitraum {perioada} bis {termen} für Sie frei. Die Buchung ist bestätigt, sobald die Anzahlung von {avans} eingegangen ist.',

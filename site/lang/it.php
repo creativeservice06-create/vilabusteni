@@ -167,6 +167,9 @@ return [
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [
+        'exp_subiect' => 'La prenotazione {nr} è stata annullata – acconto non ricevuto',
+        'exp_titlu' => 'La prenotazione è stata annullata automaticamente',
+        'exp_intro' => 'Buongiorno {nume}, non abbiamo ricevuto l’acconto per la prenotazione {nr} ({perioada}) entro {ore} ore, quindi la prenotazione è stata annullata automaticamente e il periodo è stato liberato. Se hai già pagato, chiamaci al {telefon} e la riattiveremo subito, se il periodo è ancora libero.',
         'cerere_subiect' => 'Prenotazione {nr} – versa l’acconto per confermare',
         'cerere_titlu' => 'Il periodo è riservato per te',
         'cerere_intro' => 'Grazie, {nume}! Teniamo riservato il periodo {perioada} per te fino al {termen}. La prenotazione è confermata quando riceviamo l’acconto di {avans}.',

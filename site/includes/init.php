@@ -5,6 +5,10 @@
 date_default_timezone_set('Europe/Bucharest');
 $setari = require __DIR__ . '/setari.php';
 require_once __DIR__ . '/limbi.php';
+require_once __DIR__ . '/automat.php';
+if (PHP_SAPI !== 'cli') {
+    porneste_verificarea_automata();   // anulează automat cererile neplătite în termen
+}
 
 // Linia crestei Bucegilor (Caraiman – Coștila), desenată ca o singură linie.
 // Apare sus pe prima pagină și ca separator. Puncte "x,y" pe o suprafață de 1200×120.

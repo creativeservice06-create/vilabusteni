@@ -9,6 +9,7 @@
 //    'cerere'     – imediat după rezervare: perioada e ținută 48h, proforma + cum plătește avansul
 //    'confirmare' – după ce proprietarul apasă „Plată primită” în panou
 //    'anulare'    – când proprietarul anulează (neplată sau perioadă indisponibilă)
+//    'expirare'   – automat, când avansul nu a fost plătit în termen (vezi anuleaza_expirate)
 // ============================================================
 
 const SITE_URL = 'https://vilabusteni.ro';
@@ -39,6 +40,12 @@ function trimite_mail_client(array $r, $tip, array $setari)
         $sectiuni[] = sectiune_detalii($r, $v, $E, false);
         $sectiuni[] = sectiune_sosire($v, $E, $setari);
         $butoane = [[$E['buton_harta'], $setari['harta_link'], 'plin'], [$E['buton_proforma'], link_proforma($r), 'contur']];
+    } elseif ($tip === 'expirare') { // anulată automat: avansul nu a venit la timp
+        $subiect = strtr($E['exp_subiect'], $v);
+        $titlu   = $E['exp_titlu'];
+        $intro   = strtr($E['exp_intro'], $v);
+        $status  = ['anulata', $E['status_anulata']];
+        $butoane = [[$E['buton_alte_date'], SITE_URL . ($limba === 'ro' ? '' : '/' . $limba) . '/rezervare.php', 'plin']];
     } else { // anulare
         $subiect = strtr($E['anul_subiect'], $v);
         $titlu   = $E['anul_titlu'];
@@ -48,7 +55,7 @@ function trimite_mail_client(array $r, $tip, array $setari)
     }
 
     $politica = trim($T['politica_anulare'] ?? '');
-    if ($politica !== '' && $tip !== 'anulare') {
+    if ($politica !== '' && !in_array($tip, ['anulare', 'expirare'], true)) {
         $sectiuni[] = ['titlu' => $E['anulare_titlu'], 'html' => '<p style="margin:0">' . nl2br(e($politica)) . '</p>'];
     }
     if ($tip === 'confirmare') {

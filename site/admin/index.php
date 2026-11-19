@@ -220,6 +220,8 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
             Mai are <strong><?= e(durata(strtotime($r['termen_plata']) - time())) ?></strong> să plătească avansul – până <?= e(data_ora($r['termen_plata'])) ?>.
           <?php endif; ?>
         </p>
+      <?php elseif ($r['status'] === 'anulata'): ?>
+        <p class="admin-alerta alerta-rosu">Anulată<?= !empty($r['modificat_la']) ? ' ' . e(data_ora($r['modificat_la'])) : '' ?><?= !empty($r['nota']) ? ' – ' . e(mb_strtolower(mb_substr($r['nota'], 0, 1)) . mb_substr($r['nota'], 1)) : '' ?>.</p>
       <?php elseif ($r['status'] === 'confirmata' && !empty($r['platit_la'])): ?>
         <p class="admin-alerta alerta-verde">Avans încasat – înregistrat <?= e(data_ora($r['platit_la'])) ?>.</p>
       <?php endif; ?>
@@ -281,8 +283,15 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
         </p>
       <?php endif; ?>
 
-      <?php if (strtotime($r['plecare']) >= strtotime('today') && $r['status'] !== 'anulata'): ?>
+      <?php if (strtotime($r['plecare']) >= strtotime('today')): ?>
         <div class="admin-butoane">
+          <?php if ($r['status'] === 'anulata' && $r['email'] !== ''): ?>
+            <form method="post" onsubmit="return confirm('Clientul a plătit totuși pentru #<?= (int) $r['id'] ?>? Rezervarea se reactivează și se confirmă (dacă zilele sunt încă libere), iar clientul primește mail de confirmare.')">
+              <input type="hidden" name="token" value="<?= e(token_formular()) ?>">
+              <input type="hidden" name="actiune" value="confirma"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
+              <button class="buton buton-contur">Reactivează – plată primită</button>
+            </form>
+          <?php endif; ?>
           <?php if ($r['status'] === 'in_asteptare'): ?>
             <form method="post" onsubmit="return confirm('Ai primit avansul pentru #<?= (int) $r['id'] ?>? Rezervarea se confirmă și clientul primește mail de confirmare.')">
               <input type="hidden" name="token" value="<?= e(token_formular()) ?>">

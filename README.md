@@ -48,7 +48,9 @@ Reguli simple:
    (`proforma.php?cod=...`) și detaliile de plată a **avansului de 30%** (`avans_procent`).
 3. Proprietarul primește mail cu link spre panou. Când vede banii în cont → **Plată primită – confirmă**:
    clientul primește mailul de confirmare; factura fiscală se emite separat (deocamdată de contabil).
-4. Dacă nu plătește în 48h, zilele se eliberează singure în calendar; din panou se poate anula (clientul primește mail).
+4. Dacă nu plătește în 48h, rezervarea se **anulează automat** (`includes/automat.php`, verificare la cel mult 5 minute,
+   declanșată de orice vizită pe site; opțional și din cron: `cron/expirate.php`). Clientul și proprietarul primesc mail.
+   Dacă clientul a plătit totuși, din panou → Istoric → **Reactivează – plată primită**.
 
 Mailurile sunt în `includes/mailuri.php` (șablon HTML cu sigla, merge pe tema deschisă și întunecată),
 textele în `lang/*.php` la cheile `mailuri` și `proforma`.

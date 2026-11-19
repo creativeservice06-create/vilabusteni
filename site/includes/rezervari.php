@@ -194,3 +194,45 @@ function blocheaza_perioada(PDO $pdo, $sosire, $plecare, $nota)
         ->execute([$sosire, $plecare, $nopti, mb_substr(trim($nota), 0, 255)]);
     return ['ok', "Am blocat $nopti " . ($nopti === 1 ? 'noapte' : 'nopți') . ': ' . $a->format('d.m.Y') . ' – ' . $b->format('d.m.Y') . '.'];
 }
+
+/**
+ * Anulează automat cererile al căror termen de plată a expirat:
+ * status „anulata”, mail către client (în limba lui) și notificare către proprietar.
+ * Se apelează automat (vezi includes/automat.php) și poate fi rulată și din cron (cron/expirate.php).
+ * Întoarce câte rezervări a anulat.
+ */
+function anuleaza_expirate(PDO $pdo, array $setari)
+{
+    $acum = date('Y-m-d H:i:s');
+    $st = $pdo->prepare("SELECT * FROM rezervari WHERE status = 'in_asteptare' AND termen_plata IS NOT NULL AND termen_plata < ?");
+    $st->execute([$acum]);
+    $anulate = 0;
+    foreach ($st->fetchAll() as $r) {
+        // „AND status = 'in_asteptare'” ne apără dacă proprietarul a confirmat-o chiar în aceeași clipă
+        $upd = $pdo->prepare("UPDATE rezervari SET status = 'anulata', modificat_la = ?, nota = ? WHERE id = ? AND status = 'in_asteptare'");
+        $upd->execute([$acum, 'Anulată automat: avansul nu a fost plătit în termen', $r['id']]);
+        if ($upd->rowCount() !== 1) continue;
+        $anulate++;
+        trimite_mail_client($r, 'expirare', $setari);
+        trimite_mail_anulare_automata($r, $setari);
+    }
+    return $anulate;
+}
+
+/** Îl anunță pe proprietar că o cerere s-a anulat automat (cu posibilitatea de reactivare). */
+function trimite_mail_anulare_automata(array $r, array $setari)
+{
+    $T = texte_limba('ro');
+    $E = $T['mailuri'];
+    $v = valori_mail($r, $setari, 'ro', $T);
+    $html = sablon_mail([
+        'limba' => 'ro', 'preheader' => "Anulată automat: {$r['nume']}, {$v['{perioada}']}",
+        'titlu' => 'Rezervare anulată automat #' . $r['id'],
+        'intro' => "{$r['nume']} nu a plătit avansul de {$v['{avans}']} până la {$v['{termen}']}, așa că rezervarea {$v['{nr}']} s-a anulat automat, zilele s-au eliberat pe site și clientul a primit mail. Dacă totuși a plătit, o poți reactiva din panou (Istoric → Plată primită – confirmă), cât timp perioada e liberă.",
+        'status' => ['anulata', 'Anulată automat'],
+        'sectiuni' => [sectiune_detalii($r, $v, $E, true)],
+        'butoane' => [['Deschide panoul', SITE_URL . '/admin/?vezi=istoric', 'plin']],
+        'E' => $E, 'T' => $T, 'v' => $v, 'setari' => $setari,
+    ]);
+    return trimite_mail_html($setari['email_proprietar'], "Anulată automat #{$r['id']} – {$v['{perioada}']} – {$r['nume']}", $html, $setari, $r['email']);
+}

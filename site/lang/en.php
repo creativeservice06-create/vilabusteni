@@ -167,6 +167,9 @@ return [
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [
+        'exp_subiect' => 'Booking {nr} has been cancelled – deposit not received',
+        'exp_titlu' => 'Your booking was cancelled automatically',
+        'exp_intro' => 'Hello {nume}. We did not receive the deposit for booking {nr} ({perioada}) within {ore} hours, so the booking was cancelled automatically and the dates were released. If you have already paid, please call us on {telefon} and we will reactivate it straight away, if the dates are still free.',
         'cerere_subiect' => 'Booking {nr} – pay the deposit to confirm',
         'cerere_titlu' => 'Your dates are on hold',
         'cerere_intro' => 'Thank you, {nume}! We are holding {perioada} for you until {termen}. Your booking is confirmed once we receive the deposit of {avans}.',
