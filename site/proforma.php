@@ -45,8 +45,8 @@ if ($r) {
   <meta name="robots" content="noindex, nofollow">
   <title><?= e($P['titlu']) ?><?= $r ? ' ' . e($v['{nr}']) : '' ?> – <?= e($setari['nume_vila']) ?></title>
   <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
-  <link rel="stylesheet" href="/assets/css/style.css?v=14">
-  <link rel="stylesheet" href="/assets/css/proforma.css?v=3">
+  <link rel="stylesheet" href="/assets/css/style.css?v=15">
+  <link rel="stylesheet" href="/assets/css/proforma.css?v=4">
 </head>
 <body class="proforma-pagina">
 
@@ -55,14 +55,19 @@ if ($r) {
 <?php else: ?>
 
   <div class="bara-print">
-    <?php if (poate_plati_card($r, $setari)): ?>
+    <?php $card_proforma = ($r['plata_metoda'] ?? '') !== 'transfer' && poate_plati_card($r, $setari); ?>
+    <?php if ($card_proforma): ?>
       <a href="<?= e(url('/plata-card.php')) ?>?cod=<?= e($r['cod']) ?>" class="buton buton-plin"><?= e(strtr($P['card_buton'], ['{suma}' => lei($r['avans'])])) ?></a>
     <?php endif; ?>
     <?php if ($r['status'] !== 'confirmata'): ?>
       <a href="#dovada" class="buton buton-contur"><?= e($P['dov_buton_sus']) ?></a>
     <?php endif; ?>
-    <button type="button" class="buton <?= poate_plati_card($r, $setari) ? 'buton-contur' : 'buton-plin' ?>" onclick="window.print()"><?= e($P['print']) ?></button>
+    <button type="button" class="buton <?= $card_proforma ? 'buton-contur' : 'buton-plin' ?>" onclick="window.print()"><?= e($P['print']) ?></button>
   </div>
+
+  <?php if (isset($_GET['nou'])): ?>
+    <p class="proforma-nou" role="status"><?= e(strtr($P['nou'], ['{email}' => $r['email'], '{termen}' => $v['{termen}']])) ?></p>
+  <?php endif; ?>
 
   <main class="document">
     <?php if ($r['status'] === 'confirmata'): ?><div class="stampila stampila-ok"><?= e($P['status_platit']) ?></div><?php endif; ?>
@@ -138,7 +143,7 @@ if ($r) {
       <?php endif; ?>
     </table>
 
-    <p class="doc-plata"><?= e(strtr(card_activ($setari) ? $P['plata_card'] : $P['plata'], $v)) ?></p>
+    <p class="doc-plata"><?= e(strtr($card_proforma ? $P['plata_card'] : $P['plata'], $v)) ?></p>
     <p class="doc-mentiune"><?= e($P['mentiune']) ?></p>
 
     <footer class="doc-subsol">

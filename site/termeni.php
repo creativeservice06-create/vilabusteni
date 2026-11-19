@@ -30,16 +30,16 @@ $f = $setari;
 
   <h2>4. Prețuri și plată</h2>
   <p>Prețurile afișate sunt în lei și sunt pentru întreaga vilă, pe noapte <span class="de-completat">[includ / nu includ TVA și taxa locală de ședere]</span>.</p>
-  <p>Pentru confirmarea rezervării se plătește, în <?= (int) $f['termen_plata_ore'] ?> de ore de la trimiterea cererii, cel puțin
-     <?= (int) $f['avans_procent'] ?>% din valoarea sejurului (sau o sumă mai mare, ori integral). Restul se plătește
-     la sosire. Dacă plata nu este primită în termen, cererea se anulează automat.</p>
+  <p>Pentru confirmarea rezervării se plătește un avans de <?= (int) $f['avans_procent'] ?>% din valoarea sejurului sau suma integrală,
+     la alegerea clientului. Restul se plătește la sosire.</p>
   <p>Plata se poate face:</p>
   <ul>
     <li><strong>online, cu cardul</strong> (Visa, Mastercard), pe pagina securizată a procesatorului de plăți
       <strong>NETOPIA Payments</strong> (NETOPIA Financial Services S.A.). Datele cardului se introduc doar pe pagina NETOPIA
       și nu ajung la noi. Plata se face în lei (RON); dacă ai un card în altă monedă, conversia o face banca ta.
       Rezervarea se confirmă automat după reușita plății;</li>
-    <li><strong>prin transfer bancar</strong>, în contul din factura proformă; rezervarea se confirmă după ce primim banii sau dovada plății.</li>
+    <li><strong>prin ordin de plată</strong> (transfer bancar), pe baza facturii proforme trimise pe email, în <?= (int) $f['termen_plata_ore'] ?> de ore
+      de la rezervare; rezervarea se confirmă după ce primim banii sau dovada plății. Dacă plata nu ajunge în termen, rezervarea se anulează automat.</li>
   </ul>
   <p>Factura fiscală se emite după încasare, pe numele și adresa (sau firma) completate în formularul de rezervare, și se trimite pe email.</p>
 

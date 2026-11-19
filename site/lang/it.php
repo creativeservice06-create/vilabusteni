@@ -117,7 +117,7 @@ return [
     'rez_h1'          => 'Scegli le date',
     'rez_intro'       => 'Tutta la villa costa %s a notte, minimo %d notti. Tocca il giorno di arrivo, poi quello di partenza. I giorni barrati sono già occupati.',
     'rez_avans_titlu' => 'Come si conferma la prenotazione',
-    'rez_avans_text'  => 'Per confermare paghi entro {ore} ore almeno il {procent}% del totale – oppure di più, o l’intero importo. Ricevi la fattura proforma via email e la prenotazione è confermata quando riceviamo il pagamento o la prova di pagamento. Se il pagamento non arriva in tempo, la prenotazione viene annullata automaticamente.',
+    'rez_avans_text' => 'Per confermare paghi un acconto del {procent}% o l’intero importo. Con carta la prenotazione si conferma subito. Con bonifico ricevi la proforma via email e hai {ore} ore per pagarla; se il pagamento non arriva, la prenotazione si annulla automaticamente.',
     'plata_titlu' => 'Quanto paghi ora per la conferma',
     'opt_avans' => 'Acconto {procent}%',
     'opt_suma' => 'Altro importo (minimo {procent}%)',
@@ -133,7 +133,7 @@ return [
     'f_mesaj'         => 'Messaggio (facoltativo)',
     'f_accept'        => 'Ho letto e accetto i <a href="%s" target="_blank">Termini e condizioni</a> e l’<a href="%s" target="_blank">Informativa sulla privacy</a>.',
     'f_trimite'       => 'Invia la richiesta di prenotazione',
-    'f_nota'          => 'Il periodo resta riservato per {ore} ore. Senza pagamento o prova di pagamento entro questo termine, la prenotazione viene annullata automaticamente.',
+    'f_nota' => 'Il saldo si paga all’arrivo.',
     'rez_multumim'    => 'Grazie! Abbiamo ricevuto la tua richiesta.',
     'rez_perioada'    => 'Periodo: <strong>%s – %s</strong> (%d notti), totale <strong>%s</strong>.',
     'rez_contactam'   => 'Abbiamo inviato la fattura proforma e i dati di pagamento a <strong>%s</strong>. Il periodo è riservato per te fino al <strong>%s</strong>; la prenotazione è confermata quando riceviamo il pagamento di <strong>%s</strong> o la prova di pagamento.',
@@ -171,6 +171,14 @@ return [
         'avans'    => 'Acconto per la conferma ({procent}%): <strong>{avans}</strong>, da versare entro {ore} ore.',
         'locale'   => 'it-IT',
     ],
+    'metoda_titlu' => 'Come paghi',
+    'metoda_card' => 'Con carta, ora',
+    'metoda_card_text' => 'Paghi sulla pagina sicura di NETOPIA Payments e la prenotazione si conferma subito.',
+    'metoda_transfer' => 'Con bonifico',
+    'metoda_transfer_text' => 'Ricevi via email la fattura proforma e la paghi entro {ore} ore; la prenotazione si conferma quando riceviamo il pagamento.',
+    'f_trimite_card' => 'Prenota e paga con carta',
+    'f_trimite_transfer' => 'Prenota e ricevi la proforma',
+    'err_metoda' => 'Scegli come paghi: con carta o con bonifico.',
     // Date pentru factură și plata cu cardul
     'fact_titlu' => 'Dati per la fattura',
     'fact_tara' => 'Paese',
@@ -220,9 +228,10 @@ return [
         'platit' => 'Pagato',
         'suma_integral' => 'Da pagare ora (intero importo)',
         'buton' => 'Paga {suma} con carta',
+        'buton_transfer' => 'Pago con bonifico',
         'buton_reincearca' => 'Riprova – {suma}',
         'sigur' => 'Paghi sulla pagina sicura di NETOPIA Payments. I dati della carta non arrivano a noi.',
-        'alternativa' => 'Preferisci il bonifico?',
+        'alternativa' => 'Preferisci non pagare con carta?',
         'link_proforma' => 'Vedi la fattura proforma',
         'reincarca' => 'Ricarica la pagina',
         'err_sesiune' => 'La sessione è scaduta. Premi di nuovo il pulsante di pagamento.',
@@ -255,7 +264,7 @@ return [
         'mail_status' => 'Recesso ricevuto',
         'mail_continut' => 'Contenuto della dichiarazione',
     ],
-    'politica_anulare' => "In caso di cancellazione, l’acconto del 30% del soggiorno non è rimborsabile. Qualsiasi importo pagato oltre l’acconto viene rimborsato integralmente entro 14 giorni dalla cancellazione, con lo stesso metodo di pagamento. Il saldo si paga all’arrivo. Se siamo noi ad annullare la prenotazione, rimborsiamo integralmente tutte le somme pagate.",   // apare pe pagina de rezervare și în mailuri
+    'politica_anulare' => "In caso di cancellazione, l’acconto del 50% del soggiorno non è rimborsabile. Qualsiasi importo pagato oltre l’acconto viene rimborsato integralmente entro 14 giorni dalla cancellazione, con lo stesso metodo di pagamento. Il saldo si paga all’arrivo. Se siamo noi ad annullare la prenotazione, rimborsiamo integralmente tutte le somme pagate.",   // apare pe pagina de rezervare și în mailuri
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [
@@ -348,6 +357,7 @@ return [
         'status_platit' => 'Acconto versato',
         'status_anulat' => 'Annullata',
         'integral' => 'Pagamento intero',
+        'nou' => 'Ti abbiamo inviato la proforma a {email}. Pagala con bonifico entro il {termen}; la prenotazione si conferma quando riceviamo il pagamento.',
         'card_buton' => 'Paga {suma} con carta',
         'plata_card' => 'Il pagamento si effettua online con carta (pulsante in alto) o con bonifico. Per il bonifico indicare: {nr}.',
         'persoana' => 'Referente',

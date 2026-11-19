@@ -13,7 +13,7 @@ $trimis = false;
 $date = [
     'sosire' => '', 'plecare' => '', 'persoane' => 2,
     'nume' => '', 'email' => '', 'telefon' => '', 'mesaj' => '',
-    'plata' => 'avans', 'suma' => '',
+    'plata' => 'avans', 'metoda' => '',
     // date pentru factura fiscală
     'fact_tara' => $LIMBA === 'ro' ? 'RO' : '', 'fact_judet' => '', 'fact_localitate' => '', 'fact_adresa' => '',
     'fact_pj' => '', 'fact_firma' => '', 'fact_cui' => '', 'fact_reg_com' => '',
@@ -26,10 +26,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rezultat = salveaza_rezervare($date, $_POST, $setari);
     $erori = $rezultat['erori'];
     $trimis = empty($erori);
+
+    // A ales cardul: îl trimitem direct pe pagina de plată Netopia
+    if ($trimis && $rezultat['metoda'] === 'card') {
+        $start = start_plata_card(db(), $rezultat['r'], $setari);
+        header('Location: ' . ($start['url'] ?? (url('/plata-card.php') . '?cod=' . $rezultat['cod'] . '&eroare=1')), true, 303);
+        exit;
+    }
 }
 
 $titlu = t('rez_titlu') . ' – ' . $setari['nume_vila'];
-$scripturi = ['/assets/js/calendar.js?v=6', '/assets/js/facturare.js?v=1'];
+$scripturi = ['/assets/js/calendar.js?v=7', '/assets/js/facturare.js?v=1'];
 $pagina = 'rezervare';
 require __DIR__ . '/includes/header.php';
 
@@ -44,14 +51,10 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
   <div class="mesaj-succes">
     <p><?= t('rez_perioada', e(date('d.m.Y', strtotime($date['sosire']))), e(date('d.m.Y', strtotime($date['plecare']))), (int) $rezultat['nopti'], e(lei($rezultat['total']))) ?></p>
     <p><?= t('rez_contactam', e($date['email']), e(date('d.m.Y, H:i', strtotime($rezultat['termen']))), e(lei($rezultat['avans']))) ?></p>
-    <?php if (card_activ($setari)): ?>
-      <p class="succes-butoane">
-        <a href="<?= e(url('/plata-card.php')) ?>?cod=<?= e($rezultat['cod']) ?>" class="buton buton-plin"><?= e(strtr(t('rez_card'), ['{suma}' => lei($rezultat['avans'])])) ?></a>
-        <a href="<?= e(url('/proforma.php')) ?>?cod=<?= e($rezultat['cod']) ?>" class="buton buton-contur" target="_blank"><?= e(t('rez_proforma_transfer')) ?></a>
-      </p>
-    <?php else: ?>
-      <p><a href="<?= e(url('/proforma.php')) ?>?cod=<?= e($rezultat['cod']) ?>" class="buton buton-plin" target="_blank"><?= e(t('rez_proforma')) ?></a></p>
-    <?php endif; ?>
+    <p class="succes-butoane">
+      <a href="<?= e(url('/proforma.php')) ?>?cod=<?= e($rezultat['cod']) ?>" class="buton buton-plin" target="_blank"><?= e(t('rez_proforma')) ?></a>
+      <a href="<?= e(url('/proforma.php')) ?>?cod=<?= e($rezultat['cod']) ?>#dovada" class="buton buton-contur" target="_blank"><?= e(t('mailuri')['buton_dovada']) ?></a>
+    </p>
     <p><?= t('rez_intrebari', $link_telefon) ?></p>
   </div>
   <p><a href="<?= e(url('/')) ?>" class="buton buton-contur"><?= e(t('rez_inapoi')) ?></a></p>
@@ -162,34 +165,41 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
           </div>
         </fieldset>
 
-        <!-- Cât plătește acum: avans minim / altă sumă / integral -->
+        <!-- Cât plătește acum: avansul sau toată suma -->
         <fieldset class="optiuni-plata" id="optiuni-plata" data-procent="<?= (int) $setari['avans_procent'] ?>">
           <legend><?= e(t('plata_titlu')) ?></legend>
           <label class="optiune">
-            <input type="radio" name="plata" value="avans" <?= $date['plata'] !== 'suma' && $date['plata'] !== 'integral' ? 'checked' : '' ?>>
+            <input type="radio" name="plata" value="avans" <?= $date['plata'] !== 'integral' ? 'checked' : '' ?>>
             <span class="optiune-text"><?= e(strtr(t('opt_avans'), ['{procent}' => $setari['avans_procent']])) ?></span>
             <span class="optiune-suma" data-suma="avans"><?= e(t('opt_alege')) ?></span>
-          </label>
-          <label class="optiune">
-            <input type="radio" name="plata" value="suma" <?= $date['plata'] === 'suma' ? 'checked' : '' ?>>
-            <span class="optiune-text"><?= e(strtr(t('opt_suma'), ['{procent}' => $setari['avans_procent']])) ?></span>
-            <span class="optiune-camp">
-              <input type="text" inputmode="numeric" name="suma" value="<?= e($date['suma']) ?>" placeholder="<?= e(t('moneda')) ?>" aria-label="<?= e(t('f_suma')) ?>" autocomplete="off">
-            </span>
           </label>
           <label class="optiune">
             <input type="radio" name="plata" value="integral" <?= $date['plata'] === 'integral' ? 'checked' : '' ?>>
             <span class="optiune-text"><?= e(t('opt_integral')) ?></span>
             <span class="optiune-suma" data-suma="integral"><?= e(t('opt_alege')) ?></span>
           </label>
-          <p class="optiuni-nota"><?= e(t(card_activ($setari) ? 'plata_nota_card' : 'plata_nota')) ?></p>
+        </fieldset>
+
+        <!-- Cum plătește: cu cardul (pe loc) sau prin ordin de plată (proformă) -->
+        <fieldset class="optiuni-plata metode-plata" id="metode-plata">
+          <legend><?= e(t('metoda_titlu')) ?></legend>
+          <?php if (card_activ($setari)): ?>
+          <label class="optiune">
+            <input type="radio" name="metoda" value="card" <?= $date['metoda'] === 'card' ? 'checked' : '' ?> data-buton="<?= e(t('f_trimite_card')) ?>">
+            <span class="optiune-text"><strong><?= e(t('metoda_card')) ?></strong><small><?= e(t('metoda_card_text')) ?></small></span>
+          </label>
+          <?php endif; ?>
+          <label class="optiune">
+            <input type="radio" name="metoda" value="transfer" <?= $date['metoda'] === 'transfer' || !card_activ($setari) ? 'checked' : '' ?> data-buton="<?= e(t('f_trimite_transfer')) ?>">
+            <span class="optiune-text"><strong><?= e(t('metoda_transfer')) ?></strong><small><?= e(strtr(t('metoda_transfer_text'), ['{ore}' => $setari['termen_plata_ore']])) ?></small></span>
+          </label>
         </fieldset>
 
         <label class="bifa">
           <input type="checkbox" name="accept" value="1" required>
           <span><?= t('f_accept', e(url('/termeni.php')), e(url('/confidentialitate.php'))) ?></span>
         </label>
-        <button type="submit" class="buton buton-plin buton-lat" id="buton-trimite"><?= e(t('f_trimite')) ?></button>
+        <button type="submit" class="buton buton-plin buton-lat" id="buton-trimite"><?= e($date['metoda'] === 'card' ? t('f_trimite_card') : ($date['metoda'] === 'transfer' ? t('f_trimite_transfer') : t('f_trimite'))) ?></button>
         <p class="mic"><?= e(strtr(t('f_nota'), ['{ore}' => $setari['termen_plata_ore'], '{procent}' => $setari['avans_procent']])) ?></p>
       </div>
     </div>

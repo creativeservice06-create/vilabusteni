@@ -370,6 +370,10 @@ body.meniu-deschis .limbi summary { color: var(--brad) !important; text-shadow: 
 .optiune:has(input[type=radio]:checked) { border-color: var(--brad); background: #f1f6f2; box-shadow: 0 0 0 1px var(--brad); }
 .optiune input[type=radio] { width: 20px; height: 20px; margin: 0; accent-color: var(--brad); }
 .optiune-suma { font-weight: 700; color: var(--brad); white-space: nowrap; }
+.metode-plata .optiune { align-items: start; }
+.metode-plata .optiune input[type=radio] { margin-top: .15rem; }
+.metode-plata .optiune-text strong { display: block; }
+.metode-plata .optiune-text small { display: block; margin-top: .15rem; font-size: .86rem; font-weight: 400; color: var(--piatra); line-height: 1.4; }
 .optiune-camp { grid-column: 2 / -1; }
 .optiune-camp input { margin-top: .2rem !important; min-height: 44px !important; }
 .optiuni-nota { margin: .4rem 0 0; font-size: .88rem; color: #4d3405; background: #fbefd5; border-radius: 8px; padding: .7rem .85rem; line-height: 1.45; }
@@ -438,6 +442,7 @@ button.cal-zi:hover { background: var(--cer); }
 .plata-suma dt { color: var(--text); font-weight: 600; }
 .plata-suma dd { font-family: var(--font-titlu); font-weight: 400; font-size: 1.6rem; color: var(--brad); }
 .plata-formular { margin: 1.5rem 0 .8rem; }
+.plata-alternativa { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin-bottom: 1.6rem; }
 .plata-sigur { display: flex; gap: .55rem; align-items: center; font-size: .9rem; color: var(--piatra); margin-bottom: 1.4rem; }
 .plata-sigur svg { flex: none; width: 20px; height: 20px; fill: none; stroke: var(--brad); stroke-width: 1.8; }
 .rotita { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 3px solid #e6cf9f; border-top-color: #8a5d0a; animation: roteste 1s linear infinite; }
@@ -526,3 +531,9 @@ button.cal-zi:hover { background: var(--cer); }
   .creasta-hero polyline { stroke-dashoffset: 0; }
 }
 .pagina-acasa .creasta-subsol { background: var(--cer); }
+
+/* Pagina de rezervare pe calculator: calendarul rămâne pe ecran cât completezi formularul
+   (doar dacă fereastra e destul de înaltă ca să încapă tot calendarul) */
+@media (min-width: 960px) and (min-height: 760px) {
+  .rezervare-grila > div:first-child { position: sticky; top: calc(var(--antet) + 1.25rem); }
+}

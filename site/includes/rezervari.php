@@ -79,20 +79,15 @@ function salveaza_rezervare(array $d, array $post, array $setari)
         $erori[] = t('err_fact_firma');
     }
 
-    // Cât plătește acum: avansul minim, o sumă aleasă (cel puțin avansul) sau totul
+    // Cât plătește acum: avansul (procentul din setări) sau toată suma
     $total    = max(0, $nopti) * $setari['pret_noapte'];
-    $minim    = avans_pentru($total, $setari);
-    $optiune  = in_array($post['plata'] ?? '', ['avans', 'suma', 'integral'], true) ? $post['plata'] : 'avans';
-    $de_plata = $minim;
-    if ($optiune === 'integral') {
-        $de_plata = $total;
-    } elseif ($optiune === 'suma' && $total > 0) {
-        $de_plata = (int) preg_replace('/\D/', '', (string) ($post['suma'] ?? ''));
-        if ($de_plata < $minim || $de_plata > $total) {
-            $erori[] = t('err_suma', lei($minim), lei($total));
-        } elseif ($de_plata === $total) {
-            $optiune = 'integral';
-        }
+    $optiune  = ($post['plata'] ?? '') === 'integral' ? 'integral' : 'avans';
+    $de_plata = $optiune === 'integral' ? $total : avans_pentru($total, $setari);
+
+    // Cum plătește: cu cardul (pe loc, prin Netopia) sau prin ordin de plată (proformă, 48h)
+    $metoda = ($post['metoda'] ?? '') === 'card' && card_activ($setari) ? 'card' : 'transfer';
+    if (($post['metoda'] ?? '') === '') {
+        $erori[] = t('err_metoda');
     }
 
     if ($erori) {
@@ -115,10 +110,10 @@ function salveaza_rezervare(array $d, array $post, array $setari)
 
     $cod     = bin2hex(random_bytes(16));   // pentru linkul secret al proformei
     $avans   = $de_plata;                    // suma de plătit acum, aleasă de client
-    $termen  = date('Y-m-d H:i:s', time() + $setari['termen_plata_ore'] * 3600);
-    $st = $pdo->prepare("INSERT INTO rezervari (sosire, plecare, nopti, persoane, nume, email, telefon, mesaj, total, status, ip, limba, cod, avans, termen_plata, optiune_plata,
+    $termen  = date('Y-m-d H:i:s', time() + ($metoda === 'card' ? (int) ($setari['termen_card_minute'] ?? 60) * 60 : $setari['termen_plata_ore'] * 3600));
+    $st = $pdo->prepare("INSERT INTO rezervari (sosire, plecare, nopti, persoane, nume, email, telefon, mesaj, total, status, ip, limba, cod, avans, termen_plata, optiune_plata, plata_metoda,
                                                 fact_tip, fact_tara, fact_judet, fact_localitate, fact_adresa, fact_firma, fact_cui, fact_reg_com)
-                         VALUES (:sosire, :plecare, :nopti, :persoane, :nume, :email, :telefon, :mesaj, :total, 'in_asteptare', :ip, :limba, :cod, :avans, :termen, :optiune,
+                         VALUES (:sosire, :plecare, :nopti, :persoane, :nume, :email, :telefon, :mesaj, :total, 'in_asteptare', :ip, :limba, :cod, :avans, :termen, :optiune, :metoda,
                                  :fact_tip, :fact_tara, :fact_judet, :fact_localitate, :fact_adresa, :fact_firma, :fact_cui, :fact_reg_com)");
     $st->execute([
         ':sosire' => $d['sosire'], ':plecare' => $d['plecare'], ':nopti' => $nopti,
@@ -126,7 +121,7 @@ function salveaza_rezervare(array $d, array $post, array $setari)
         ':telefon' => $d['telefon'], ':mesaj' => $d['mesaj'], ':total' => $total,
         ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
         ':limba' => $GLOBALS['LIMBA'],
-        ':cod' => $cod, ':avans' => $avans, ':termen' => $termen, ':optiune' => $optiune,
+        ':cod' => $cod, ':avans' => $avans, ':termen' => $termen, ':optiune' => $optiune, ':metoda' => $metoda,
         ':fact_tip' => $pj ? 'PJ' : 'PF', ':fact_tara' => $tara, ':fact_judet' => $judet,
         ':fact_localitate' => mb_substr($d['fact_localitate'], 0, 100), ':fact_adresa' => mb_substr($d['fact_adresa'], 0, 255),
         ':fact_firma' => $pj ? mb_substr($d['fact_firma'], 0, 160) : null, ':fact_cui' => $pj ? $cui : null,
@@ -138,13 +133,34 @@ function salveaza_rezervare(array $d, array $post, array $setari)
         return ['erori' => [t('err_tehnic', telefon())], 'nopti' => $nopti, 'total' => 0];
     }
 
-    // mailurile: proprietarului (notificare) și clientului (cererea + proforma)
+    // Mailurile:
+    //  - ordin de plată: acum – clientul primește proforma (48h), proprietarul notificarea
+    //  - card: abia după plată (confirmarea, vezi includes/netopia.php); fără plată nu pleacă nimic
     $r = $pdo->query('SELECT * FROM rezervari WHERE id = ' . (int) $id)->fetch();
-    trimite_mail_client($r, 'cerere', $setari);
-    trimite_mail_proprietar($r, $setari);
+    if ($metoda === 'transfer') {
+        trimite_mail_client($r, 'cerere', $setari);
+        trimite_mail_proprietar($r, $setari);
+    }
     unset($_SESSION['token']); // un token = o singură trimitere
 
-    return ['erori' => [], 'nopti' => $nopti, 'total' => $total, 'avans' => $avans, 'termen' => $termen, 'cod' => $cod];
+    return ['erori' => [], 'nopti' => $nopti, 'total' => $total, 'avans' => $avans, 'termen' => $termen, 'cod' => $cod, 'metoda' => $metoda, 'r' => $r];
+}
+
+/**
+ * Clientul a ales cardul, dar se răzgândește și plătește prin ordin de plată:
+ * primește proforma (cu termen de 48h), proprietarul primește notificarea.
+ */
+function treci_la_transfer(PDO $pdo, array $r, array $setari)
+{
+    if ($r['status'] !== 'in_asteptare') return false;
+    $termen = date('Y-m-d H:i:s', time() + $setari['termen_plata_ore'] * 3600);
+    $pdo->prepare("UPDATE rezervari SET plata_metoda = 'transfer', termen_plata = ? WHERE id = ? AND status = 'in_asteptare'")->execute([$termen, $r['id']]);
+    $st = $pdo->prepare("SELECT * FROM rezervari WHERE id = ?");
+    $st->execute([$r['id']]);
+    $r = $st->fetch();
+    trimite_mail_client($r, 'cerere', $setari);
+    trimite_mail_proprietar($r, $setari);
+    return true;
 }
 
 /** Avansul pentru o sumă (procentul din setari.php, rotunjit la leu). */
@@ -259,9 +275,11 @@ function anuleaza_expirate(PDO $pdo, array $setari)
     foreach ($st->fetchAll() as $r) {
         // „AND status = 'in_asteptare'” ne apără dacă proprietarul a confirmat-o chiar în aceeași clipă
         $upd = $pdo->prepare("UPDATE rezervari SET status = 'anulata', modificat_la = ?, nota = ? WHERE id = ? AND status = 'in_asteptare'");
-        $upd->execute([$acum, 'Anulată automat: avansul nu a fost plătit în termen', $r['id']]);
+        $card = ($r['plata_metoda'] ?? '') === 'card';
+        $upd->execute([$acum, $card ? 'Anulată automat: plata cu cardul nu a fost finalizată' : 'Anulată automat: avansul nu a fost plătit în termen', $r['id']]);
         if ($upd->rowCount() !== 1) continue;
         $anulate++;
+        if ($card) continue;   // a ales cardul și n-a plătit: n-a primit niciun mail, nu-i trimitem nici acum
         trimite_mail_client($r, 'expirare', $setari);
         if ($setari['notifica_anulare_auto'] ?? true) trimite_mail_anulare_automata($r, $setari);
     }

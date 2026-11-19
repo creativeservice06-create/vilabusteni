@@ -29,7 +29,8 @@ function trimite_mail_client(array $r, $tip, array $setari)
         $titlu   = $E['cerere_titlu'];
         $intro   = strtr($E['cerere_intro'], $v);
         $status  = ['asteptare', $E['status_asteptare']];
-        $card = function_exists('poate_plati_card') && poate_plati_card($r, $setari);
+        // a ales ordinul de plată: mailul are proforma și datele bancare, fără buton de card
+        $card = ($r['plata_metoda'] ?? '') !== 'transfer' && function_exists('poate_plati_card') && poate_plati_card($r, $setari);
         $sectiuni[] = sectiune_detalii($r, $v, $E, true);
         if ($card) {
             $sectiuni[] = ['titlu' => $E['card_titlu'], 'html' => '<p style="margin:0">' . e(strtr($E['card_text'], $v)) . '</p>'];
@@ -94,23 +95,33 @@ function trimite_mail_proprietar(array $r, array $setari)
     $T = texte_limba('ro');
     $E = $T['mailuri'];
     $v = valori_mail($r, $setari, 'ro', $T);
-    $client = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">'
-        . rand_tabel('Client', e($r['nume']))
-        . rand_tabel('Telefon', '<a href="tel:' . e(preg_replace('/[^\d+]/', '', $r['telefon'])) . '" style="color:#164a28">' . e($r['telefon']) . '</a>')
-        . rand_tabel('Email', '<a href="mailto:' . e($r['email']) . '" style="color:#164a28">' . e($r['email']) . '</a>')
-        . rand_tabel('Limba', e(LIMBI[$r['limba']] ?? $r['limba']))
-        . (trim($r['mesaj']) !== '' ? rand_tabel('Mesaj', nl2br(e($r['mesaj']))) : '')
-        . '</table>';
     $html = sablon_mail([
         'limba' => 'ro', 'preheader' => "Rezervare nouă {$v['{perioada}']} – {$r['nume']}",
         'titlu' => 'Rezervare nouă #' . $r['id'],
-        'intro' => 'Clientul are timp până la ' . $v['{termen}'] . ' să plătească avansul de ' . $v['{avans}'] . '. Când vezi banii în cont, apasă „Plată primită” în panou.',
+        'intro' => 'Plată prin ordin de plată. Clientul are timp până la ' . $v['{termen}'] . ' să plătească ' . $v['{avans}'] . ' și a primit proforma. Când vezi banii în cont, apasă „Plată primită” în panou.',
         'status' => ['asteptare', $E['status_asteptare']],
-        'sectiuni' => [sectiune_detalii($r, $v, $E, true), ['titlu' => 'Client', 'html' => $client]],
+        'sectiuni' => [sectiune_detalii($r, $v, $E, true), sectiune_client($r)],
         'butoane' => [['Deschide panoul', SITE_URL . '/admin/', 'plin']],
         'E' => $E, 'T' => $T, 'v' => $v, 'setari' => $setari,
     ]);
     return trimite_mail_html($setari['email_proprietar'], "Rezervare nouă #{$r['id']} – {$v['{perioada}']} – {$r['nume']}", $html, $setari, $r['email']);
+}
+
+/** Datele clientului, pentru mailurile către proprietar. */
+function sectiune_client(array $r)
+{
+    $factura = !empty($r['fact_adresa']) && function_exists('adresa_facturare')
+        ? (($r['fact_tip'] ?? 'PF') === 'PJ' ? e($r['fact_firma']) . ', CUI ' . e($r['fact_cui']) . '<br>' : '') . e(adresa_facturare($r))
+        : '';
+    $h = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">'
+        . rand_tabel('Client', e($r['nume']))
+        . rand_tabel('Telefon', '<a href="tel:' . e(preg_replace('/[^\d+]/', '', $r['telefon'])) . '" style="color:#164a28">' . e($r['telefon']) . '</a>')
+        . rand_tabel('Email', '<a href="mailto:' . e($r['email']) . '" style="color:#164a28">' . e($r['email']) . '</a>')
+        . rand_tabel('Limba', e(LIMBI[$r['limba']] ?? $r['limba']))
+        . ($factura !== '' ? rand_tabel('Factură pe', $factura) : '')
+        . (trim((string) $r['mesaj']) !== '' ? rand_tabel('Mesaj', nl2br(e($r['mesaj']))) : '')
+        . '</table>';
+    return ['titlu' => 'Client', 'html' => $h];
 }
 
 // ------------------------------------------------------------

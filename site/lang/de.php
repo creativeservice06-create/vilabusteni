@@ -117,7 +117,7 @@ return [
     'rez_h1'          => 'Termin wählen',
     'rez_intro'       => 'Die ganze Villa kostet %s pro Nacht, mindestens %d Nächte. Tippen Sie auf den Anreisetag und dann auf den Abreisetag. Durchgestrichene Tage sind bereits belegt.',
     'rez_avans_titlu' => 'So wird Ihre Buchung bestätigt',
-    'rez_avans_text'  => 'Zur Bestätigung zahlen Sie innerhalb von {ore} Stunden mindestens {procent}% des Gesamtbetrags – oder mehr, oder den ganzen Betrag. Sie erhalten eine Proformarechnung per E-Mail; die Buchung wird bestätigt, sobald die Zahlung oder Ihr Zahlungsnachweis eingeht. Kommt die Zahlung nicht rechtzeitig, wird die Buchung automatisch storniert.',
+    'rez_avans_text' => 'Zur Bestätigung zahlen Sie eine Anzahlung von {procent} % oder den ganzen Betrag. Mit Karte wird die Buchung sofort bestätigt. Per Überweisung erhalten Sie eine Proformarechnung per E-Mail und haben {ore} Stunden Zeit; geht die Zahlung nicht ein, wird die Buchung automatisch storniert.',
     'plata_titlu' => 'Wie viel Sie jetzt zur Bestätigung zahlen',
     'opt_avans' => 'Anzahlung {procent}%',
     'opt_suma' => 'Anderer Betrag (mindestens {procent}%)',
@@ -133,7 +133,7 @@ return [
     'f_mesaj'         => 'Nachricht (optional)',
     'f_accept'        => 'Ich habe die <a href="%s" target="_blank">AGB</a> und die <a href="%s" target="_blank">Datenschutzerklärung</a> gelesen und akzeptiere sie.',
     'f_trimite'       => 'Buchungsanfrage senden',
-    'f_nota'          => 'Der Zeitraum bleibt {ore} Stunden reserviert. Ohne Zahlung oder Zahlungsnachweis in dieser Zeit wird die Buchung automatisch storniert.',
+    'f_nota' => 'Der Restbetrag wird bei Ankunft bezahlt.',
     'rez_multumim'    => 'Vielen Dank! Wir haben Ihre Anfrage erhalten.',
     'rez_perioada'    => 'Zeitraum: <strong>%s – %s</strong> (%d Nächte), gesamt <strong>%s</strong>.',
     'rez_contactam'   => 'Wir haben die Proformarechnung und die Zahlungsdaten an <strong>%s</strong> gesendet. Der Zeitraum ist bis <strong>%s</strong> reserviert; die Buchung wird bestätigt, sobald die Zahlung von <strong>%s</strong> oder Ihr Zahlungsnachweis eingeht.',
@@ -171,6 +171,14 @@ return [
         'avans'    => 'Anzahlung zur Bestätigung ({procent}%): <strong>{avans}</strong>, zahlbar innerhalb von {ore} Stunden.',
         'locale'   => 'de-DE',
     ],
+    'metoda_titlu' => 'Zahlungsart',
+    'metoda_card' => 'Mit Karte, jetzt',
+    'metoda_card_text' => 'Sie zahlen auf der sicheren Seite von NETOPIA Payments, die Buchung wird sofort bestätigt.',
+    'metoda_transfer' => 'Per Banküberweisung',
+    'metoda_transfer_text' => 'Sie erhalten per E-Mail eine Proformarechnung und zahlen sie innerhalb von {ore} Stunden; die Buchung wird nach Zahlungseingang bestätigt.',
+    'f_trimite_card' => 'Buchen und mit Karte zahlen',
+    'f_trimite_transfer' => 'Buchen und Proforma erhalten',
+    'err_metoda' => 'Bitte wählen Sie die Zahlungsart: Karte oder Banküberweisung.',
     // Date pentru factură și plata cu cardul
     'fact_titlu' => 'Rechnungsangaben',
     'fact_tara' => 'Land',
@@ -220,9 +228,10 @@ return [
         'platit' => 'Bezahlt',
         'suma_integral' => 'Jetzt zu zahlen (vollständig)',
         'buton' => '{suma} mit Karte bezahlen',
+        'buton_transfer' => 'Per Banküberweisung zahlen',
         'buton_reincearca' => 'Erneut versuchen – {suma}',
         'sigur' => 'Sie zahlen auf der sicheren Seite von NETOPIA Payments. Ihre Kartendaten erreichen uns nicht.',
-        'alternativa' => 'Lieber per Banküberweisung?',
+        'alternativa' => 'Lieber nicht mit Karte zahlen?',
         'link_proforma' => 'Proformarechnung ansehen',
         'reincarca' => 'Seite neu laden',
         'err_sesiune' => 'Ihre Sitzung ist abgelaufen. Bitte drücken Sie erneut auf die Zahlungsschaltfläche.',
@@ -255,7 +264,7 @@ return [
         'mail_status' => 'Widerruf eingegangen',
         'mail_continut' => 'Inhalt der Erklärung',
     ],
-    'politica_anulare' => "Bei Stornierung wird die Anzahlung von 30 % des Aufenthaltspreises nicht erstattet. Jeder darüber hinaus gezahlte Betrag wird innerhalb von 14 Tagen nach der Stornierung vollständig über dieselbe Zahlungsart erstattet. Der Restbetrag wird bei Ankunft bezahlt. Stornieren wir die Buchung, erstatten wir alle gezahlten Beträge vollständig.",   // apare pe pagina de rezervare și în mailuri
+    'politica_anulare' => "Bei Stornierung wird die Anzahlung von 50 % des Aufenthaltspreises nicht erstattet. Jeder darüber hinaus gezahlte Betrag wird innerhalb von 14 Tagen nach der Stornierung vollständig über dieselbe Zahlungsart erstattet. Der Restbetrag wird bei Ankunft bezahlt. Stornieren wir die Buchung, erstatten wir alle gezahlten Beträge vollständig.",   // apare pe pagina de rezervare și în mailuri
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [
@@ -348,6 +357,7 @@ return [
         'status_platit' => 'Anzahlung bezahlt',
         'status_anulat' => 'Storniert',
         'integral' => 'Gesamtzahlung',
+        'nou' => 'Wir haben die Proforma an {email} gesendet. Bitte überweisen Sie bis {termen}; die Buchung wird nach Zahlungseingang bestätigt.',
         'card_buton' => '{suma} mit Karte bezahlen',
         'plata_card' => 'Die Zahlung erfolgt online mit Karte (Schaltfläche oben) oder per Banküberweisung. Bei Überweisung bitte angeben: {nr}.',
         'persoana' => 'Ansprechpartner',

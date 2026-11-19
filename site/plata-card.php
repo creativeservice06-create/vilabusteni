@@ -26,6 +26,13 @@ $eroare = null;
 if ($r && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (($_POST['token'] ?? '') !== ($_SESSION['token'] ?? null)) {
         $eroare = $C['err_sesiune'];
+    } elseif (($_POST['actiune'] ?? '') === 'transfer') {
+        // se răzgândește: plătește prin ordin de plată → primește proforma pe email
+        if (treci_la_transfer($pdo, $r, $setari)) {
+            header('Location: ' . url('/proforma.php') . '?cod=' . $r['cod'] . '&nou=1', true, 303);
+            exit;
+        }
+        $eroare = $C['indisponibil'];
     } elseif (!poate_plati_card($r, $setari)) {
         $eroare = $C['indisponibil'];
     } else {
@@ -52,6 +59,9 @@ if ($r) {
     $plata = $st->fetch() ?: null;
 }
 $intors = isset($_GET['intors']);
+if (isset($_GET['eroare']) && !$eroare) {
+    $eroare = t_card_tel($C['err_start']);   // pornirea plății din formular n-a mers
+}
 $runda  = min(30, max(0, (int) ($_GET['n'] ?? 0)));
 
 // Ce arătăm
@@ -119,7 +129,12 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg>
         <span><?= e($C['sigur']) ?></span>
       </p>
-      <p class="mic"><?= e($C['alternativa']) ?> <a href="<?= e(url('/proforma.php')) ?>?cod=<?= e($cod) ?>"><?= e($C['link_proforma']) ?></a></p>
+      <form method="post" action="<?= e($baza) ?>" class="plata-alternativa">
+        <input type="hidden" name="token" value="<?= e(token_formular()) ?>">
+        <input type="hidden" name="actiune" value="transfer">
+        <span class="mic"><?= e($C['alternativa']) ?></span>
+        <button class="buton buton-contur buton-mic"><?= e($C['buton_transfer']) ?></button>
+      </form>
     <?php elseif (in_array($stare, ['platit', 'deja'], true)): ?>
       <p><a href="<?= e(url('/proforma.php')) ?>?cod=<?= e($cod) ?>" class="buton buton-contur"><?= e($C['link_proforma']) ?></a></p>
     <?php endif; ?>

@@ -69,3 +69,6 @@ body.proforma-pagina { background: #e7edee; padding: 0; }
   .document { box-shadow: none; margin: 0; padding: 0; max-width: none; }
   .doc-tabel thead th, .doc-totaluri tr.de-plata th, .doc-totaluri tr.de-plata td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+.proforma-nou { max-width: 210mm; margin: 0 auto 1rem; padding: .9rem 1.1rem; border-radius: 8px; background: #dcebe3; border: 1px solid #b6d1c2; line-height: 1.5; }
+@media print { .proforma-nou { display: none; } }

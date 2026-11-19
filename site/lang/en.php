@@ -117,7 +117,7 @@ return [
     'rez_h1'          => 'Choose your dates',
     'rez_intro'       => 'The whole villa costs %s per night, minimum %d nights. Tap your arrival day, then your departure day. Crossed-out days are already booked.',
     'rez_avans_titlu' => 'How your booking is confirmed',
-    'rez_avans_text'  => 'To confirm, pay at least {procent}% of the total within {ore} hours – or a larger amount, or the full amount. You will receive a pro forma invoice by email, and the booking is confirmed once we receive the payment or your proof of payment. If payment does not arrive in time, the booking is cancelled automatically.',
+    'rez_avans_text' => 'To confirm, you pay a {procent}% deposit or the full amount. By card, your booking is confirmed on the spot. By bank transfer, you receive a pro forma invoice by email and have {ore} hours to pay it; if the payment does not arrive, the booking is cancelled automatically.',
     'plata_titlu' => 'How much you pay now to confirm',
     'opt_avans' => 'Deposit {procent}%',
     'opt_suma' => 'Another amount (minimum {procent}%)',
@@ -133,7 +133,7 @@ return [
     'f_mesaj'         => 'Message (optional)',
     'f_accept'        => 'I have read and accept the <a href="%s" target="_blank">Terms and conditions</a> and the <a href="%s" target="_blank">Privacy policy</a>.',
     'f_trimite'       => 'Send booking request',
-    'f_nota'          => 'Your dates are held for {ore} hours. Without payment or proof of payment in that time, the booking is cancelled automatically.',
+    'f_nota' => 'The balance is paid on arrival.',
     'rez_multumim'    => 'Thank you! We have received your request.',
     'rez_perioada'    => 'Dates: <strong>%s – %s</strong> (%d nights), total <strong>%s</strong>.',
     'rez_contactam'   => 'We have sent the pro forma invoice and payment details to <strong>%s</strong>. Your dates are held until <strong>%s</strong>; the booking is confirmed once we receive the payment of <strong>%s</strong> or your proof of payment.',
@@ -171,6 +171,14 @@ return [
         'avans'    => 'Deposit to confirm ({procent}%): <strong>{avans}</strong>, payable within {ore} hours.',
         'locale'   => 'en-GB',
     ],
+    'metoda_titlu' => 'How you pay',
+    'metoda_card' => 'By card, now',
+    'metoda_card_text' => 'You pay on the secure NETOPIA Payments page and your booking is confirmed instantly.',
+    'metoda_transfer' => 'By bank transfer',
+    'metoda_transfer_text' => 'You receive a pro forma invoice by email and pay it within {ore} hours; your booking is confirmed once we receive the money.',
+    'f_trimite_card' => 'Book and pay by card',
+    'f_trimite_transfer' => 'Book and get the pro forma',
+    'err_metoda' => 'Please choose how you pay: by card or by bank transfer.',
     // Date pentru factură și plata cu cardul
     'fact_titlu' => 'Invoice details',
     'fact_tara' => 'Country',
@@ -220,9 +228,10 @@ return [
         'platit' => 'Paid',
         'suma_integral' => 'To pay now (in full)',
         'buton' => 'Pay {suma} by card',
+        'buton_transfer' => 'Pay by bank transfer',
         'buton_reincearca' => 'Try again – {suma}',
         'sigur' => 'You pay on the secure NETOPIA Payments page. Your card details never reach us.',
-        'alternativa' => 'Prefer a bank transfer?',
+        'alternativa' => 'Prefer not to pay by card?',
         'link_proforma' => 'View the pro forma invoice',
         'reincarca' => 'Refresh the page',
         'err_sesiune' => 'Your session has expired. Please press the payment button again.',
@@ -255,7 +264,7 @@ return [
         'mail_status' => 'Withdrawal received',
         'mail_continut' => 'Content of the declaration',
     ],
-    'politica_anulare' => "If you cancel, the 30% deposit is non-refundable. Any amount paid above this deposit is refunded in full within 14 days of the cancellation, using the same payment method. The balance is paid on arrival. If we cancel your booking, we refund everything you have paid.",   // apare pe pagina de rezervare și în mailuri
+    'politica_anulare' => "If you cancel, the 50% deposit is non-refundable. Any amount paid above this deposit is refunded in full within 14 days of the cancellation, using the same payment method. The balance is paid on arrival. If we cancel your booking, we refund everything you have paid.",   // apare pe pagina de rezervare și în mailuri
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [
@@ -348,6 +357,7 @@ return [
         'status_platit' => 'Deposit paid',
         'status_anulat' => 'Cancelled',
         'integral' => 'Full payment',
+        'nou' => 'We have sent the pro forma to {email}. Please pay it by bank transfer by {termen}; your booking is confirmed once we receive the money.',
         'card_buton' => 'Pay {suma} by card',
         'plata_card' => 'Payment can be made online by card (button at the top) or by bank transfer. For transfers, please quote: {nr}.',
         'persoana' => 'Contact person',

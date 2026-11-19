@@ -78,8 +78,12 @@ Verificare: panou → jos → **Trimite mail de test**.
 
 ## Plata cu cardul (Netopia) și facturile (FGO)
 
-**Fluxul:** clientul trimite cererea → apasă „Plătește cu cardul” (pe pagina de succes, în mail sau pe proformă)
-→ plătește pe pagina securizată Netopia → Netopia anunță site-ul (`api/netopia-ipn.php`, mesaj semnat, verificat cu cheia publică Netopia)
+**Formularul:** clientul alege avans 50% sau integral și metoda: **card** sau **ordin de plată**.
+- Ordin de plată: primește imediat proforma pe email (48h), proprietarul primește „Rezervare nouă”.
+- Card: e trimis direct pe Netopia; zilele sunt ținute 60 min (`termen_card_minute`); fără plată se eliberează fără niciun mail.
+  Dacă se răzgândește, pe pagina de plată are „Plătesc prin ordin de plată” (primește proforma).
+
+**Fluxul cu cardul:** clientul trimite formularul → plătește pe pagina securizată Netopia → Netopia anunță site-ul (`api/netopia-ipn.php`, mesaj semnat, verificat cu cheia publică Netopia)
 → rezervarea se confirmă automat → se emite factura în FGO → clientul primește confirmarea cu linkul facturii, proprietarul o notificare.
 
 Fișiere: `includes/netopia.php`, `plata-card.php`, `api/netopia-ipn.php`, `includes/fgo.php`, `includes/tari.php` (țări și județe).

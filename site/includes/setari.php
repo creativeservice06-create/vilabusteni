@@ -52,15 +52,15 @@ return [
     // Plata prin transfer bancar (apare pe proformă și în mailuri)
     'iban'           => '',     // DE COMPLETAT, ex: 'RO49 AAAA 1B31 0075 9384 0000'
     'banca'          => '',     // DE COMPLETAT, ex: 'Banca Transilvania'
-    'avans_procent'  => 30,     // avansul care confirmă rezervarea (100 = se plătește tot)
-    'termen_plata_ore' => 48,   // cât timp stau zilele rezervate provizoriu, așteptând plata
+    'avans_procent'  => 50,     // avansul care confirmă rezervarea (clientul alege: avansul sau integral)
+    'termen_plata_ore' => 48,   // plata prin ordin de plată: cât timp stau zilele rezervate, așteptând banii
+    'termen_card_minute' => 60, // plata cu cardul: dacă nu plătește în acest timp, zilele se eliberează (fără mail)
     'serie_proforma' => 'VR',   // proformele se numerotează VR-0001, VR-0002 ...
 
     // Plata cu cardul prin Netopia. Cheile NU sunt aici, ci în config.php pe server
     // ('netopia_api_key', 'netopia_pos_signature', 'netopia_cheie_publica', 'netopia_mediu').
     // Butonul „Plătește cu cardul” apare singur când cheile sunt completate.
-    'plata_card'       => false,   // OPRIT până aprobă Netopia punctul de vânzare – apoi pune true. (false = ascunde plata cu cardul chiar dacă există chei)
-    'notifica_plata_card' => true, // mail către proprietar la fiecare plată cu cardul
+    'plata_card'       => true,    // false = ascunde plata cu cardul chiar dacă există chei
 
     // Facturi fiscale automate prin FGO (după fiecare plată). Cheia API NU e aici: 'fgo_cheie_api' în config.php.
     // Facturarea pornește doar când sunt completate cheia, seria și cota de TVA.

@@ -129,9 +129,6 @@
     box.querySelectorAll('[data-suma]').forEach(function (el) { if (!el.dataset.gol) el.dataset.gol = gol; });
     box.querySelector('[data-suma="avans"]').textContent = total ? lei(minim) : gol;
     box.querySelector('[data-suma="integral"]').textContent = total ? lei(total) : gol;
-    var camp = box.querySelector('input[name="suma"]');
-    camp.placeholder = total ? lei(minim) + ' – ' + lei(total) : MONEDA;
-    camp.dataset.minim = minim; camp.dataset.maxim = total;
   }
 
   function actualizeazaSumar() {
@@ -166,18 +163,13 @@
     .then(deseneaza);
 })();
 
-// Opțiunile de plată: un click în câmpul „altă sumă” bifează opțiunea; suma se verifică la ieșirea din câmp
+// Metoda de plată: textul butonului se schimbă după alegere („Plătește cu cardul” / „Primește proforma”)
 (function () {
-  var box = document.getElementById('optiuni-plata');
-  if (!box) return;
-  var camp = box.querySelector('input[name="suma"]');
-  var radioSuma = box.querySelector('input[value="suma"]');
-  camp.addEventListener('focus', function () { radioSuma.checked = true; });
-  camp.addEventListener('input', function () { camp.value = camp.value.replace(/\D/g, ''); });
-  camp.addEventListener('blur', function () {
-    var v = parseInt(camp.value, 10), min = parseInt(camp.dataset.minim, 10), max = parseInt(camp.dataset.maxim, 10);
-    if (!v || !max) return;
-    if (v < min) camp.value = min;
-    if (v > max) camp.value = max;
+  var buton = document.getElementById('buton-trimite');
+  var metode = document.querySelectorAll('input[name="metoda"]');
+  if (!buton || !metode.length) return;
+  metode.forEach(function (m) {
+    m.addEventListener('change', function () { if (m.checked) buton.textContent = m.dataset.buton; });
+    if (m.checked) buton.textContent = m.dataset.buton;
   });
 })();

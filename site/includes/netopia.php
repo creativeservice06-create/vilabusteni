@@ -317,9 +317,8 @@ function proceseaza_ipn(PDO $pdo, array $mesaj, array $setari)
             emite_factura_plata($pdo, $r, (int) $plata['suma'], $setari);   // nu face nimic dacă FGO nu e configurat
             trimite_mail_client($r, 'confirmare', $setari);
         }
-        if ($situatie !== 'confirmata' || ($setari['notifica_plata_card'] ?? true)) {
-            trimite_mail_card_proprietar($r, $plata, $setari, $situatie);
-        }
+        // proprietarul primește mereu mailul: la plata cu cardul e singura notificare despre rezervare
+        trimite_mail_card_proprietar($r, $plata, $setari, $situatie);
     }];
 }
 
@@ -331,7 +330,7 @@ function trimite_mail_card_proprietar(array $r, array $plata, array $setari, $si
     $v = valori_mail($r, $setari, 'ro', $T);
     $suma = number_format((int) $plata['suma'], 0, ',', '.') . ' lei';
     $texte = [
-        'confirmata'      => ['confirmata', 'Plătită cu cardul', "Plata cu cardul de $suma pentru {$v['{nr}']} a reușit. Rezervarea s-a confirmat automat și clientul a primit mail de confirmare."],
+        'confirmata'      => ['confirmata', 'Rezervare nouă plătită cu cardul', "{$r['nume']} a rezervat {$v['{perioada}']} și a plătit $suma cu cardul. Rezervarea s-a confirmat automat și clientul a primit mail de confirmare."],
         'deja_confirmata' => ['asteptare', 'Plată în plus', "Am primit $suma cu cardul pentru {$v['{nr}']}, dar rezervarea era deja confirmată (poate a plătit și prin transfer). Verifică și, dacă e cazul, rambursează diferența din contul Netopia."],
         'ocupata'         => ['anulata', 'Atenție: perioadă ocupată', "{$r['nume']} a plătit $suma cu cardul pentru {$v['{nr}']}, dar între timp perioada a fost ocupată de altă rezervare, așa că NU am confirmat-o. Sună clientul și rambursează plata din contul Netopia sau propune alte date."],
         'suma'            => ['asteptare', 'Sumă diferită', "Netopia a raportat o plată de " . ($suma_primita !== null ? number_format($suma_primita, 2, ',', '.') : '?') . " lei pentru {$v['{nr}']}, dar ceream $suma. Nu am confirmat automat: verifică tranzacția în contul Netopia, apoi confirmă din panou."],
@@ -343,7 +342,7 @@ function trimite_mail_card_proprietar(array $r, array $plata, array $setari, $si
         'titlu' => $eticheta . ' #' . $r['id'],
         'intro' => $intro . ($plata['card'] ? ' Card: ' . $plata['card'] . '.' : '') . ' Comanda Netopia: ' . $plata['comanda'] . '.',
         'status' => [$status, $eticheta],
-        'sectiuni' => [sectiune_detalii($r, $v, $E, $r['status'] !== 'confirmata')],
+        'sectiuni' => [sectiune_detalii($r, $v, $E, $r['status'] !== 'confirmata'), sectiune_client($r)],
         'butoane' => [['Deschide panoul', SITE_URL . '/admin/?vezi=' . ($r['status'] === 'confirmata' ? 'confirmate' : 'noi'), 'plin']],
         'E' => $E, 'T' => $T, 'v' => $v, 'setari' => $setari,
     ]);

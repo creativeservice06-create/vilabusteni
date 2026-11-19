@@ -131,7 +131,7 @@ return [
     'rez_h1'          => 'Alege datele',
     'rez_intro'       => 'Toată vila costă %s pe noapte, minimum %d nopți. Atinge ziua sosirii, apoi ziua plecării. Zilele tăiate sunt ocupate.',
     'rez_avans_titlu' => 'Cum se confirmă rezervarea',
-    'rez_avans_text'  => 'Pentru confirmare plătești în {ore} de ore cel puțin {procent}% din total – sau o sumă mai mare, ori toată suma. Primești factura proformă pe email, iar rezervarea se confirmă după ce primim plata sau dovada de plată. Dacă plata nu ajunge în acest termen, rezervarea se anulează automat.',
+    'rez_avans_text' => 'Pentru confirmare plătești avansul de {procent}% sau toată suma. Cu cardul, rezervarea se confirmă pe loc. Prin ordin de plată primești factura proformă pe email și ai {ore} de ore s-o plătești; dacă plata nu ajunge, rezervarea se anulează automat.',
     'plata_titlu' => 'Cât plătești acum pentru confirmare',
     'opt_avans' => 'Avans {procent}%',
     'opt_suma' => 'Altă sumă (minimum {procent}%)',
@@ -147,7 +147,7 @@ return [
     'f_mesaj'         => 'Mesaj (opțional)',
     'f_accept'        => 'Am citit și accept <a href="%s" target="_blank">Termenii și condițiile</a> și <a href="%s" target="_blank">Politica de confidențialitate</a>.',
     'f_trimite'       => 'Trimite cererea de rezervare',
-    'f_nota'          => 'Perioada rămâne rezervată {ore} de ore. Fără plată sau dovadă de plată în acest termen, rezervarea se anulează automat.',
+    'f_nota' => 'Restul sumei se plătește la sosire.',
     'rez_multumim'    => 'Mulțumim! Am primit cererea ta.',
     'rez_perioada'    => 'Perioada: <strong>%s – %s</strong> (%d nopți), total <strong>%s</strong>.',
     'rez_contactam'   => 'Ți-am trimis pe <strong>%s</strong> factura proformă și datele de plată. Perioada e rezervată pentru tine până la <strong>%s</strong>; rezervarea se confirmă după ce primim plata de <strong>%s</strong> sau dovada de plată.',
@@ -187,6 +187,14 @@ return [
         'avans'    => 'Avans pentru confirmare ({procent}%): <strong>{avans}</strong>, de plătit în {ore} de ore.',
         'locale'   => 'ro-RO',
     ],
+    'metoda_titlu' => 'Cum plătești',
+    'metoda_card' => 'Cu cardul, acum',
+    'metoda_card_text' => 'Plătești pe pagina securizată NETOPIA Payments și rezervarea se confirmă imediat.',
+    'metoda_transfer' => 'Prin ordin de plată',
+    'metoda_transfer_text' => 'Primești pe email factura proformă și o plătești în {ore} de ore; rezervarea se confirmă după ce primim banii.',
+    'f_trimite_card' => 'Rezervă și plătește cu cardul',
+    'f_trimite_transfer' => 'Rezervă și primește proforma',
+    'err_metoda' => 'Alege cum plătești: cu cardul sau prin ordin de plată.',
     // Date pentru factură și plata cu cardul
     'fact_titlu' => 'Date pentru factură',
     'fact_tara' => 'Țara',
@@ -236,9 +244,10 @@ return [
         'platit' => 'Plătit',
         'suma_integral' => 'De plată acum (integral)',
         'buton' => 'Plătește {suma} cu cardul',
+        'buton_transfer' => 'Plătesc prin ordin de plată',
         'buton_reincearca' => 'Încearcă din nou – {suma}',
         'sigur' => 'Plata se face pe pagina securizată NETOPIA Payments. Datele cardului nu ajung la noi.',
-        'alternativa' => 'Preferi transferul bancar?',
+        'alternativa' => 'Nu vrei să plătești cu cardul?',
         'link_proforma' => 'Vezi factura proformă',
         'reincarca' => 'Reîncarcă pagina',
         'err_sesiune' => 'Sesiunea a expirat. Apasă din nou butonul de plată.',
@@ -271,7 +280,7 @@ return [
         'mail_status' => 'Retragere primită',
         'mail_continut' => 'Conținutul declarației',
     ],
-    'politica_anulare' => "La anulare, avansul de 30% din valoarea sejurului nu se returnează. Orice sumă plătită peste acest avans se returnează integral, în cel mult 14 zile de la anulare, prin aceeași metodă de plată. Restul sumei se plătește la sosire. Dacă noi anulăm rezervarea, returnăm integral toate sumele plătite.",   // apare pe pagina de rezervare și în mailuri
+    'politica_anulare' => "La anulare, avansul de 50% din valoarea sejurului nu se returnează. Orice sumă plătită peste acest avans se returnează integral, în cel mult 14 zile de la anulare, prin aceeași metodă de plată. Restul sumei se plătește la sosire. Dacă noi anulăm rezervarea, returnăm integral toate sumele plătite.",   // apare pe pagina de rezervare și în mailuri
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [
@@ -364,6 +373,7 @@ return [
         'status_platit' => 'Avans plătit',
         'status_anulat' => 'Anulată',
         'integral' => 'Plată integrală',
+        'nou' => 'Ți-am trimis proforma pe {email}. Plătește-o prin ordin de plată până la {termen}; rezervarea se confirmă după ce primim banii.',
         'card_buton' => 'Plătește {suma} cu cardul',
         'plata_card' => 'Plata se face online cu cardul (din butonul de sus) sau prin transfer bancar. La transfer menționați: {nr}.',
         'persoana' => 'Persoană de contact',
