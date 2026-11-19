@@ -444,6 +444,8 @@ button.cal-zi:hover { background: var(--cer); }
 @keyframes roteste { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .rotita { animation-duration: 3s; } }
 .retragere { max-width: 40rem; }
+.politica-anulare { max-width: 46rem; margin: -.4rem 0 1.8rem; font-size: .92rem; line-height: 1.55; color: var(--piatra); }
+.politica-anulare strong { color: var(--text); }
 .form-retragere label .mic { display: block; font-weight: 400; margin-top: .35rem; }
 .plati-acceptate { margin: .9rem 0 0; font-size: .85rem; opacity: .85; }
 

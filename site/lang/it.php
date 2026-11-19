@@ -255,7 +255,7 @@ return [
         'mail_status' => 'Recesso ricevuto',
         'mail_continut' => 'Contenuto della dichiarazione',
     ],
-    'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
+    'politica_anulare' => "In caso di cancellazione, l’acconto del 30% del soggiorno non è rimborsabile. Qualsiasi importo pagato oltre l’acconto viene rimborsato integralmente entro 14 giorni dalla cancellazione, con lo stesso metodo di pagamento. Il saldo si paga all’arrivo. Se siamo noi ad annullare la prenotazione, rimborsiamo integralmente tutte le somme pagate.",   // apare pe pagina de rezervare și în mailuri
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [

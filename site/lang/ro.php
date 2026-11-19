@@ -271,7 +271,7 @@ return [
         'mail_status' => 'Retragere primită',
         'mail_continut' => 'Conținutul declarației',
     ],
-    'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
+    'politica_anulare' => "La anulare, avansul de 30% din valoarea sejurului nu se returnează. Orice sumă plătită peste acest avans se returnează integral, în cel mult 14 zile de la anulare, prin aceeași metodă de plată. Restul sumei se plătește la sosire. Dacă noi anulăm rezervarea, returnăm integral toate sumele plătite.",   // apare pe pagina de rezervare și în mailuri
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [

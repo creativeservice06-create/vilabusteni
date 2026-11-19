@@ -70,6 +70,11 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
     </div>
   </div>
 
+  <?php if (trim(t('politica_anulare')) !== ''): ?>
+    <p class="politica-anulare"><strong><?= e(t('mailuri')['anulare_titlu']) ?>:</strong> <?= e(t('politica_anulare')) ?>
+      <a href="<?= e(url('/termeni.php')) ?>#anulare"><?= e(t('termeni')) ?></a></p>
+  <?php endif; ?>
+
   <?php if ($erori): ?>
     <div class="mesaj-eroare" role="alert">
       <?php foreach ($erori as $er): ?><p><?= e($er) ?></p><?php endforeach; ?>

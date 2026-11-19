@@ -255,7 +255,7 @@ return [
         'mail_status' => 'Отказ получен',
         'mail_continut' => 'Содержание заявления',
     ],
-    'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
+    'politica_anulare' => "При отмене предоплата в размере 30% стоимости проживания не возвращается. Любая сумма, оплаченная сверх предоплаты, возвращается полностью в течение 14 дней после отмены тем же способом оплаты. Остаток оплачивается по приезде. Если бронирование отменяем мы, все оплаченные суммы возвращаются полностью.",   // apare pe pagina de rezervare și în mailuri
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [

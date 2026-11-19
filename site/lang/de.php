@@ -255,7 +255,7 @@ return [
         'mail_status' => 'Widerruf eingegangen',
         'mail_continut' => 'Inhalt der Erklärung',
     ],
-    'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
+    'politica_anulare' => "Bei Stornierung wird die Anzahlung von 30 % des Aufenthaltspreises nicht erstattet. Jeder darüber hinaus gezahlte Betrag wird innerhalb von 14 Tagen nach der Stornierung vollständig über dieselbe Zahlungsart erstattet. Der Restbetrag wird bei Ankunft bezahlt. Stornieren wir die Buchung, erstatten wir alle gezahlten Beträge vollständig.",   // apare pe pagina de rezervare și în mailuri
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [

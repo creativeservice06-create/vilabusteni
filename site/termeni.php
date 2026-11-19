@@ -32,7 +32,7 @@ $f = $setari;
   <p>Prețurile afișate sunt în lei și sunt pentru întreaga vilă, pe noapte <span class="de-completat">[includ / nu includ TVA și taxa locală de ședere]</span>.</p>
   <p>Pentru confirmarea rezervării se plătește, în <?= (int) $f['termen_plata_ore'] ?> de ore de la trimiterea cererii, cel puțin
      <?= (int) $f['avans_procent'] ?>% din valoarea sejurului (sau o sumă mai mare, ori integral). Restul se plătește
-     <span class="de-completat">[la sosire / cu X zile înainte de sosire]</span>. Dacă plata nu este primită în termen, cererea se anulează automat.</p>
+     la sosire. Dacă plata nu este primită în termen, cererea se anulează automat.</p>
   <p>Plata se poate face:</p>
   <ul>
     <li><strong>online, cu cardul</strong> (Visa, Mastercard), pe pagina securizată a procesatorului de plăți
@@ -50,7 +50,15 @@ $f = $setari;
      Nu există costuri de livrare.</p>
 
   <h2 id="anulare">6. Anulare și rambursare</h2>
-  <p class="de-completat">[Politica de anulare: de ex. anulare gratuită cu X zile înainte de sosire; între X și Y zile se reține Z%; sub Y zile nu se rambursează. Termenul de rambursare: N zile lucrătoare.]</p>
+  <p>Rezervarea se poate anula oricând înainte de sosire, din pagina
+     <a href="<?= e(url('/retragere.php')) ?>">Retrageți-vă din contract aici</a>, pe email sau telefonic.</p>
+  <ul>
+    <li><strong>Avansul de <?= (int) $f['avans_procent'] ?>%</strong> din valoarea sejurului <strong>nu se returnează</strong> la anularea făcută de client, indiferent de data anulării.</li>
+    <li>Orice sumă plătită <strong>peste acest avans</strong> (de exemplu, dacă ai plătit integral) se returnează integral.</li>
+    <li>Dacă nu te prezinți la sosire fără să anulezi, se aplică aceleași reguli.</li>
+    <li>Dacă <strong>noi</strong> anulăm rezervarea (de exemplu, vila nu mai este disponibilă), returnăm integral toate sumele plătite.</li>
+    <li>Rambursarea se face în cel mult <strong>14 zile</strong> de la anulare, prin aceeași metodă de plată.</li>
+  </ul>
   <p>Sumele plătite cu cardul se rambursează pe același card, prin NETOPIA Payments; cele plătite prin transfer, în contul din care au fost trimise.</p>
   <p>Conform art. 16 lit. l) din OUG 34/2014, dreptul de retragere de 14 zile nu se aplică serviciilor de cazare
      prestate la o dată sau într-o perioadă anume; se aplică politica de anulare de mai sus.</p>

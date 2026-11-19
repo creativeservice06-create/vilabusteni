@@ -255,7 +255,7 @@ return [
         'mail_status' => 'Withdrawal received',
         'mail_continut' => 'Content of the declaration',
     ],
-    'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
+    'politica_anulare' => "If you cancel, the 30% deposit is non-refundable. Any amount paid above this deposit is refunded in full within 14 days of the cancellation, using the same payment method. The balance is paid on arrival. If we cancel your booking, we refund everything you have paid.",   // apare pe pagina de rezervare și în mailuri
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [

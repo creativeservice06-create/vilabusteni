@@ -166,7 +166,7 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
   <meta name="robots" content="noindex, nofollow">
   <title>Administrare – <?= e($setari['nume_vila']) ?></title>
   <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
-  <link rel="stylesheet" href="/assets/css/style.css?v=12">
+  <link rel="stylesheet" href="/assets/css/style.css?v=13">
   <link rel="stylesheet" href="/assets/css/admin.css?v=5">
 </head>
 <body class="admin">
