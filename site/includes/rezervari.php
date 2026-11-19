@@ -229,7 +229,7 @@ function anuleaza_expirate(PDO $pdo, array $setari)
         if ($upd->rowCount() !== 1) continue;
         $anulate++;
         trimite_mail_client($r, 'expirare', $setari);
-        trimite_mail_anulare_automata($r, $setari);
+        if ($setari['notifica_anulare_auto'] ?? true) trimite_mail_anulare_automata($r, $setari);
     }
     return $anulate;
 }
@@ -294,7 +294,7 @@ function salveaza_dovada(PDO $pdo, array $r, array $fisier, array $setari)
     $pdo->prepare("UPDATE rezervari SET dovada_fisier = ?, dovada_la = ? WHERE id = ?")->execute([$nume, $acum, $r['id']]);
     $r['dovada_fisier'] = $nume;
     $r['dovada_la'] = $acum;
-    trimite_mail_dovada($r, $cale, $mime, $setari);
+    if ($setari['notifica_dovada'] ?? true) trimite_mail_dovada($r, $cale, $mime, $setari);
     return [true, ''];
 }
 

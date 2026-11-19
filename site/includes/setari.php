@@ -26,7 +26,10 @@ return [
     // Unde ajung notificările despre rezervări (mai multe adrese: separate prin virgulă)
     'email_proprietar' => 'contact@horoscoptravel.ro',
     // Copie ascunsă a fiecărui mail trimis clienților, ca istoric (gol = fără copie)
-    'email_arhiva'     => 'contact@horoscoptravel.ro',
+    'email_arhiva'     => '',
+    // Alte notificări pentru proprietar (true = se trimit, false = nu). Rezervarea nouă se trimite mereu.
+    'notifica_dovada'        => true,   // clientul a trimis dovada de plată (cu fișierul atașat)
+    'notifica_anulare_auto'  => true,   // o rezervare s-a anulat automat (avans neplătit în 48h)
     // Doar dacă serverul de mail nu răspunde: mailul pleacă de pe adresa site-ului
     'email_expeditor_rezerva' => 'rezervari@vilabusteni.ro',
 
