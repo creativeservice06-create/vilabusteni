@@ -59,7 +59,7 @@ return [
     // Plata cu cardul prin Netopia. Cheile NU sunt aici, ci în config.php pe server
     // ('netopia_api_key', 'netopia_pos_signature', 'netopia_cheie_publica', 'netopia_mediu').
     // Butonul „Plătește cu cardul” apare singur când cheile sunt completate.
-    'plata_card'       => true,    // false = ascunde plata cu cardul chiar dacă există chei
+    'plata_card'       => false,   // OPRIT până aprobă Netopia punctul de vânzare – apoi pune true. (false = ascunde plata cu cardul chiar dacă există chei)
     'notifica_plata_card' => true, // mail către proprietar la fiecare plată cu cardul
 
     // Facturi fiscale automate prin FGO (după fiecare plată). Cheia API NU e aici: 'fgo_cheie_api' în config.php.
