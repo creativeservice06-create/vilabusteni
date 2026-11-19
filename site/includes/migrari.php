@@ -28,6 +28,9 @@ function migrari()
 
         // limba în care clientul a făcut rezervarea (ro, en, de, it, ru)
         2 => "ALTER TABLE rezervari ADD COLUMN limba VARCHAR(5) NOT NULL DEFAULT 'ro'",
+
+        // notă internă (vizibilă doar în panoul de administrare) și data ultimei schimbări de status
+        3 => "ALTER TABLE rezervari ADD COLUMN nota VARCHAR(255) NULL, ADD COLUMN modificat_la DATETIME NULL",
     ];
 }
 

@@ -42,7 +42,7 @@ function db()
 }
 
 /**
- * Nopțile ocupate (rezervări confirmate), ca listă de date "YYYY-MM-DD".
+ * Nopțile ocupate (rezervări confirmate + zile blocate manual), ca listă de date "YYYY-MM-DD".
  * O noapte = data sosirii, până în ziua dinaintea plecării.
  */
 function nopti_ocupate()
@@ -53,7 +53,7 @@ function nopti_ocupate()
     }
     try {
         $rez = $pdo->query("SELECT sosire, plecare FROM rezervari
-                        WHERE status = 'confirmata' AND plecare >= " . ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite' ? "date('now')" : 'CURDATE()'))
+                        WHERE status IN ('confirmata', 'blocat') AND plecare >= " . ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite' ? "date('now')" : 'CURDATE()'))
                ->fetchAll();
     } catch (PDOException $ex) {
         error_log('Eroare citire rezervări: ' . $ex->getMessage());

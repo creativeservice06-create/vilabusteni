@@ -38,6 +38,14 @@ return [
         'tripadvisor' => '',   // DE COMPLETAT
     ],
 
+    // Plata prin transfer (apare în mailul de confirmare doar dacă IBAN-ul e completat)
+    'iban'           => '',     // DE COMPLETAT, ex: 'RO49 AAAA 1B31 0075 9384 0000'
+    'banca'          => '',     // DE COMPLETAT, ex: 'Banca Transilvania'
+    'avans_procent'  => 0,      // DE COMPLETAT: cât la sută se plătește avans (0 = fără avans, se plătește tot)
+    'avans_zile'     => 3,      // în câte zile de la confirmare trebuie plătit
+
+    // Parola panoului de administrare NU e aici: se pune în config.php pe server ('admin_parola').
+
     // Tarife și reguli de rezervare
     'pret_noapte'    => 1500,   // lei / noapte, pentru toată vila
     'minim_nopti'    => 3,

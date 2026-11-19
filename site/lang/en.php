@@ -171,4 +171,15 @@ return [
                        . "Address: {adresa}\n"
                        . "Phone: {telefon}\n\n"
                        . "Kind regards,\n{vila}\n",
+
+    // Mailurile trimise din panoul de administrare (în {acolade} se pun automat valorile)
+    'mail_conf_subiect' => "Booking confirmed – %s",
+    'mail_conf_corp' => "Hello {nume},\n\nYour booking #{id} at {vila} is confirmed. We look forward to welcoming you!\n\nDates: {perioada} ({nopti} nights)\nGuests: {persoane}\nTotal: {total}\nCheck-in from {check_in}, check-out by {check_out}.\n\nAddress: {adresa}\nMap: {harta}\nPhone: {telefon}\n{plata}{anulare}\nKind regards,\n{vila}\n",
+    'mail_plata_avans' => "\nPAYMENT\nDeposit: {avans} ({procent}% of the total), payable within {zile} days by bank transfer.\nThe remaining {rest} is paid on arrival.\n{banca}",
+    'mail_plata_tot' => "\nPAYMENT\nThe amount of {total} is payable within {zile} days by bank transfer.\n{banca}",
+    'mail_banca' => "Account holder: {titular}\nIBAN: {iban}\nBank: {nume_banca}\nPayment reference: Booking #{id}\n",
+    'mail_anulare_titlu' => "CANCELLATION POLICY",
+    'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
+    'mail_anul_subiect' => "Dates no longer available – %s",
+    'mail_anul_corp' => "Hello {nume},\n\nWe are sorry, but the dates {perioada} are no longer available at {vila}, so we cannot confirm your request #{id}.\n\nYou can choose other dates here: {link}\nOr call us on {telefon} and we will find an option together.\n\nKind regards,\n{vila}\n",
 ];

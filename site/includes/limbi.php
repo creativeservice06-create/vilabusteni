@@ -47,3 +47,11 @@ function pagina_curenta()
     $cale = preg_replace('#^/(' . implode('|', array_keys(LIMBI)) . ')(?=/|$)#', '', $cale);
     return $cale === '' ? '/' : $cale;
 }
+
+/** Toate textele unei limbi (folosit la mailurile trimise din panou, în limba clientului). */
+function texte_limba($limba)
+{
+    if (!isset(LIMBI[$limba])) $limba = 'ro';
+    $texte = require __DIR__ . '/../lang/' . $limba . '.php';
+    return $limba === 'ro' ? $texte : $texte + (require __DIR__ . '/../lang/ro.php');
+}

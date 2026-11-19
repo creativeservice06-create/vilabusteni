@@ -188,4 +188,15 @@ return [
                        . "Adresa: {adresa}\n"
                        . "Telefon: {telefon}\n\n"
                        . "Cu drag,\n{vila}\n",
+
+    // Mailurile trimise din panoul de administrare (în {acolade} se pun automat valorile)
+    'mail_conf_subiect' => "Rezervare confirmată – %s",
+    'mail_conf_corp' => "Bună ziua, {nume},\n\nRezervarea ta #{id} la {vila} este confirmată. Te așteptăm!\n\nPerioada: {perioada} ({nopti} nopți)\nPersoane: {persoane}\nTotal: {total}\nCheck-in de la {check_in}, check-out până la {check_out}.\n\nAdresa: {adresa}\nHartă: {harta}\nTelefon: {telefon}\n{plata}{anulare}\nCu drag,\n{vila}\n",
+    'mail_plata_avans' => "\nPLATA\nAvans: {avans} ({procent}% din total), de plătit în {zile} zile prin transfer bancar.\nRestul de {rest} se achită la sosire.\n{banca}",
+    'mail_plata_tot' => "\nPLATA\nSuma de {total} se plătește în {zile} zile prin transfer bancar.\n{banca}",
+    'mail_banca' => "Titular: {titular}\nIBAN: {iban}\nBanca: {nume_banca}\nLa detalii plată scrie: Rezervare #{id}\n",
+    'mail_anulare_titlu' => "POLITICA DE ANULARE",
+    'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
+    'mail_anul_subiect' => "Perioada nu mai este disponibilă – %s",
+    'mail_anul_corp' => "Bună ziua, {nume},\n\nNe pare rău, dar perioada {perioada} nu mai este disponibilă la {vila}, așa că nu putem confirma cererea ta #{id}.\n\nPoți alege alte date aici: {link}\nSau sună-ne la {telefon} și găsim împreună o variantă.\n\nCu drag,\n{vila}\n",
 ];

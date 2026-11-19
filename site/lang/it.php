@@ -171,4 +171,15 @@ return [
                        . "Indirizzo: {adresa}\n"
                        . "Telefono: {telefon}\n\n"
                        . "Cordiali saluti,\n{vila}\n",
+
+    // Mailurile trimise din panoul de administrare (în {acolade} se pun automat valorile)
+    'mail_conf_subiect' => "Prenotazione confermata – %s",
+    'mail_conf_corp' => "Buongiorno {nume},\n\nla tua prenotazione #{id} presso {vila} è confermata. Ti aspettiamo!\n\nPeriodo: {perioada} ({nopti} notti)\nOspiti: {persoane}\nTotale: {total}\nCheck-in dalle {check_in}, check-out entro le {check_out}.\n\nIndirizzo: {adresa}\nMappa: {harta}\nTelefono: {telefon}\n{plata}{anulare}\nCordiali saluti,\n{vila}\n",
+    'mail_plata_avans' => "\nPAGAMENTO\nAcconto: {avans} ({procent}% del totale), da versare entro {zile} giorni tramite bonifico bancario.\nIl saldo di {rest} si paga all’arrivo.\n{banca}",
+    'mail_plata_tot' => "\nPAGAMENTO\nL’importo di {total} va versato entro {zile} giorni tramite bonifico bancario.\n{banca}",
+    'mail_banca' => "Intestatario: {titular}\nIBAN: {iban}\nBanca: {nume_banca}\nCausale: Prenotazione #{id}\n",
+    'mail_anulare_titlu' => "CONDIZIONI DI CANCELLAZIONE",
+    'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
+    'mail_anul_subiect' => "Periodo non più disponibile – %s",
+    'mail_anul_corp' => "Buongiorno {nume},\n\nci dispiace, ma il periodo {perioada} non è più disponibile presso {vila}, quindi non possiamo confermare la tua richiesta #{id}.\n\nPuoi scegliere altre date qui: {link}\nOppure chiamaci al {telefon} e troveremo insieme una soluzione.\n\nCordiali saluti,\n{vila}\n",
 ];

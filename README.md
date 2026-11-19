@@ -50,6 +50,17 @@ Reguli simple:
 
 Urmează: panou de administrare, plata online cu cardul, banner cookie + Google Ads / Meta Pixel, versiunea în engleză.
 
+## Panoul de administrare – vilabusteni.ro/admin/
+
+Parola se pune în `config.php` pe server: `'admin_parola' => '...'`.
+- **Cereri noi**: Confirmă (clientul primește mail de confirmare în limba lui) sau Anulează (mail că perioada nu e disponibilă).
+- **Confirmate**: rezervările viitoare; zilele lor apar ocupate în calendarul de pe site.
+- **Zile blocate**: blochezi perioade închiriate pe alte căi (telefon, Booking etc.).
+- **Istoric**: rezervări trecute și anulate.
+
+Mailul de confirmare include automat: perioada, prețul, adresa, link Google Maps, check-in/out, telefonul;
+plus detaliile de plată (dacă `iban` e completat în `setari.php`) și politica de anulare (dacă `politica_anulare` e completată în `lang/*.php`).
+
 ## Instalare pe server (o singură dată)
 
 1. cPanel → **MySQL Databases**: creezi baza `rezervari` și userul `site`, apoi le legi (All Privileges).

@@ -68,7 +68,7 @@ function salveaza_rezervare(array $d, array $post, array $setari)
     try {
     // Perioada se suprapune cu o rezervare confirmată?
     $st = $pdo->prepare("SELECT COUNT(*) FROM rezervari
-                         WHERE status = 'confirmata' AND sosire < :plecare AND plecare > :sosire");
+                         WHERE status IN ('confirmata', 'blocat') AND sosire < :plecare AND plecare > :sosire");
     $st->execute([':sosire' => $d['sosire'], ':plecare' => $d['plecare']]);
     if ($st->fetchColumn() > 0) {
         return ['erori' => [t('err_ocupat')], 'nopti' => $nopti, 'total' => 0];
@@ -110,7 +110,8 @@ function trimite_mailuri($id, array $d, $nopti, $total, $persoane, array $setari
           . "Total: " . number_format($total, 0, ',', '.') . " lei\n"
           . "Limba clientului: " . LIMBI[$LIMBA] . "\n\n"
           . "Nume: {$d['nume']}\nEmail: {$d['email']}\nTelefon: {$d['telefon']}\n\n"
-          . "Mesaj:\n{$d['mesaj']}\n";
+          . "Mesaj:\n{$d['mesaj']}\n\n"
+          . "Confirmă sau anulează din panou: https://vilabusteni.ro/admin/\n";
     trimite_mail($setari['email_proprietar'], "Rezervare nouă #$id – $perioada", $text, $setari, $d['email']);
 
     // 2. Către client – în limba în care a făcut rezervarea
@@ -137,4 +138,122 @@ function trimite_mail($catre, $subiect, $text, array $setari, $raspuns_la)
         error_log("Mailul către $catre nu a putut fi trimis.");
     }
     return $ok;
+}
+
+// ============================================================
+//  FUNCȚII PENTRU PANOUL DE ADMINISTRARE
+// ============================================================
+
+/** Rezervările se suprapun cu altele confirmate / blocate? (fără rezervarea $exceptie) */
+function perioada_ocupata(PDO $pdo, $sosire, $plecare, $exceptie = 0)
+{
+    $st = $pdo->prepare("SELECT COUNT(*) FROM rezervari
+                         WHERE status IN ('confirmata', 'blocat') AND id <> :id
+                           AND sosire < :plecare AND plecare > :sosire");
+    $st->execute([':id' => (int) $exceptie, ':sosire' => $sosire, ':plecare' => $plecare]);
+    return $st->fetchColumn() > 0;
+}
+
+/**
+ * Confirmă sau anulează o rezervare și trimite clientului mailul potrivit, în limba lui.
+ * Întoarce un mesaj pentru panou.
+ */
+function schimba_status(PDO $pdo, $id, $status_nou, array $setari)
+{
+    $st = $pdo->prepare("SELECT * FROM rezervari WHERE id = ?");
+    $st->execute([(int) $id]);
+    $r = $st->fetch();
+    if (!$r) {
+        return ['eroare', "Rezervarea #$id nu există."];
+    }
+    if ($r['status'] === $status_nou) {
+        return ['info', "Rezervarea #$id are deja acest status."];
+    }
+
+    if ($status_nou === 'confirmata' && perioada_ocupata($pdo, $r['sosire'], $r['plecare'], $r['id'])) {
+        return ['eroare', "Nu pot confirma #$id: perioada se suprapune cu o rezervare confirmată sau cu zile blocate."];
+    }
+
+    $acum = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite' ? "datetime('now')" : 'NOW()';
+    $pdo->prepare("UPDATE rezervari SET status = ?, modificat_la = $acum WHERE id = ?")->execute([$status_nou, $r['id']]);
+
+    if ($r['status'] === 'blocat' || $r['email'] === '') {
+        return ['ok', $status_nou === 'anulata' ? 'Zilele au fost deblocate.' : 'Status schimbat.'];
+    }
+
+    $tip = $status_nou === 'confirmata' ? 'confirmare' : 'anulare';
+    $trimis = trimite_mail_status($r, $tip, $setari);
+    $text = $status_nou === 'confirmata' ? "Rezervarea #{$r['id']} a fost confirmată." : "Rezervarea #{$r['id']} a fost anulată.";
+    return $trimis
+        ? ['ok', "$text Clientul a primit mail ({$r['email']})."]
+        : ['eroare', "$text ATENȚIE: mailul către client nu a putut fi trimis – anunță-l telefonic ({$r['telefon']})."];
+}
+
+/** Mailul de confirmare / anulare către client, în limba în care a rezervat. */
+function trimite_mail_status(array $r, $tip, array $setari)
+{
+    $limba = $r['limba'] ?? 'ro';
+    $T = texte_limba($limba);
+    $sep = ['en' => ',', 'ru' => ' '][$limba] ?? '.';
+    $bani = function ($suma) use ($T, $sep) { return number_format((int) $suma, 0, ',', $sep) . ' ' . $T['moneda']; };
+    $tel = $limba === 'ro' ? $setari['telefon'] : $setari['telefon_int'];
+    $perioada = date('d.m.Y', strtotime($r['sosire'])) . ' – ' . date('d.m.Y', strtotime($r['plecare']));
+    $prefix = $limba === 'ro' ? '' : '/' . $limba;
+
+    if ($tip === 'anulare') {
+        $text = strtr($T['mail_anul_corp'], [
+            '{nume}' => $r['nume'], '{vila}' => $setari['nume_vila'], '{perioada}' => $perioada, '{id}' => $r['id'],
+            '{link}' => 'https://vilabusteni.ro' . $prefix . '/rezervare.php', '{telefon}' => $tel,
+        ]);
+        return trimite_mail($r['email'], sprintf($T['mail_anul_subiect'], $setari['nume_vila']), $text, $setari, $setari['email_contact']);
+    }
+
+    // Plata: doar dacă IBAN-ul e completat în setari.php
+    $plata = '';
+    if ($setari['iban'] !== '') {
+        $banca = strtr($T['mail_banca'], [
+            '{titular}' => $setari['firma_nume'], '{iban}' => $setari['iban'],
+            '{nume_banca}' => $setari['banca'], '{id}' => $r['id'],
+        ]);
+        $procent = (int) $setari['avans_procent'];
+        if ($procent > 0 && $procent < 100) {
+            $avans = (int) round($r['total'] * $procent / 100);
+            $plata = strtr($T['mail_plata_avans'], [
+                '{avans}' => $bani($avans), '{procent}' => $procent, '{zile}' => $setari['avans_zile'],
+                '{rest}' => $bani($r['total'] - $avans), '{banca}' => $banca,
+            ]);
+        } else {
+            $plata = strtr($T['mail_plata_tot'], ['{total}' => $bani($r['total']), '{zile}' => $setari['avans_zile'], '{banca}' => $banca]);
+        }
+    }
+
+    // Politica de anulare: doar dacă e completată în lang/*.php
+    $anulare = trim($T['politica_anulare'] ?? '') !== '' ? "\n" . $T['mail_anulare_titlu'] . "\n" . trim($T['politica_anulare']) . "\n" : '';
+
+    $text = strtr($T['mail_conf_corp'], [
+        '{nume}' => $r['nume'], '{id}' => $r['id'], '{vila}' => $setari['nume_vila'], '{perioada}' => $perioada,
+        '{nopti}' => $r['nopti'], '{persoane}' => $r['persoane'], '{total}' => $bani($r['total']),
+        '{check_in}' => $setari['ora_check_in'], '{check_out}' => $setari['ora_check_out'],
+        '{adresa}' => $setari['adresa'], '{harta}' => $setari['harta_link'], '{telefon}' => $tel,
+        '{plata}' => $plata, '{anulare}' => $anulare,
+    ]);
+    return trimite_mail($r['email'], sprintf($T['mail_conf_subiect'], $setari['nume_vila']), $text, $setari, $setari['email_contact']);
+}
+
+/** Blochează manual o perioadă (ex. închiriată prin telefon sau pe alte site-uri). */
+function blocheaza_perioada(PDO $pdo, $sosire, $plecare, $nota)
+{
+    $a = DateTime::createFromFormat('!Y-m-d', $sosire);
+    $b = DateTime::createFromFormat('!Y-m-d', $plecare);
+    if (!$a || !$b || $b <= $a) {
+        return ['eroare', 'Alege o dată de început și una de sfârșit (sfârșitul după început).'];
+    }
+    if (perioada_ocupata($pdo, $sosire, $plecare)) {
+        return ['eroare', 'Perioada se suprapune cu o rezervare confirmată sau cu zile deja blocate.'];
+    }
+    $nopti = (int) $a->diff($b)->format('%a');
+    $pdo->prepare("INSERT INTO rezervari (sosire, plecare, nopti, persoane, nume, email, telefon, mesaj, total, status, nota)
+                   VALUES (?, ?, ?, 0, 'Blocat manual', '', '', '', 0, 'blocat', ?)")
+        ->execute([$sosire, $plecare, $nopti, mb_substr(trim($nota), 0, 255)]);
+    return ['ok', "Am blocat $nopti " . ($nopti === 1 ? 'noapte' : 'nopți') . ': ' . $a->format('d.m.Y') . ' – ' . $b->format('d.m.Y') . '.'];
 }

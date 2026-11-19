@@ -171,4 +171,15 @@ return [
                        . "Адрес: {adresa}\n"
                        . "Телефон: {telefon}\n\n"
                        . "С уважением,\n{vila}\n",
+
+    // Mailurile trimise din panoul de administrare (în {acolade} se pun automat valorile)
+    'mail_conf_subiect' => "Бронирование подтверждено – %s",
+    'mail_conf_corp' => "Здравствуйте, {nume}!\n\nВаше бронирование #{id} на виллу {vila} подтверждено. Ждём вас!\n\nДаты: {perioada} (ночей: {nopti})\nГостей: {persoane}\nИтого: {total}\nЗаезд с {check_in}, выезд до {check_out}.\n\nАдрес: {adresa}\nКарта: {harta}\nТелефон: {telefon}\n{plata}{anulare}\nС уважением,\n{vila}\n",
+    'mail_plata_avans' => "\nОПЛАТА\nПредоплата: {avans} ({procent}% от суммы), в течение {zile} дней банковским переводом.\nОстаток {rest} оплачивается при заезде.\n{banca}",
+    'mail_plata_tot' => "\nОПЛАТА\nСумму {total} необходимо оплатить в течение {zile} дней банковским переводом.\n{banca}",
+    'mail_banca' => "Получатель: {titular}\nIBAN: {iban}\nБанк: {nume_banca}\nНазначение платежа: Бронирование #{id}\n",
+    'mail_anulare_titlu' => "УСЛОВИЯ ОТМЕНЫ",
+    'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
+    'mail_anul_subiect' => "Даты больше недоступны – %s",
+    'mail_anul_corp' => "Здравствуйте, {nume}!\n\nК сожалению, даты {perioada} на вилле {vila} больше недоступны, поэтому мы не можем подтвердить ваш запрос #{id}.\n\nВы можете выбрать другие даты здесь: {link}\nИли позвоните нам по номеру {telefon}, и мы вместе подберём вариант.\n\nС уважением,\n{vila}\n",
 ];

@@ -171,4 +171,15 @@ return [
                        . "Adresse: {adresa}\n"
                        . "Telefon: {telefon}\n\n"
                        . "Herzliche Grüße\n{vila}\n",
+
+    // Mailurile trimise din panoul de administrare (în {acolade} se pun automat valorile)
+    'mail_conf_subiect' => "Buchung bestätigt – %s",
+    'mail_conf_corp' => "Guten Tag {nume},\n\nIhre Buchung #{id} in der {vila} ist bestätigt. Wir freuen uns auf Sie!\n\nZeitraum: {perioada} ({nopti} Nächte)\nGäste: {persoane}\nGesamt: {total}\nCheck-in ab {check_in} Uhr, Check-out bis {check_out} Uhr.\n\nAdresse: {adresa}\nKarte: {harta}\nTelefon: {telefon}\n{plata}{anulare}\nHerzliche Grüße\n{vila}\n",
+    'mail_plata_avans' => "\nZAHLUNG\nAnzahlung: {avans} ({procent}% des Gesamtbetrags), zahlbar innerhalb von {zile} Tagen per Überweisung.\nDer Restbetrag von {rest} wird bei Anreise bezahlt.\n{banca}",
+    'mail_plata_tot' => "\nZAHLUNG\nDer Betrag von {total} ist innerhalb von {zile} Tagen per Überweisung zu zahlen.\n{banca}",
+    'mail_banca' => "Kontoinhaber: {titular}\nIBAN: {iban}\nBank: {nume_banca}\nVerwendungszweck: Buchung #{id}\n",
+    'mail_anulare_titlu' => "STORNOBEDINGUNGEN",
+    'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
+    'mail_anul_subiect' => "Zeitraum nicht mehr verfügbar – %s",
+    'mail_anul_corp' => "Guten Tag {nume},\n\nleider ist der Zeitraum {perioada} in der {vila} nicht mehr verfügbar, daher können wir Ihre Anfrage #{id} nicht bestätigen.\n\nAndere Termine können Sie hier wählen: {link}\nOder rufen Sie uns an unter {telefon}, dann finden wir gemeinsam eine Lösung.\n\nHerzliche Grüße\n{vila}\n",
 ];
