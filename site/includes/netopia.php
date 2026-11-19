@@ -98,7 +98,8 @@ function start_plata_card(PDO $pdo, array $r, array $setari)
     $n = config_netopia();
     if (!$n) return ['eroare' => 'Netopia nu este configurată'];
 
-    $suma    = (int) $r['avans'];
+    // Doar pentru probă: 'netopia_suma_test' => 1 în config.php face ca plata să fie de 1 leu (apoi șterge linia!)
+    $suma    = (int) (config_site()['netopia_suma_test'] ?? 0) ?: (int) $r['avans'];
     $comanda = numar_proforma($r['id'], $setari) . '-' . date('ymdHis') . '-' . bin2hex(random_bytes(2));
     $acum    = date('Y-m-d H:i:s');
     $pdo->prepare("INSERT INTO plati_card (rezervare_id, comanda, suma, status, creat_la) VALUES (?, ?, ?, 'pornita', ?)")

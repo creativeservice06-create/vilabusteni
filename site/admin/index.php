@@ -440,7 +440,7 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
     <p><strong>Plata cu cardul (Netopia):</strong>
       <?php if (!$netopia): ?>neconfigurată – lipsesc cheile din config.php.
       <?php elseif (empty($setari['plata_card'])): ?>oprită din setari.php ('plata_card' => false).
-      <?php else: ?><?= $netopia['mediu'] === 'live' ? '<span class="eticheta-ok">activă (plăți reale)</span>' : '<span class="eticheta-test">mod de test (sandbox)</span> – plățile nu sunt reale' ?><?= $netopia['publica'] === '' ? ' · ATENȚIE: lipsește netopia_cheie_publica, confirmările de plată vor fi respinse' : '' ?>.
+      <?php else: ?><?= !empty(config_site()['netopia_suma_test']) ? '<span class="eticheta-test">PROBĂ: toate plățile sunt de ' . (int) config_site()['netopia_suma_test'] . ' leu – șterge netopia_suma_test din config.php după test</span> · ' : '' ?><?= $netopia['mediu'] === 'live' ? '<span class="eticheta-ok">activă (plăți reale)</span>' : '<span class="eticheta-test">mod de test (sandbox)</span> – plățile nu sunt reale' ?><?= $netopia['publica'] === '' ? ' · ATENȚIE: lipsește netopia_cheie_publica, confirmările de plată vor fi respinse' : '' ?>.
       <?php endif; ?>
     </p>
     <p><strong>Facturi automate (FGO):</strong>
