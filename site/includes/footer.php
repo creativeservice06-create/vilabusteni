@@ -40,7 +40,7 @@
   </div>
   <!-- Siglele obligatorii: NETOPIA (plata cu cardul) și pictograma ANPC SAL (Ordinul ANPC 449/2022) -->
   <div class="subsol-insigne">
-    <?php if (card_activ($setari)): ?>
+    <?php if (config_netopia() !== null): /* vizibilă și cât timp plata e oprită – o verifică Netopia */ ?>
       <a href="https://netopia-payments.com" target="_blank" rel="noopener" class="insigna-netopia" title="<?= e(t('plati_acceptate')) ?>">
         <img src="/assets/images/plati/netopia-alb.svg" alt="NETOPIA Payments" width="133" height="50" loading="lazy">
       </a>
