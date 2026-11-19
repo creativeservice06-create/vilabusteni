@@ -123,10 +123,11 @@ return [
     'f_mesaj'         => 'Messaggio (facoltativo)',
     'f_accept'        => 'Ho letto e accetto i <a href="%s" target="_blank">Termini e condizioni</a> e l’<a href="%s" target="_blank">Informativa sulla privacy</a>.',
     'f_trimite'       => 'Invia la richiesta di prenotazione',
-    'f_nota'          => 'La prenotazione è definitiva dopo la nostra conferma. Il pagamento online con carta sarà presto disponibile.',
+    'f_nota'          => 'Dopo l’invio riceverai la proforma via email. Il periodo resta riservato per {ore} ore; la prenotazione è confermata dopo il versamento dell’acconto del {procent}%.',
     'rez_multumim'    => 'Grazie! Abbiamo ricevuto la tua richiesta.',
     'rez_perioada'    => 'Periodo: <strong>%s – %s</strong> (%d notti), totale <strong>%s</strong>.',
-    'rez_contactam'   => 'Ti contatteremo al più presto per la conferma. Ti abbiamo inviato anche un’email a <strong>%s</strong>.',
+    'rez_contactam'   => 'Abbiamo inviato la proforma e i dati di pagamento a <strong>%s</strong>. Il periodo è riservato per te fino al <strong>%s</strong>; la prenotazione è confermata dopo il versamento dell’acconto di <strong>%s</strong>.',
+    'rez_proforma'    => 'Vedi la proforma',
     'rez_intrebari'   => 'Per qualsiasi domanda: %s.',
     'rez_inapoi'      => 'Torna alla pagina iniziale',
 
@@ -159,27 +160,82 @@ return [
         'total'    => '{n} notti × {pret} = ',
         'locale'   => 'it-IT',
     ],
-
-    'mail_subiect'    => 'Abbiamo ricevuto la tua richiesta – %s',
-    'mail_corp'       => "Buongiorno {nume},\n\n"
-                       . "abbiamo ricevuto la tua richiesta di prenotazione per {vila}.\n\n"
-                       . "Periodo: {perioada} ({nopti} notti)\n"
-                       . "Ospiti: {persoane}\n"
-                       . "Totale stimato: {total}\n"
-                       . "Check-in dalle {check_in}, check-out entro le {check_out}.\n\n"
-                       . "La prenotazione è definitiva dopo la nostra conferma. Ti contatteremo al più presto.\n\n"
-                       . "Indirizzo: {adresa}\n"
-                       . "Telefono: {telefon}\n\n"
-                       . "Cordiali saluti,\n{vila}\n",
-
-    // Mailurile trimise din panoul de administrare (în {acolade} se pun automat valorile)
-    'mail_conf_subiect' => "Prenotazione confermata – %s",
-    'mail_conf_corp' => "Buongiorno {nume},\n\nla tua prenotazione #{id} presso {vila} è confermata. Ti aspettiamo!\n\nPeriodo: {perioada} ({nopti} notti)\nOspiti: {persoane}\nTotale: {total}\nCheck-in dalle {check_in}, check-out entro le {check_out}.\n\nIndirizzo: {adresa}\nMappa: {harta}\nTelefono: {telefon}\n{plata}{anulare}\nCordiali saluti,\n{vila}\n",
-    'mail_plata_avans' => "\nPAGAMENTO\nAcconto: {avans} ({procent}% del totale), da versare entro {zile} giorni tramite bonifico bancario.\nIl saldo di {rest} si paga all’arrivo.\n{banca}",
-    'mail_plata_tot' => "\nPAGAMENTO\nL’importo di {total} va versato entro {zile} giorni tramite bonifico bancario.\n{banca}",
-    'mail_banca' => "Intestatario: {titular}\nIBAN: {iban}\nBanca: {nume_banca}\nCausale: Prenotazione #{id}\n",
-    'mail_anulare_titlu' => "CONDIZIONI DI CANCELLAZIONE",
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
-    'mail_anul_subiect' => "Periodo non più disponibile – %s",
-    'mail_anul_corp' => "Buongiorno {nume},\n\nci dispiace, ma il periodo {perioada} non è più disponibile presso {vila}, quindi non possiamo confermare la tua richiesta #{id}.\n\nPuoi scegliere altre date qui: {link}\nOppure chiamaci al {telefon} e troveremo insieme una soluzione.\n\nCordiali saluti,\n{vila}\n",
+
+    // Mailurile (în {acolade} se pun automat valorile)
+    'mailuri' => [
+        'cerere_subiect' => 'Prenotazione {nr} – versa l’acconto per confermare',
+        'cerere_titlu' => 'Il periodo è riservato per te',
+        'cerere_intro' => 'Grazie, {nume}! Teniamo riservato il periodo {perioada} per te fino al {termen}. La prenotazione è confermata quando riceviamo l’acconto di {avans}.',
+        'status_asteptare' => 'In attesa dell’acconto',
+        'conf_subiect' => 'Prenotazione confermata {nr} – {vila}',
+        'conf_titlu' => 'La tua prenotazione è confermata',
+        'conf_intro' => 'Abbiamo ricevuto il pagamento, {nume}. Ti aspettiamo a {vila} dal {perioada}!',
+        'status_confirmata' => 'Confermata',
+        'anul_subiect' => 'La prenotazione {nr} è stata annullata – {vila}',
+        'anul_titlu' => 'La prenotazione non è stata confermata',
+        'anul_intro' => 'Ci dispiace, {nume}. La richiesta {nr} per il periodo {perioada} è stata annullata: il periodo non è più disponibile oppure il termine di pagamento è scaduto. Puoi scegliere altre date quando vuoi.',
+        'status_anulata' => 'Annullata',
+        'detalii_titlu' => 'Dettagli della prenotazione',
+        'lbl_nr' => 'Numero prenotazione',
+        'lbl_perioada' => 'Periodo',
+        'lbl_nopti' => 'Notti',
+        'lbl_persoane' => 'Ospiti',
+        'lbl_total' => 'Totale soggiorno',
+        'lbl_avans' => 'Acconto da versare ({procent}%)',
+        'lbl_rest' => 'Saldo all’arrivo',
+        'lbl_termen' => 'Termine di pagamento',
+        'lbl_platit' => 'Acconto versato',
+        'plata_titlu' => 'Come versare l’acconto',
+        'plata_text' => 'Con bonifico bancario sul conto qui sotto, entro il {termen}. Nella causale indica il numero della prenotazione.',
+        'plata_fara_iban' => 'Ti contatteremo al più presto per telefono o email con i dati per il versamento dell’acconto.',
+        'lbl_suma' => 'Importo',
+        'lbl_titular' => 'Intestatario',
+        'lbl_iban' => 'IBAN',
+        'lbl_banca' => 'Banca',
+        'lbl_referinta' => 'Causale',
+        'buton_proforma' => 'Vedi la proforma (PDF)',
+        'buton_harta' => 'Apri in Google Maps',
+        'buton_alte_date' => 'Scegli altre date',
+        'sosire_titlu' => 'All’arrivo',
+        'lbl_adresa' => 'Indirizzo',
+        'lbl_check' => 'Check-in / check-out',
+        'lbl_telefon' => 'Telefono',
+        'check_in_out' => 'Check-in dalle {in}, check-out entro le {out}',
+        'anulare_titlu' => 'Condizioni di cancellazione',
+        'factura_nota' => 'La fattura fiscale per il pagamento ti sarà inviata separatamente.',
+        'semnatura' => 'Cordiali saluti,',
+    ],
+
+    // Proforma
+    'proforma' => [
+        'titlu' => 'Fattura proforma',
+        'nr' => 'N.',
+        'data' => 'Data',
+        'valabila' => 'Valida fino al',
+        'furnizor' => 'Fornitore',
+        'client' => 'Cliente',
+        'cui' => 'Cod. fiscale',
+        'reg' => 'Reg. Imprese',
+        'sediu' => 'Sede legale',
+        'iban' => 'IBAN',
+        'banca' => 'Banca',
+        'tel' => 'Telefono',
+        'email' => 'Email',
+        'descriere' => 'Descrizione',
+        'cant' => 'Q.tà',
+        'um' => 'notti',
+        'pret' => 'Prezzo unitario',
+        'valoare' => 'Importo',
+        'serviciu' => 'Soggiorno a {vila} (villa intera), {perioada}, {persoane} ospiti',
+        'total' => 'Totale',
+        'avans' => 'Acconto da versare ora ({procent}%)',
+        'rest' => 'Saldo all’arrivo',
+        'plata' => 'Pagamento con bonifico bancario. Causale: {nr}.',
+        'mentiune' => 'Documento senza valore fiscale. La fattura fiscale viene emessa dopo l’incasso.',
+        'print' => 'Scarica PDF / Stampa',
+        'negasit' => 'Proforma non trovata. Controlla il link nell’email.',
+        'status_platit' => 'Acconto versato',
+        'status_anulat' => 'Annullata',
+    ],
 ];

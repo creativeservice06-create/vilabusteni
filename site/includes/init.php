@@ -2,6 +2,7 @@
 // Se include la începutul fiecărei pagini.
 // Încarcă setările și câteva funcții mici folosite peste tot.
 
+date_default_timezone_set('Europe/Bucharest');
 $setari = require __DIR__ . '/setari.php';
 require_once __DIR__ . '/limbi.php';
 

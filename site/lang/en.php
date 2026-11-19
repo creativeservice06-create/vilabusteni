@@ -123,10 +123,11 @@ return [
     'f_mesaj'         => 'Message (optional)',
     'f_accept'        => 'I have read and accept the <a href="%s" target="_blank">Terms and conditions</a> and the <a href="%s" target="_blank">Privacy policy</a>.',
     'f_trimite'       => 'Send booking request',
-    'f_nota'          => 'Your booking is confirmed once we reply. Online card payment will be available soon.',
+    'f_nota'          => 'After sending, you will receive the pro forma by email. Your dates are held for {ore} hours; the booking is confirmed once the {procent}% deposit is paid.',
     'rez_multumim'    => 'Thank you! We have received your request.',
     'rez_perioada'    => 'Dates: <strong>%s – %s</strong> (%d nights), total <strong>%s</strong>.',
-    'rez_contactam'   => 'We will contact you shortly to confirm. We have also sent an email to <strong>%s</strong>.',
+    'rez_contactam'   => 'We have sent the pro forma and payment details to <strong>%s</strong>. Your dates are held until <strong>%s</strong>; the booking is confirmed once the deposit of <strong>%s</strong> is paid.',
+    'rez_proforma'    => 'View pro forma',
     'rez_intrebari'   => 'For any question: %s.',
     'rez_inapoi'      => 'Back to the home page',
 
@@ -159,27 +160,82 @@ return [
         'total'    => '{n} nights × {pret} = ',
         'locale'   => 'en-GB',
     ],
-
-    'mail_subiect'    => 'We have received your request – %s',
-    'mail_corp'       => "Hello {nume},\n\n"
-                       . "We have received your booking request for {vila}.\n\n"
-                       . "Dates: {perioada} ({nopti} nights)\n"
-                       . "Guests: {persoane}\n"
-                       . "Estimated total: {total}\n"
-                       . "Check-in from {check_in}, check-out by {check_out}.\n\n"
-                       . "Your booking is confirmed once we reply. We will contact you shortly.\n\n"
-                       . "Address: {adresa}\n"
-                       . "Phone: {telefon}\n\n"
-                       . "Kind regards,\n{vila}\n",
-
-    // Mailurile trimise din panoul de administrare (în {acolade} se pun automat valorile)
-    'mail_conf_subiect' => "Booking confirmed – %s",
-    'mail_conf_corp' => "Hello {nume},\n\nYour booking #{id} at {vila} is confirmed. We look forward to welcoming you!\n\nDates: {perioada} ({nopti} nights)\nGuests: {persoane}\nTotal: {total}\nCheck-in from {check_in}, check-out by {check_out}.\n\nAddress: {adresa}\nMap: {harta}\nPhone: {telefon}\n{plata}{anulare}\nKind regards,\n{vila}\n",
-    'mail_plata_avans' => "\nPAYMENT\nDeposit: {avans} ({procent}% of the total), payable within {zile} days by bank transfer.\nThe remaining {rest} is paid on arrival.\n{banca}",
-    'mail_plata_tot' => "\nPAYMENT\nThe amount of {total} is payable within {zile} days by bank transfer.\n{banca}",
-    'mail_banca' => "Account holder: {titular}\nIBAN: {iban}\nBank: {nume_banca}\nPayment reference: Booking #{id}\n",
-    'mail_anulare_titlu' => "CANCELLATION POLICY",
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
-    'mail_anul_subiect' => "Dates no longer available – %s",
-    'mail_anul_corp' => "Hello {nume},\n\nWe are sorry, but the dates {perioada} are no longer available at {vila}, so we cannot confirm your request #{id}.\n\nYou can choose other dates here: {link}\nOr call us on {telefon} and we will find an option together.\n\nKind regards,\n{vila}\n",
+
+    // Mailurile (în {acolade} se pun automat valorile)
+    'mailuri' => [
+        'cerere_subiect' => 'Booking {nr} – pay the deposit to confirm',
+        'cerere_titlu' => 'Your dates are on hold',
+        'cerere_intro' => 'Thank you, {nume}! We are holding {perioada} for you until {termen}. Your booking is confirmed once we receive the deposit of {avans}.',
+        'status_asteptare' => 'Awaiting deposit',
+        'conf_subiect' => 'Booking confirmed {nr} – {vila}',
+        'conf_titlu' => 'Your booking is confirmed',
+        'conf_intro' => 'We have received your payment, {nume}. We look forward to welcoming you to {vila} on {perioada}!',
+        'status_confirmata' => 'Confirmed',
+        'anul_subiect' => 'Booking {nr} has been cancelled – {vila}',
+        'anul_titlu' => 'Your booking could not be confirmed',
+        'anul_intro' => 'We are sorry, {nume}. Request {nr} for {perioada} has been cancelled: the dates are no longer available or the payment deadline has passed. You are welcome to choose other dates.',
+        'status_anulata' => 'Cancelled',
+        'detalii_titlu' => 'Booking details',
+        'lbl_nr' => 'Booking number',
+        'lbl_perioada' => 'Dates',
+        'lbl_nopti' => 'Nights',
+        'lbl_persoane' => 'Guests',
+        'lbl_total' => 'Total stay',
+        'lbl_avans' => 'Deposit due ({procent}%)',
+        'lbl_rest' => 'Balance due on arrival',
+        'lbl_termen' => 'Payment deadline',
+        'lbl_platit' => 'Deposit paid',
+        'plata_titlu' => 'How to pay the deposit',
+        'plata_text' => 'By bank transfer to the account below, by {termen}. Please quote the booking number as the payment reference.',
+        'plata_fara_iban' => 'We will contact you shortly by phone or email with the details for paying the deposit.',
+        'lbl_suma' => 'Amount',
+        'lbl_titular' => 'Account holder',
+        'lbl_iban' => 'IBAN',
+        'lbl_banca' => 'Bank',
+        'lbl_referinta' => 'Payment reference',
+        'buton_proforma' => 'View pro forma (PDF)',
+        'buton_harta' => 'Open in Google Maps',
+        'buton_alte_date' => 'Choose other dates',
+        'sosire_titlu' => 'On arrival',
+        'lbl_adresa' => 'Address',
+        'lbl_check' => 'Check-in / check-out',
+        'lbl_telefon' => 'Phone',
+        'check_in_out' => 'Check-in from {in}, check-out by {out}',
+        'anulare_titlu' => 'Cancellation policy',
+        'factura_nota' => 'The tax invoice for your payment will be sent to you separately.',
+        'semnatura' => 'Kind regards,',
+    ],
+
+    // Proforma
+    'proforma' => [
+        'titlu' => 'Pro forma invoice',
+        'nr' => 'No.',
+        'data' => 'Date',
+        'valabila' => 'Valid until',
+        'furnizor' => 'Supplier',
+        'client' => 'Customer',
+        'cui' => 'Tax ID',
+        'reg' => 'Trade Reg.',
+        'sediu' => 'Registered office',
+        'iban' => 'IBAN',
+        'banca' => 'Bank',
+        'tel' => 'Phone',
+        'email' => 'Email',
+        'descriere' => 'Description',
+        'cant' => 'Qty',
+        'um' => 'nights',
+        'pret' => 'Unit price',
+        'valoare' => 'Amount',
+        'serviciu' => 'Accommodation at {vila} (whole villa), {perioada}, {persoane} guests',
+        'total' => 'Total',
+        'avans' => 'Deposit due now ({procent}%)',
+        'rest' => 'Balance due on arrival',
+        'plata' => 'Payment by bank transfer. Please quote: {nr}.',
+        'mentiune' => 'This document has no tax value. The tax invoice is issued after payment is received.',
+        'print' => 'Download PDF / Print',
+        'negasit' => 'Pro forma not found. Please check the link in your email.',
+        'status_platit' => 'Deposit paid',
+        'status_anulat' => 'Cancelled',
+    ],
 ];

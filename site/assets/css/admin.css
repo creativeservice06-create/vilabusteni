@@ -69,3 +69,6 @@ body.admin { padding-bottom: 0; background: #eef3f4; }
   .admin-blocheaza-campuri { grid-template-columns: 1fr 1fr 2fr; }
   .admin-lista { grid-template-columns: 1fr 1fr; }
 }
+
+.admin-termen { display: inline-block; margin-top: .2rem; font-size: .88rem; color: #7a5208; }
+.admin-termen.expirat { color: var(--lemn); font-weight: 600; }

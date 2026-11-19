@@ -39,7 +39,8 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
   <h1><?= e(t('rez_multumim')) ?></h1>
   <div class="mesaj-succes">
     <p><?= t('rez_perioada', e(date('d.m.Y', strtotime($date['sosire']))), e(date('d.m.Y', strtotime($date['plecare']))), (int) $rezultat['nopti'], e(lei($rezultat['total']))) ?></p>
-    <p><?= t('rez_contactam', e($date['email'])) ?></p>
+    <p><?= t('rez_contactam', e($date['email']), e(date('d.m.Y, H:i', strtotime($rezultat['termen']))), e(lei($rezultat['avans']))) ?></p>
+    <p><a href="<?= e(url('/proforma.php')) ?>?cod=<?= e($rezultat['cod']) ?>" class="buton buton-plin" target="_blank"><?= e(t('rez_proforma')) ?></a></p>
     <p><?= t('rez_intrebari', $link_telefon) ?></p>
   </div>
   <p><a href="<?= e(url('/')) ?>" class="buton buton-contur"><?= e(t('rez_inapoi')) ?></a></p>
@@ -97,7 +98,7 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
           <span><?= t('f_accept', e(url('/termeni.php')), e(url('/confidentialitate.php'))) ?></span>
         </label>
         <button type="submit" class="buton buton-plin buton-lat" id="buton-trimite"><?= e(t('f_trimite')) ?></button>
-        <p class="mic"><?= e(t('f_nota')) ?></p>
+        <p class="mic"><?= e(strtr(t('f_nota'), ['{ore}' => $setari['termen_plata_ore'], '{procent}' => $setari['avans_procent']])) ?></p>
       </div>
     </div>
   </form>

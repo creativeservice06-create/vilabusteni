@@ -137,10 +137,11 @@ return [
     'f_mesaj'         => 'Mesaj (opțional)',
     'f_accept'        => 'Am citit și accept <a href="%s" target="_blank">Termenii și condițiile</a> și <a href="%s" target="_blank">Politica de confidențialitate</a>.',
     'f_trimite'       => 'Trimite cererea de rezervare',
-    'f_nota'          => 'Rezervarea devine fermă după confirmarea noastră. Plata online cu cardul va fi disponibilă în curând.',
+    'f_nota'          => 'După trimitere primești pe email proforma. Perioada rămâne rezervată {ore} de ore; rezervarea se confirmă după plata avansului de {procent}%.',
     'rez_multumim'    => 'Mulțumim! Am primit cererea ta.',
     'rez_perioada'    => 'Perioada: <strong>%s – %s</strong> (%d nopți), total <strong>%s</strong>.',
-    'rez_contactam'   => 'Te contactăm în cel mai scurt timp pentru confirmare. Ți-am trimis și un email la <strong>%s</strong>.',
+    'rez_contactam'   => 'Ți-am trimis pe <strong>%s</strong> proforma și detaliile de plată. Perioada e rezervată pentru tine până la <strong>%s</strong>; rezervarea se confirmă după plata avansului de <strong>%s</strong>.',
+    'rez_proforma'    => 'Vezi proforma',
     'rez_intrebari'   => 'Pentru orice întrebare: %s.',
     'rez_inapoi'      => 'Înapoi la prima pagină',
 
@@ -175,28 +176,82 @@ return [
         'total'    => '{n} nopți × {pret} = ',
         'locale'   => 'ro-RO',
     ],
-
-    // Emailul către client
-    'mail_subiect'    => 'Am primit cererea ta – %s',
-    'mail_corp'       => "Bună ziua, {nume},\n\n"
-                       . "Am primit cererea ta de rezervare la {vila}.\n\n"
-                       . "Perioada: {perioada} ({nopti} nopți)\n"
-                       . "Persoane: {persoane}\n"
-                       . "Total estimat: {total}\n"
-                       . "Check-in de la {check_in}, check-out până la {check_out}.\n\n"
-                       . "Rezervarea devine fermă după confirmarea noastră. Te contactăm în cel mai scurt timp.\n\n"
-                       . "Adresa: {adresa}\n"
-                       . "Telefon: {telefon}\n\n"
-                       . "Cu drag,\n{vila}\n",
-
-    // Mailurile trimise din panoul de administrare (în {acolade} se pun automat valorile)
-    'mail_conf_subiect' => "Rezervare confirmată – %s",
-    'mail_conf_corp' => "Bună ziua, {nume},\n\nRezervarea ta #{id} la {vila} este confirmată. Te așteptăm!\n\nPerioada: {perioada} ({nopti} nopți)\nPersoane: {persoane}\nTotal: {total}\nCheck-in de la {check_in}, check-out până la {check_out}.\n\nAdresa: {adresa}\nHartă: {harta}\nTelefon: {telefon}\n{plata}{anulare}\nCu drag,\n{vila}\n",
-    'mail_plata_avans' => "\nPLATA\nAvans: {avans} ({procent}% din total), de plătit în {zile} zile prin transfer bancar.\nRestul de {rest} se achită la sosire.\n{banca}",
-    'mail_plata_tot' => "\nPLATA\nSuma de {total} se plătește în {zile} zile prin transfer bancar.\n{banca}",
-    'mail_banca' => "Titular: {titular}\nIBAN: {iban}\nBanca: {nume_banca}\nLa detalii plată scrie: Rezervare #{id}\n",
-    'mail_anulare_titlu' => "POLITICA DE ANULARE",
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
-    'mail_anul_subiect' => "Perioada nu mai este disponibilă – %s",
-    'mail_anul_corp' => "Bună ziua, {nume},\n\nNe pare rău, dar perioada {perioada} nu mai este disponibilă la {vila}, așa că nu putem confirma cererea ta #{id}.\n\nPoți alege alte date aici: {link}\nSau sună-ne la {telefon} și găsim împreună o variantă.\n\nCu drag,\n{vila}\n",
+
+    // Mailurile (în {acolade} se pun automat valorile)
+    'mailuri' => [
+        'cerere_subiect' => 'Rezervarea {nr} – plătește avansul pentru confirmare',
+        'cerere_titlu' => 'Perioada e rezervată pentru tine',
+        'cerere_intro' => 'Mulțumim, {nume}! Ținem perioada {perioada} rezervată pentru tine până la {termen}. Rezervarea se confirmă după ce primim avansul de {avans}.',
+        'status_asteptare' => 'Așteaptă plata avansului',
+        'conf_subiect' => 'Rezervare confirmată {nr} – {vila}',
+        'conf_titlu' => 'Rezervarea ta este confirmată',
+        'conf_intro' => 'Am primit plata, {nume}. Te așteptăm la {vila} pe {perioada}!',
+        'status_confirmata' => 'Confirmată',
+        'anul_subiect' => 'Rezervarea {nr} a fost anulată – {vila}',
+        'anul_titlu' => 'Rezervarea nu a putut fi confirmată',
+        'anul_intro' => 'Ne pare rău, {nume}. Cererea {nr} pentru perioada {perioada} a fost anulată: perioada nu mai este disponibilă sau termenul de plată a expirat. Poți alege oricând alte date.',
+        'status_anulata' => 'Anulată',
+        'detalii_titlu' => 'Detaliile rezervării',
+        'lbl_nr' => 'Număr rezervare',
+        'lbl_perioada' => 'Perioada',
+        'lbl_nopti' => 'Nopți',
+        'lbl_persoane' => 'Persoane',
+        'lbl_total' => 'Total sejur',
+        'lbl_avans' => 'Avans de plată ({procent}%)',
+        'lbl_rest' => 'Rest de plată la sosire',
+        'lbl_termen' => 'Termen de plată',
+        'lbl_platit' => 'Avans plătit',
+        'plata_titlu' => 'Cum plătești avansul',
+        'plata_text' => 'Prin transfer bancar, în contul de mai jos, până la {termen}. La detaliile plății scrie numărul rezervării.',
+        'plata_fara_iban' => 'Te contactăm în cel mai scurt timp, la telefon sau pe email, cu detaliile pentru plata avansului.',
+        'lbl_suma' => 'Suma',
+        'lbl_titular' => 'Titular cont',
+        'lbl_iban' => 'IBAN',
+        'lbl_banca' => 'Banca',
+        'lbl_referinta' => 'Detalii plată',
+        'buton_proforma' => 'Vezi proforma (PDF)',
+        'buton_harta' => 'Deschide în Google Maps',
+        'buton_alte_date' => 'Alege alte date',
+        'sosire_titlu' => 'La sosire',
+        'lbl_adresa' => 'Adresa',
+        'lbl_check' => 'Check-in / check-out',
+        'lbl_telefon' => 'Telefon',
+        'check_in_out' => 'Check-in de la {in}, check-out până la {out}',
+        'anulare_titlu' => 'Politica de anulare',
+        'factura_nota' => 'Factura fiscală pentru plata efectuată îți va fi transmisă separat.',
+        'semnatura' => 'Cu drag,',
+    ],
+
+    // Proforma
+    'proforma' => [
+        'titlu' => 'Factură proformă',
+        'nr' => 'Nr.',
+        'data' => 'Data',
+        'valabila' => 'Valabilă până la',
+        'furnizor' => 'Furnizor',
+        'client' => 'Client',
+        'cui' => 'CUI',
+        'reg' => 'Reg. Com.',
+        'sediu' => 'Sediu',
+        'iban' => 'IBAN',
+        'banca' => 'Banca',
+        'tel' => 'Telefon',
+        'email' => 'Email',
+        'descriere' => 'Descriere',
+        'cant' => 'Cant.',
+        'um' => 'nopți',
+        'pret' => 'Preț unitar',
+        'valoare' => 'Valoare',
+        'serviciu' => 'Cazare {vila} (închiriere integrală), {perioada}, {persoane} persoane',
+        'total' => 'Total',
+        'avans' => 'Avans de plată acum ({procent}%)',
+        'rest' => 'Rest de plată la sosire',
+        'plata' => 'Plata se face prin transfer bancar. La detaliile plății menționați: {nr}.',
+        'mentiune' => 'Document fără valoare fiscală. Factura fiscală se emite după încasarea plății.',
+        'print' => 'Descarcă PDF / Tipărește',
+        'negasit' => 'Proforma nu a fost găsită. Verifică linkul din email.',
+        'status_platit' => 'Avans plătit',
+        'status_anulat' => 'Anulată',
+    ],
 ];

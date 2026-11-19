@@ -123,10 +123,11 @@ return [
     'f_mesaj'         => 'Nachricht (optional)',
     'f_accept'        => 'Ich habe die <a href="%s" target="_blank">AGB</a> und die <a href="%s" target="_blank">Datenschutzerklärung</a> gelesen und akzeptiere sie.',
     'f_trimite'       => 'Buchungsanfrage senden',
-    'f_nota'          => 'Die Buchung ist nach unserer Bestätigung verbindlich. Die Online-Kartenzahlung ist bald verfügbar.',
+    'f_nota'          => 'Nach dem Absenden erhalten Sie die Proformarechnung per E-Mail. Der Zeitraum bleibt {ore} Stunden reserviert; die Buchung ist nach der Anzahlung von {procent}% bestätigt.',
     'rez_multumim'    => 'Vielen Dank! Wir haben Ihre Anfrage erhalten.',
     'rez_perioada'    => 'Zeitraum: <strong>%s – %s</strong> (%d Nächte), gesamt <strong>%s</strong>.',
-    'rez_contactam'   => 'Wir melden uns in Kürze zur Bestätigung. Wir haben Ihnen auch eine E-Mail an <strong>%s</strong> geschickt.',
+    'rez_contactam'   => 'Wir haben die Proformarechnung und die Zahlungsdaten an <strong>%s</strong> gesendet. Der Zeitraum ist bis <strong>%s</strong> für Sie reserviert; die Buchung ist nach der Anzahlung von <strong>%s</strong> bestätigt.',
+    'rez_proforma'    => 'Proforma ansehen',
     'rez_intrebari'   => 'Bei Fragen: %s.',
     'rez_inapoi'      => 'Zurück zur Startseite',
 
@@ -159,27 +160,82 @@ return [
         'total'    => '{n} Nächte × {pret} = ',
         'locale'   => 'de-DE',
     ],
-
-    'mail_subiect'    => 'Wir haben Ihre Anfrage erhalten – %s',
-    'mail_corp'       => "Guten Tag {nume},\n\n"
-                       . "wir haben Ihre Buchungsanfrage für {vila} erhalten.\n\n"
-                       . "Zeitraum: {perioada} ({nopti} Nächte)\n"
-                       . "Gäste: {persoane}\n"
-                       . "Voraussichtlicher Gesamtbetrag: {total}\n"
-                       . "Check-in ab {check_in} Uhr, Check-out bis {check_out} Uhr.\n\n"
-                       . "Die Buchung ist nach unserer Bestätigung verbindlich. Wir melden uns in Kürze.\n\n"
-                       . "Adresse: {adresa}\n"
-                       . "Telefon: {telefon}\n\n"
-                       . "Herzliche Grüße\n{vila}\n",
-
-    // Mailurile trimise din panoul de administrare (în {acolade} se pun automat valorile)
-    'mail_conf_subiect' => "Buchung bestätigt – %s",
-    'mail_conf_corp' => "Guten Tag {nume},\n\nIhre Buchung #{id} in der {vila} ist bestätigt. Wir freuen uns auf Sie!\n\nZeitraum: {perioada} ({nopti} Nächte)\nGäste: {persoane}\nGesamt: {total}\nCheck-in ab {check_in} Uhr, Check-out bis {check_out} Uhr.\n\nAdresse: {adresa}\nKarte: {harta}\nTelefon: {telefon}\n{plata}{anulare}\nHerzliche Grüße\n{vila}\n",
-    'mail_plata_avans' => "\nZAHLUNG\nAnzahlung: {avans} ({procent}% des Gesamtbetrags), zahlbar innerhalb von {zile} Tagen per Überweisung.\nDer Restbetrag von {rest} wird bei Anreise bezahlt.\n{banca}",
-    'mail_plata_tot' => "\nZAHLUNG\nDer Betrag von {total} ist innerhalb von {zile} Tagen per Überweisung zu zahlen.\n{banca}",
-    'mail_banca' => "Kontoinhaber: {titular}\nIBAN: {iban}\nBank: {nume_banca}\nVerwendungszweck: Buchung #{id}\n",
-    'mail_anulare_titlu' => "STORNOBEDINGUNGEN",
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
-    'mail_anul_subiect' => "Zeitraum nicht mehr verfügbar – %s",
-    'mail_anul_corp' => "Guten Tag {nume},\n\nleider ist der Zeitraum {perioada} in der {vila} nicht mehr verfügbar, daher können wir Ihre Anfrage #{id} nicht bestätigen.\n\nAndere Termine können Sie hier wählen: {link}\nOder rufen Sie uns an unter {telefon}, dann finden wir gemeinsam eine Lösung.\n\nHerzliche Grüße\n{vila}\n",
+
+    // Mailurile (în {acolade} se pun automat valorile)
+    'mailuri' => [
+        'cerere_subiect' => 'Buchung {nr} – Anzahlung zur Bestätigung',
+        'cerere_titlu' => 'Ihr Zeitraum ist für Sie reserviert',
+        'cerere_intro' => 'Vielen Dank, {nume}! Wir halten den Zeitraum {perioada} bis {termen} für Sie frei. Die Buchung ist bestätigt, sobald die Anzahlung von {avans} eingegangen ist.',
+        'status_asteptare' => 'Anzahlung ausstehend',
+        'conf_subiect' => 'Buchung bestätigt {nr} – {vila}',
+        'conf_titlu' => 'Ihre Buchung ist bestätigt',
+        'conf_intro' => 'Wir haben Ihre Zahlung erhalten, {nume}. Wir freuen uns auf Sie in der {vila} vom {perioada}!',
+        'status_confirmata' => 'Bestätigt',
+        'anul_subiect' => 'Buchung {nr} wurde storniert – {vila}',
+        'anul_titlu' => 'Die Buchung konnte nicht bestätigt werden',
+        'anul_intro' => 'Es tut uns leid, {nume}. Die Anfrage {nr} für {perioada} wurde storniert: Der Zeitraum ist nicht mehr verfügbar oder die Zahlungsfrist ist abgelaufen. Sie können gern andere Termine wählen.',
+        'status_anulata' => 'Storniert',
+        'detalii_titlu' => 'Buchungsdetails',
+        'lbl_nr' => 'Buchungsnummer',
+        'lbl_perioada' => 'Zeitraum',
+        'lbl_nopti' => 'Nächte',
+        'lbl_persoane' => 'Gäste',
+        'lbl_total' => 'Gesamtpreis',
+        'lbl_avans' => 'Anzahlung ({procent}%)',
+        'lbl_rest' => 'Restbetrag bei Anreise',
+        'lbl_termen' => 'Zahlungsfrist',
+        'lbl_platit' => 'Anzahlung bezahlt',
+        'plata_titlu' => 'So zahlen Sie die Anzahlung',
+        'plata_text' => 'Per Überweisung auf das unten genannte Konto bis {termen}. Bitte geben Sie die Buchungsnummer als Verwendungszweck an.',
+        'plata_fara_iban' => 'Wir melden uns in Kürze telefonisch oder per E-Mail mit den Zahlungsdaten für die Anzahlung.',
+        'lbl_suma' => 'Betrag',
+        'lbl_titular' => 'Kontoinhaber',
+        'lbl_iban' => 'IBAN',
+        'lbl_banca' => 'Bank',
+        'lbl_referinta' => 'Verwendungszweck',
+        'buton_proforma' => 'Proforma ansehen (PDF)',
+        'buton_harta' => 'In Google Maps öffnen',
+        'buton_alte_date' => 'Andere Termine wählen',
+        'sosire_titlu' => 'Bei der Anreise',
+        'lbl_adresa' => 'Adresse',
+        'lbl_check' => 'Check-in / Check-out',
+        'lbl_telefon' => 'Telefon',
+        'check_in_out' => 'Check-in ab {in} Uhr, Check-out bis {out} Uhr',
+        'anulare_titlu' => 'Stornobedingungen',
+        'factura_nota' => 'Die Rechnung für Ihre Zahlung erhalten Sie separat.',
+        'semnatura' => 'Herzliche Grüße',
+    ],
+
+    // Proforma
+    'proforma' => [
+        'titlu' => 'Proformarechnung',
+        'nr' => 'Nr.',
+        'data' => 'Datum',
+        'valabila' => 'Gültig bis',
+        'furnizor' => 'Anbieter',
+        'client' => 'Kunde',
+        'cui' => 'Steuer-Nr.',
+        'reg' => 'Handelsreg.',
+        'sediu' => 'Sitz',
+        'iban' => 'IBAN',
+        'banca' => 'Bank',
+        'tel' => 'Telefon',
+        'email' => 'E-Mail',
+        'descriere' => 'Beschreibung',
+        'cant' => 'Menge',
+        'um' => 'Nächte',
+        'pret' => 'Einzelpreis',
+        'valoare' => 'Betrag',
+        'serviciu' => 'Unterkunft {vila} (ganze Villa), {perioada}, {persoane} Gäste',
+        'total' => 'Gesamt',
+        'avans' => 'Jetzt fällige Anzahlung ({procent}%)',
+        'rest' => 'Restbetrag bei Anreise',
+        'plata' => 'Zahlung per Überweisung. Verwendungszweck: {nr}.',
+        'mentiune' => 'Dokument ohne steuerliche Wirkung. Die Rechnung wird nach Zahlungseingang ausgestellt.',
+        'print' => 'PDF herunterladen / Drucken',
+        'negasit' => 'Proforma nicht gefunden. Bitte prüfen Sie den Link in Ihrer E-Mail.',
+        'status_platit' => 'Anzahlung bezahlt',
+        'status_anulat' => 'Storniert',
+    ],
 ];

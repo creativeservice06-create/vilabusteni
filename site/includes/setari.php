@@ -38,11 +38,12 @@ return [
         'tripadvisor' => '',   // DE COMPLETAT
     ],
 
-    // Plata prin transfer (apare în mailul de confirmare doar dacă IBAN-ul e completat)
+    // Plata prin transfer bancar (apare pe proformă și în mailuri)
     'iban'           => '',     // DE COMPLETAT, ex: 'RO49 AAAA 1B31 0075 9384 0000'
     'banca'          => '',     // DE COMPLETAT, ex: 'Banca Transilvania'
-    'avans_procent'  => 0,      // DE COMPLETAT: cât la sută se plătește avans (0 = fără avans, se plătește tot)
-    'avans_zile'     => 3,      // în câte zile de la confirmare trebuie plătit
+    'avans_procent'  => 30,     // avansul care confirmă rezervarea (100 = se plătește tot)
+    'termen_plata_ore' => 48,   // cât timp stau zilele rezervate provizoriu, așteptând plata
+    'serie_proforma' => 'VR',   // proformele se numerotează VR-0001, VR-0002 ...
 
     // Parola panoului de administrare NU e aici: se pune în config.php pe server ('admin_parola').
 

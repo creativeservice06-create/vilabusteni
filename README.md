@@ -41,14 +41,17 @@ Reguli simple:
 - **prețul, telefonul, emailurile** se schimbă doar în `includes/setari.php`;
 - **o poză nouă**: se pune în `images/` și (mai mică) în `images/mici/`, apoi se adaugă în lista `$galerie` din `index.php`.
 
-## Cum funcționează rezervarea (versiunea 1)
+## Cum funcționează rezervarea
 
-1. Clientul alege perioada în calendar (minim 3 nopți) și completează datele.
-2. Cererea se salvează în baza de date cu statusul `in_asteptare`.
-3. Proprietarul primește un email; clientul primește confirmarea de primire.
-4. Proprietarul confirmă telefonic/pe email. Zilele cu status `confirmata` apar ocupate în calendar.
+1. Clientul alege perioada (minim 3 nopți) și trimite cererea.
+2. Perioada e ținută **48 de ore** (`termen_plata_ore`), iar clientul primește mail cu **proforma**
+   (`proforma.php?cod=...`) și detaliile de plată a **avansului de 30%** (`avans_procent`).
+3. Proprietarul primește mail cu link spre panou. Când vede banii în cont → **Plată primită – confirmă**:
+   clientul primește mailul de confirmare; factura fiscală se emite separat (deocamdată de contabil).
+4. Dacă nu plătește în 48h, zilele se eliberează singure în calendar; din panou se poate anula (clientul primește mail).
 
-Urmează: panou de administrare, plata online cu cardul, banner cookie + Google Ads / Meta Pixel, versiunea în engleză.
+Mailurile sunt în `includes/mailuri.php` (șablon HTML cu sigla, merge pe tema deschisă și întunecată),
+textele în `lang/*.php` la cheile `mailuri` și `proforma`.
 
 ## Panoul de administrare – vilabusteni.ro/admin/
 

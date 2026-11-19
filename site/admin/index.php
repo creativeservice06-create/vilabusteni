@@ -73,7 +73,7 @@ if (isset($_SESSION['admin_mesaj'])) {
 
 // ---------- Datele pentru listă ----------
 $file = [
-    'noi'        => ['Cereri noi',   "status = 'in_asteptare' AND plecare >= :azi", 'sosire ASC'],
+    'noi'        => ['Așteaptă plata',   "status = 'in_asteptare' AND plecare >= :azi", 'sosire ASC'],
     'confirmate' => ['Confirmate',   "status = 'confirmata' AND plecare >= :azi",  'sosire ASC'],
     'blocate'    => ['Zile blocate', "status = 'blocat' AND plecare >= :azi",      'sosire ASC'],
     'istoric'    => ['Istoric',      "(status = 'anulata' OR plecare < :azi)",     'sosire DESC'],
@@ -94,7 +94,7 @@ if ($pdo) {
     $lista = $st->fetchAll();
 }
 
-$statusuri = ['in_asteptare' => 'În așteptare', 'confirmata' => 'Confirmată', 'anulata' => 'Anulată', 'blocat' => 'Blocat'];
+$statusuri = ['in_asteptare' => 'Așteaptă plata', 'confirmata' => 'Confirmată', 'anulata' => 'Anulată', 'blocat' => 'Blocat'];
 function data_ro($d) { return date('d.m.Y', strtotime($d)); }
 function zi_sapt($d) { return ['Du', 'Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ'][(int) date('w', strtotime($d))]; }
 ?>
@@ -178,7 +178,7 @@ function zi_sapt($d) { return ['Du', 'Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ'][(int) 
 
   <!-- ===== Lista ===== -->
   <?php if (!$lista): ?>
-    <p class="admin-gol"><?= $vezi === 'noi' ? 'Nicio cerere nouă. Când cineva rezervă pe site, apare aici și primești mail.' : 'Nimic aici deocamdată.' ?></p>
+    <p class="admin-gol"><?= $vezi === 'noi' ? 'Nicio rezervare care așteaptă plata. Când cineva rezervă pe site, apare aici și primești mail.' : 'Nimic aici deocamdată.' ?></p>
   <?php endif; ?>
 
   <div class="admin-lista">
@@ -200,6 +200,18 @@ function zi_sapt($d) { return ['Du', 'Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ'][(int) 
         <dl>
           <dt>Client</dt><dd><?= e($r['nume']) ?>, <?= (int) $r['persoane'] ?> pers.</dd>
           <dt>Total</dt><dd><strong><?= number_format((int) $r['total'], 0, ',', '.') ?> lei</strong></dd>
+          <?php if ((int) ($r['avans'] ?? 0) > 0): ?>
+          <dt><?= $r['status'] === 'confirmata' ? 'Avans plătit' : 'Avans' ?></dt><dd><?= number_format((int) $r['avans'], 0, ',', '.') ?> lei
+            <?php if ($r['status'] === 'in_asteptare' && !empty($r['termen_plata'])): ?>
+              <?php $expirat = strtotime($r['termen_plata']) < time(); ?>
+              <br><span class="admin-termen<?= $expirat ? ' expirat' : '' ?>"><?= $expirat ? 'Termen expirat' : 'Termen' ?>: <?= e(date('d.m.Y H:i', strtotime($r['termen_plata']))) ?></span>
+            <?php endif; ?>
+            <?php if (!empty($r['platit_la'])): ?><br><span class="mic">Înregistrat: <?= e(date('d.m.Y H:i', strtotime($r['platit_la']))) ?></span><?php endif; ?>
+          </dd>
+          <?php endif; ?>
+          <?php if (!empty($r['cod'])): ?>
+          <dt>Proformă</dt><dd><a href="<?= e(link_proforma($r)) ?>" target="_blank"><?= e(numar_proforma($r['id'], $setari)) ?></a></dd>
+          <?php endif; ?>
           <dt>Telefon</dt><dd>
             <a href="tel:<?= e(preg_replace('/[^\d+]/', '', $r['telefon'])) ?>"><?= e($r['telefon']) ?></a>
             · <a href="https://wa.me/<?= e(ltrim(preg_replace('/\D/', '', preg_replace('/^0/', '40', $r['telefon'])), '0')) ?>" target="_blank" rel="noopener">WhatsApp</a>
@@ -213,14 +225,14 @@ function zi_sapt($d) { return ['Du', 'Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ'][(int) 
       <?php if (strtotime($r['plecare']) >= strtotime('today') && $r['status'] !== 'anulata'): ?>
         <div class="admin-butoane">
           <?php if ($r['status'] === 'in_asteptare'): ?>
-            <form method="post" onsubmit="return confirm('Confirmi rezervarea #<?= (int) $r['id'] ?>? Clientul primește mail de confirmare.')">
+            <form method="post" onsubmit="return confirm('Ai primit avansul pentru #<?= (int) $r['id'] ?>? Rezervarea se confirmă și clientul primește mail de confirmare.')">
               <input type="hidden" name="token" value="<?= e(token_formular()) ?>">
               <input type="hidden" name="actiune" value="confirma"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
-              <button class="buton buton-plin">Confirmă</button>
+              <button class="buton buton-plin">Plată primită – confirmă</button>
             </form>
           <?php endif; ?>
           <?php if (in_array($r['status'], ['in_asteptare', 'confirmata'], true)): ?>
-            <form method="post" onsubmit="return confirm('Anulezi rezervarea #<?= (int) $r['id'] ?>? Clientul primește mail că perioada nu e disponibilă.')">
+            <form method="post" onsubmit="return confirm('Anulezi rezervarea #<?= (int) $r['id'] ?>? Zilele se eliberează și clientul primește mail de anulare.')">
               <input type="hidden" name="token" value="<?= e(token_formular()) ?>">
               <input type="hidden" name="actiune" value="anuleaza"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
               <button class="buton buton-contur">Anulează</button>

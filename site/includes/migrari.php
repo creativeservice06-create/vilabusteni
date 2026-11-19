@@ -31,6 +31,10 @@ function migrari()
 
         // notă internă (vizibilă doar în panoul de administrare) și data ultimei schimbări de status
         3 => "ALTER TABLE rezervari ADD COLUMN nota VARCHAR(255) NULL, ADD COLUMN modificat_la DATETIME NULL",
+
+        // proforma și plata: cod secret pentru linkul proformei, avansul, termenul de plată, data plății
+        4 => "ALTER TABLE rezervari ADD COLUMN cod VARCHAR(32) NULL, ADD COLUMN avans INT NOT NULL DEFAULT 0,
+                                    ADD COLUMN termen_plata DATETIME NULL, ADD COLUMN platit_la DATETIME NULL",
     ];
 }
 
