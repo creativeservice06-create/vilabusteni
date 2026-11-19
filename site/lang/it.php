@@ -229,6 +229,32 @@ return [
         'indisponibil' => 'Questa prenotazione non può più essere pagata con carta.',
         'err_start' => 'Non è stato possibile aprire la pagina di pagamento. Riprova tra un minuto o chiamaci al %s.',
     ],
+    'retragere_link' => 'Recedi dal contratto qui',
+    // Retragerea online din contract (retragere.php)
+    'retragere' => [
+        'titlu' => 'Recesso dal contratto',
+        'h1' => 'Recedi dal contratto qui',
+        'intro' => 'Compila il modulo per inviarci la dichiarazione di recesso dal contratto di alloggio concluso su vilabusteni.ro. Dopo aver premuto “Conferma il recesso”, ricevi subito via email la conferma di ricezione, con data e ora.',
+        'nota_cazare' => 'Per i servizi di alloggio in date specifiche il diritto legale di recesso di 14 giorni non si applica (art. 16 lett. l OUG 34/2014); annullamento e rimborso seguono la politica di cancellazione nei',
+        'nume' => 'Nome e cognome',
+        'rezervare' => 'Numero di prenotazione',
+        'rezervare_ajutor' => 'Lo trovi nell’email di prenotazione, ad es. VR-0007.',
+        'email' => 'Email',
+        'email_ajutor' => 'L’indirizzo usato per la prenotazione; qui ricevi la conferma di ricezione.',
+        'mesaj' => 'Dettagli (facoltativo)',
+        'buton' => 'Conferma il recesso',
+        'err_rezervare' => 'Inserisci il numero di prenotazione.',
+        'ok_titlu' => 'Abbiamo ricevuto la tua dichiarazione di recesso.',
+        'ok_text' => 'Registrata il {data} con il numero {nr}. Ti abbiamo inviato la conferma di ricezione a {email}. Ti contatteremo a breve con i passi successivi e, se previsto, con il rimborso.',
+        'declaratie' => 'Con la presente comunico il recesso dal contratto di servizi di alloggio indicato di seguito.',
+        'data_ora' => 'Data e ora di invio',
+        'nr_inregistrare' => 'Numero di registrazione',
+        'mail_subiect' => 'Conferma di ricezione – recesso dal contratto ({rezervare})',
+        'mail_titlu' => 'Abbiamo ricevuto il tuo recesso',
+        'mail_intro' => 'Confermiamo di aver ricevuto il {data} la tua dichiarazione di recesso dal contratto, con il contenuto riportato sotto. Ti contatteremo a breve con i passi successivi.',
+        'mail_status' => 'Recesso ricevuto',
+        'mail_continut' => 'Contenuto della dichiarazione',
+    ],
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
 
     // Mailurile (în {acolade} se pun automat valorile)

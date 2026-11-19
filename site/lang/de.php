@@ -229,6 +229,32 @@ return [
         'indisponibil' => 'Diese Buchung kann nicht mehr mit Karte bezahlt werden.',
         'err_start' => 'Die Zahlungsseite konnte nicht geöffnet werden. Bitte versuchen Sie es in einer Minute erneut oder rufen Sie uns an unter %s.',
     ],
+    'retragere_link' => 'Hier vom Vertrag zurücktreten',
+    // Retragerea online din contract (retragere.php)
+    'retragere' => [
+        'titlu' => 'Widerruf des Vertrags',
+        'h1' => 'Hier vom Vertrag zurücktreten',
+        'intro' => 'Füllen Sie das Formular aus, um uns Ihre Widerrufserklärung zum auf vilabusteni.ro geschlossenen Beherbergungsvertrag zu senden. Nachdem Sie auf „Widerruf bestätigen“ klicken, erhalten Sie sofort per E-Mail eine Eingangsbestätigung mit Datum und Uhrzeit.',
+        'nota_cazare' => 'Für Beherbergungsleistungen zu einem bestimmten Termin gilt das gesetzliche 14-tägige Widerrufsrecht nicht (Art. 16 Buchst. l OUG 34/2014); Stornierung und Erstattung richten sich nach der Stornierungsregelung in den',
+        'nume' => 'Vor- und Nachname',
+        'rezervare' => 'Buchungsnummer',
+        'rezervare_ajutor' => 'Sie finden sie in Ihrer Buchungs-E-Mail, z. B. VR-0007.',
+        'email' => 'E-Mail',
+        'email_ajutor' => 'Die bei der Buchung verwendete Adresse; dorthin senden wir die Eingangsbestätigung.',
+        'mesaj' => 'Details (optional)',
+        'buton' => 'Widerruf bestätigen',
+        'err_rezervare' => 'Bitte geben Sie Ihre Buchungsnummer ein.',
+        'ok_titlu' => 'Wir haben Ihre Widerrufserklärung erhalten.',
+        'ok_text' => 'Registriert am {data} unter der Nummer {nr}. Die Eingangsbestätigung haben wir an {email} gesendet. Wir melden uns in Kürze mit den nächsten Schritten und gegebenenfalls der Erstattung.',
+        'declaratie' => 'Hiermit widerrufe ich den unten angegebenen Vertrag über Beherbergungsleistungen.',
+        'data_ora' => 'Datum und Uhrzeit der Übermittlung',
+        'nr_inregistrare' => 'Registriernummer',
+        'mail_subiect' => 'Eingangsbestätigung – Widerruf des Vertrags ({rezervare})',
+        'mail_titlu' => 'Wir haben Ihren Widerruf erhalten',
+        'mail_intro' => 'Wir bestätigen, dass wir am {data} Ihre Widerrufserklärung mit dem unten stehenden Inhalt erhalten haben. Wir melden uns in Kürze mit den nächsten Schritten.',
+        'mail_status' => 'Widerruf eingegangen',
+        'mail_continut' => 'Inhalt der Erklärung',
+    ],
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
 
     // Mailurile (în {acolade} se pun automat valorile)

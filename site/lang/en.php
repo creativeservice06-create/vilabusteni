@@ -229,6 +229,32 @@ return [
         'indisponibil' => 'This booking can no longer be paid by card.',
         'err_start' => 'We could not open the payment page. Please try again in a minute or call us at %s.',
     ],
+    'retragere_link' => 'Withdraw from the contract here',
+    // Retragerea online din contract (retragere.php)
+    'retragere' => [
+        'titlu' => 'Withdrawal from the contract',
+        'h1' => 'Withdraw from the contract here',
+        'intro' => 'Fill in the form below to send us your declaration of withdrawal from the accommodation contract concluded on vilabusteni.ro. After you press “Confirm withdrawal”, you immediately receive an acknowledgement of receipt by email, with the date and time.',
+        'nota_cazare' => 'For accommodation services on specific dates, the statutory 14-day right of withdrawal does not apply (art. 16(l) of GEO 34/2014); cancellations and refunds follow the cancellation policy in the',
+        'nume' => 'Full name',
+        'rezervare' => 'Booking number',
+        'rezervare_ajutor' => 'You can find it in your booking email, e.g. VR-0007.',
+        'email' => 'Email',
+        'email_ajutor' => 'The address used for the booking; the acknowledgement of receipt is sent here.',
+        'mesaj' => 'Details (optional)',
+        'buton' => 'Confirm withdrawal',
+        'err_rezervare' => 'Please enter your booking number.',
+        'ok_titlu' => 'We have received your declaration of withdrawal.',
+        'ok_text' => 'Registered on {data} under number {nr}. We have sent the acknowledgement of receipt to {email}. We will contact you shortly with the next steps and, where applicable, the refund.',
+        'declaratie' => 'I hereby give notice of my withdrawal from the accommodation services contract identified below.',
+        'data_ora' => 'Date and time sent',
+        'nr_inregistrare' => 'Registration number',
+        'mail_subiect' => 'Acknowledgement of receipt – withdrawal from contract ({rezervare})',
+        'mail_titlu' => 'We have received your declaration of withdrawal',
+        'mail_intro' => 'We confirm that on {data} we received your declaration of withdrawal from the contract, with the content below. We will contact you shortly with the next steps.',
+        'mail_status' => 'Withdrawal received',
+        'mail_continut' => 'Content of the declaration',
+    ],
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
 
     // Mailurile (în {acolade} se pun automat valorile)

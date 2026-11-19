@@ -45,7 +45,7 @@ if ($r) {
   <meta name="robots" content="noindex, nofollow">
   <title><?= e($P['titlu']) ?><?= $r ? ' ' . e($v['{nr}']) : '' ?> – <?= e($setari['nume_vila']) ?></title>
   <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
-  <link rel="stylesheet" href="/assets/css/style.css?v=11">
+  <link rel="stylesheet" href="/assets/css/style.css?v=12">
   <link rel="stylesheet" href="/assets/css/proforma.css?v=3">
 </head>
 <body class="proforma-pagina">

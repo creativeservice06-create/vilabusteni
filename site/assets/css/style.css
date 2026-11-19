@@ -443,6 +443,8 @@ button.cal-zi:hover { background: var(--cer); }
 .rotita { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 3px solid #e6cf9f; border-top-color: #8a5d0a; animation: roteste 1s linear infinite; }
 @keyframes roteste { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .rotita { animation-duration: 3s; } }
+.retragere { max-width: 40rem; }
+.form-retragere label .mic { display: block; font-weight: 400; margin-top: .35rem; }
 .plati-acceptate { margin: .9rem 0 0; font-size: .85rem; opacity: .85; }
 
 /* ============================================================

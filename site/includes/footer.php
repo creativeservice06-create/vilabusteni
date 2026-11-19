@@ -36,6 +36,7 @@
       <a href="<?= e(url('/termeni.php')) ?>"><?= e(t('termeni')) ?></a>
       <a href="<?= e(url('/confidentialitate.php')) ?>"><?= e(t('confidentialitate')) ?></a>
       <a href="<?= e(url('/cookies.php')) ?>"><?= e(t('cookies')) ?></a>
+      <a href="<?= e(url('/retragere.php')) ?>"><?= e(t('retragere_link')) ?></a>
       <a href="https://anpc.ro/" target="_blank" rel="noopener">ANPC</a>
       <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener"><?= e(t('anpc_sal')) ?></a>
     </nav>

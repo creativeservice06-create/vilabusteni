@@ -15,6 +15,9 @@ $f = $setari;
   <p>Site-ul vilabusteni.ro este administrat de <strong><?= e($f['firma_nume']) ?></strong>, CUI <?= e($f['firma_cui']) ?>,
      <?= e($f['firma_reg_com']) ?>, cu sediul în <?= e($f['firma_sediu']) ?>
      („noi”). Contact: <?= e($f['telefon']) ?>, <?= e($f['email_contact']) ?>.</p>
+  <p><strong>Rolul nostru:</strong> <?= e($f['firma_nume']) ?> este prestatorul direct al serviciului de cazare (comerciant):
+     vindem serviciul în nume propriu, încasăm plata și emitem factura fiscală. Nu acționăm ca intermediar sau marketplace.
+     <?= e($f['nume_vila']) ?> este o marcă <?= e($f['firma_marca']) ?>.</p>
 
   <h2>2. Obiectul</h2>
   <p>Prin acest site oferim servicii de cazare în <?= e($f['nume_vila']) ?>, <?= e($f['adresa']) ?>. Vila se închiriază integral.</p>
@@ -40,21 +43,30 @@ $f = $setari;
   </ul>
   <p>Factura fiscală se emite după încasare, pe numele și adresa (sau firma) completate în formularul de rezervare, și se trimite pe email.</p>
 
-  <h2>5. Anulare și rambursare</h2>
+  <h2 id="livrare">5. Prestarea serviciului („livrarea”)</h2>
+  <p>Nu livrăm produse fizice. Serviciul cumpărat este cazarea în <?= e($f['nume_vila']) ?>, <?= e($f['adresa']) ?>, în perioada rezervată.
+     După confirmarea plății primești pe email confirmarea rezervării, cu adresa, orele de check-in (de la <?= e($f['ora_check_in']) ?>)
+     și check-out (până la <?= e($f['ora_check_out']) ?>) și datele de contact. Accesul în vilă se face la sosire, pe baza rezervării confirmate.
+     Nu există costuri de livrare.</p>
+
+  <h2 id="anulare">6. Anulare și rambursare</h2>
   <p class="de-completat">[Politica de anulare: de ex. anulare gratuită cu X zile înainte de sosire; între X și Y zile se reține Z%; sub Y zile nu se rambursează. Termenul de rambursare: N zile lucrătoare.]</p>
   <p>Sumele plătite cu cardul se rambursează pe același card, prin NETOPIA Payments; cele plătite prin transfer, în contul din care au fost trimise.</p>
   <p>Conform art. 16 lit. l) din OUG 34/2014, dreptul de retragere de 14 zile nu se aplică serviciilor de cazare
      prestate la o dată sau într-o perioadă anume; se aplică politica de anulare de mai sus.</p>
+  <p>Poți trimite oricând online declarația de retragere / anulare din pagina
+     <a href="<?= e(url('/retragere.php')) ?>">Retrageți-vă din contract aici</a> (link și în subsolul fiecărei pagini).
+     Primești imediat pe email confirmarea de primire, cu data și ora. O poți trimite și pe email, la <?= e($f['email_contact']) ?>.</p>
 
-  <h2>6. Regulile casei</h2>
+  <h2>7. Regulile casei</h2>
   <p class="de-completat">[Fumat, animale de companie, petreceri, liniște, garanție/depozit, răspunderea pentru daune etc.]</p>
 
-  <h2>7. Reclamații și litigii</h2>
+  <h2>8. Reclamații și litigii</h2>
   <p>Reclamațiile se pot trimite la <?= e($f['email_contact']) ?>. Consumatorii se pot adresa și
      <a href="https://anpc.ro/" target="_blank" rel="noopener">ANPC</a> sau procedurii de
      <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener">soluționare alternativă a litigiilor (SAL)</a>.</p>
 
-  <h2>8. Date personale</h2>
+  <h2>9. Date personale</h2>
   <p>Prelucrăm datele tale conform <a href="<?= e(url('/confidentialitate.php')) ?>">Politicii de confidențialitate</a>.</p>
 </section>
 <?php require __DIR__ . '/includes/footer.php'; ?>

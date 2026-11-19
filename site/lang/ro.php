@@ -245,6 +245,32 @@ return [
         'indisponibil' => 'Rezervarea nu mai poate fi plătită cu cardul.',
         'err_start' => 'Nu am putut deschide pagina de plată. Încearcă din nou peste un minut sau sună-ne la %s.',
     ],
+    'retragere_link' => 'Retrageți-vă din contract aici',
+    // Retragerea online din contract (retragere.php)
+    'retragere' => [
+        'titlu' => 'Retragere din contract',
+        'h1' => 'Retrageți-vă din contract aici',
+        'intro' => 'Completează formularul de mai jos pentru a ne trimite declarația de retragere din contractul de cazare încheiat pe vilabusteni.ro. După ce apeși „Confirmați retragerea”, primești imediat pe email confirmarea de primire, cu data și ora.',
+        'nota_cazare' => 'Pentru serviciile de cazare la o dată anume, dreptul legal de retragere de 14 zile nu se aplică (art. 16 lit. l din OUG 34/2014); anularea și rambursarea se fac conform politicii de anulare din',
+        'nume' => 'Nume și prenume',
+        'rezervare' => 'Numărul rezervării',
+        'rezervare_ajutor' => 'Îl găsești în emailul de rezervare, de forma VR-0007.',
+        'email' => 'Email',
+        'email_ajutor' => 'Adresa folosită la rezervare; aici primești confirmarea de primire.',
+        'mesaj' => 'Detalii (opțional)',
+        'buton' => 'Confirmați retragerea',
+        'err_rezervare' => 'Completează numărul rezervării.',
+        'ok_titlu' => 'Am primit declarația ta de retragere.',
+        'ok_text' => 'Înregistrată pe {data}, cu numărul {nr}. Ți-am trimis confirmarea de primire pe {email}. Te contactăm în cel mai scurt timp cu pașii următori și, dacă e cazul, cu rambursarea.',
+        'declaratie' => 'Prin prezenta notific retragerea din contractul de prestare a serviciilor de cazare identificat mai jos.',
+        'data_ora' => 'Data și ora transmiterii',
+        'nr_inregistrare' => 'Număr de înregistrare',
+        'mail_subiect' => 'Confirmare de primire – retragere din contract ({rezervare})',
+        'mail_titlu' => 'Am primit declarația de retragere',
+        'mail_intro' => 'Confirmăm că am primit pe {data} declarația ta de retragere din contract, cu conținutul de mai jos. Te contactăm în cel mai scurt timp cu pașii următori.',
+        'mail_status' => 'Retragere primită',
+        'mail_continut' => 'Conținutul declarației',
+    ],
     'politica_anulare' => "",   // DE COMPLETAT: textul politicii de anulare (gol = nu apare în mail)
 
     // Mailurile (în {acolade} se pun automat valorile)

@@ -77,6 +77,19 @@ function migrari()
                 creat_la      DATETIME NOT NULL,
                 INDEX (rezervare_id)
               ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+        // declarațiile de retragere trimise online (art. 11^1 OUG 34/2014) – păstrate ca dovadă
+        9 => "CREATE TABLE IF NOT EXISTS retrageri (
+                id            INT AUTO_INCREMENT PRIMARY KEY,
+                nume          VARCHAR(120) NOT NULL,
+                email         VARCHAR(160) NOT NULL,
+                rezervare     VARCHAR(40) NOT NULL,
+                rezervare_id  INT NULL,
+                mesaj         TEXT,
+                ip            VARCHAR(45),
+                limba         VARCHAR(5) NOT NULL DEFAULT 'ro',
+                creat_la      DATETIME NOT NULL
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
     ];
 }
 
