@@ -35,6 +35,10 @@ function migrari()
         // proforma și plata: cod secret pentru linkul proformei, avansul, termenul de plată, data plății
         4 => "ALTER TABLE rezervari ADD COLUMN cod VARCHAR(32) NULL, ADD COLUMN avans INT NOT NULL DEFAULT 0,
                                     ADD COLUMN termen_plata DATETIME NULL, ADD COLUMN platit_la DATETIME NULL",
+
+        // ce a ales clientul să plătească (avans / suma / integral) și dovada de plată încărcată
+        5 => "ALTER TABLE rezervari ADD COLUMN optiune_plata VARCHAR(10) NOT NULL DEFAULT 'avans',
+                                    ADD COLUMN dovada_fisier VARCHAR(255) NULL, ADD COLUMN dovada_la DATETIME NULL",
     ];
 }
 

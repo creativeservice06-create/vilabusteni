@@ -15,6 +15,23 @@ if (strlen($cod) === 32 && ($pdo = db())) {
     $st->execute([$cod]);
     $r = $st->fetch() ?: null;
 }
+// Încărcarea dovezii de plată
+$mesaj_dovada = null;
+if ($r && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['dovada'])) {
+    if (($_POST['token'] ?? '') !== ($_SESSION['token'] ?? null)) {
+        $mesaj_dovada = ['eroare', $P['dov_err']];
+    } elseif ($r['status'] === 'confirmata') {
+        $mesaj_dovada = ['ok', $P['dov_ok']];
+    } else {
+        [$ok, $cheie] = salveaza_dovada($pdo, $r, $_FILES['dovada'], $setari);
+        $mesaj_dovada = $ok ? ['ok', $P['dov_ok']] : ['eroare', $P[$cheie]];
+        if ($ok) {
+            $st->execute([$cod]);
+            $r = $st->fetch();
+        }
+    }
+}
+
 if ($r) {
     $v = valori_mail($r, $setari, $LIMBA, $GLOBALS['TEXTE']);
     $pret_noapte = $r['nopti'] > 0 ? (int) round($r['total'] / $r['nopti']) : 0;
@@ -29,7 +46,7 @@ if ($r) {
   <title><?= e($P['titlu']) ?><?= $r ? ' ' . e($v['{nr}']) : '' ?> – <?= e($setari['nume_vila']) ?></title>
   <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
   <link rel="stylesheet" href="/assets/css/style.css?v=8">
-  <link rel="stylesheet" href="/assets/css/proforma.css?v=1">
+  <link rel="stylesheet" href="/assets/css/proforma.css?v=2">
 </head>
 <body class="proforma-pagina">
 
@@ -38,6 +55,9 @@ if ($r) {
 <?php else: ?>
 
   <div class="bara-print">
+    <?php if ($r['status'] !== 'confirmata'): ?>
+      <a href="#dovada" class="buton buton-contur"><?= e($P['dov_buton_sus']) ?></a>
+    <?php endif; ?>
     <button type="button" class="buton buton-plin" onclick="window.print()"><?= e($P['print']) ?></button>
   </div>
 
@@ -100,8 +120,8 @@ if ($r) {
 
     <table class="doc-totaluri">
       <tr><th><?= e($P['total']) ?></th><td><strong><?= e($v['{total}']) ?></strong></td></tr>
-      <tr class="de-plata"><th><?= e(strtr($P['avans'], $v)) ?></th><td><strong><?= e($v['{avans}']) ?></strong></td></tr>
-      <?php if ($v['{procent}'] < 100): ?>
+      <tr class="de-plata"><th><?= e($v['{integral}'] ? $P['integral'] : strtr($P['avans'], $v)) ?></th><td><strong><?= e($v['{avans}']) ?></strong></td></tr>
+      <?php if (!$v['{integral}']): ?>
       <tr><th><?= e($P['rest']) ?></th><td><?= e($v['{rest}']) ?></td></tr>
       <?php endif; ?>
     </table>
@@ -113,6 +133,27 @@ if ($r) {
       <?= e($setari['nume_vila']) ?> · <?= e($setari['adresa']) ?> · vilabusteni.ro
     </footer>
   </main>
+
+  <?php if ($r['status'] !== 'confirmata'): ?>
+  <!-- Trimiterea dovezii de plată (nu apare la tipărire) -->
+  <section class="dovada" id="dovada">
+    <h2><?= e($P['dov_titlu']) ?></h2>
+    <p><?= e($P['dov_text']) ?></p>
+    <?php if ($mesaj_dovada): ?>
+      <p class="dovada-mesaj dovada-<?= e($mesaj_dovada[0]) ?>" role="status"><?= e($mesaj_dovada[1]) ?></p>
+    <?php elseif (!empty($r['dovada_la'])): ?>
+      <p class="dovada-mesaj dovada-ok"><?= e(strtr($P['dov_deja'], ['{data}' => date('d.m.Y, H:i', strtotime($r['dovada_la']))])) ?></p>
+    <?php endif; ?>
+    <form method="post" enctype="multipart/form-data" action="#dovada">
+      <input type="hidden" name="token" value="<?= e(token_formular()) ?>">
+      <label class="dovada-fisier">
+        <span><?= e($P['dov_fisier']) ?></span>
+        <input type="file" name="dovada" accept="image/jpeg,image/png,image/webp,application/pdf" required>
+      </label>
+      <button class="buton buton-plin"><?= e($P['dov_buton']) ?></button>
+    </form>
+  </section>
+  <?php endif; ?>
 
 <?php endif; ?>
 </body>

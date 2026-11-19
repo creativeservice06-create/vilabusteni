@@ -43,7 +43,7 @@ Reguli simple:
 
 ## Cum funcționează rezervarea
 
-1. Clientul alege perioada (minim 3 nopți) și trimite cererea.
+1. Clientul alege perioada (minim 3 nopți) și cât plătește acum: avansul de 30%, o sumă aleasă (minimum 30%) sau totul.
 2. Perioada e ținută **48 de ore** (`termen_plata_ore`), iar clientul primește mail cu **proforma**
    (`proforma.php?cod=...`) și detaliile de plată a **avansului de 30%** (`avans_procent`).
 3. Proprietarul primește mail cu link spre panou. Când vede banii în cont → **Plată primită – confirmă**:
@@ -51,6 +51,9 @@ Reguli simple:
 4. Dacă nu plătește în 48h, rezervarea se **anulează automat** (`includes/automat.php`, verificare la cel mult 5 minute,
    declanșată de orice vizită pe site; opțional și din cron: `cron/expirate.php`). Clientul și proprietarul primesc mail.
    Dacă clientul a plătit totuși, din panou → Istoric → **Reactivează – plată primită**.
+5. Clientul poate trimite **dovada de plată** (poză/PDF) din pagina proformei. Fișierul se păstrează în `dovezi-plata/`
+   (lângă public_html, nu e accesibil din browser), proprietarul îl primește atașat pe mail și îl vede în panou.
+   O rezervare cu dovadă trimisă nu se mai anulează automat.
 
 Mailurile sunt în `includes/mailuri.php` (șablon HTML cu sigla, merge pe tema deschisă și întunecată),
 textele în `lang/*.php` la cheile `mailuri` și `proforma`.

@@ -114,7 +114,28 @@
     deseneaza();
   }
 
+  // Anunță formularul ce total s-a ales (0 = perioadă incompletă)
+  function anuntaTotal() {
+    var total = (sosire && plecare && nopti(sosire, plecare) >= MINIM) ? nopti(sosire, plecare) * PRET : 0;
+    actualizeazaPlata(total);
+  }
+
+  // Opțiunile de plată: sumele afișate și limitele pentru „altă sumă”
+  function actualizeazaPlata(total) {
+    var box = document.getElementById('optiuni-plata');
+    if (!box) return;
+    var minim = Math.round(total * PROCENT / 100);
+    var gol = box.querySelector('[data-suma="avans"]').dataset.gol || box.querySelector('[data-suma="avans"]').textContent;
+    box.querySelectorAll('[data-suma]').forEach(function (el) { if (!el.dataset.gol) el.dataset.gol = gol; });
+    box.querySelector('[data-suma="avans"]').textContent = total ? lei(minim) : gol;
+    box.querySelector('[data-suma="integral"]').textContent = total ? lei(total) : gol;
+    var camp = box.querySelector('input[name="suma"]');
+    camp.placeholder = total ? lei(minim) + ' – ' + lei(total) : MONEDA;
+    camp.dataset.minim = minim; camp.dataset.maxim = total;
+  }
+
   function actualizeazaSumar() {
+    anuntaTotal();
     if (!sosire) {
       sumar.innerHTML = T.start;
       sumar.className = 'sumar';
@@ -143,4 +164,20 @@
     .then(function (j) { (j.ocupate || []).forEach(function (z) { ocupate[z] = true; }); })
     .catch(function () { /* fără date de disponibilitate: calendarul merge oricum */ })
     .then(deseneaza);
+})();
+
+// Opțiunile de plată: un click în câmpul „altă sumă” bifează opțiunea; suma se verifică la ieșirea din câmp
+(function () {
+  var box = document.getElementById('optiuni-plata');
+  if (!box) return;
+  var camp = box.querySelector('input[name="suma"]');
+  var radioSuma = box.querySelector('input[value="suma"]');
+  camp.addEventListener('focus', function () { radioSuma.checked = true; });
+  camp.addEventListener('input', function () { camp.value = camp.value.replace(/\D/g, ''); });
+  camp.addEventListener('blur', function () {
+    var v = parseInt(camp.value, 10), min = parseInt(camp.dataset.minim, 10), max = parseInt(camp.dataset.maxim, 10);
+    if (!v || !max) return;
+    if (v < min) camp.value = min;
+    if (v > max) camp.value = max;
+  });
 })();

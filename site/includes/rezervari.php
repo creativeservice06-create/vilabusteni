@@ -57,6 +57,22 @@ function salveaza_rezervare(array $d, array $post, array $setari)
         $erori[] = t('err_accept');
     }
 
+    // Cât plătește acum: avansul minim, o sumă aleasă (cel puțin avansul) sau totul
+    $total    = max(0, $nopti) * $setari['pret_noapte'];
+    $minim    = avans_pentru($total, $setari);
+    $optiune  = in_array($post['plata'] ?? '', ['avans', 'suma', 'integral'], true) ? $post['plata'] : 'avans';
+    $de_plata = $minim;
+    if ($optiune === 'integral') {
+        $de_plata = $total;
+    } elseif ($optiune === 'suma' && $total > 0) {
+        $de_plata = (int) preg_replace('/\D/', '', (string) ($post['suma'] ?? ''));
+        if ($de_plata < $minim || $de_plata > $total) {
+            $erori[] = t('err_suma', lei($minim), lei($total));
+        } elseif ($de_plata === $total) {
+            $optiune = 'integral';
+        }
+    }
+
     if ($erori) {
         return ['erori' => $erori, 'nopti' => $nopti, 'total' => 0];
     }
@@ -75,20 +91,18 @@ function salveaza_rezervare(array $d, array $post, array $setari)
         return ['erori' => [t('err_ocupat')], 'nopti' => $nopti, 'total' => 0];
     }
 
-    $total = $nopti * $setari['pret_noapte'];
-
     $cod     = bin2hex(random_bytes(16));   // pentru linkul secret al proformei
-    $avans   = avans_pentru($total, $setari);
+    $avans   = $de_plata;                    // suma de plătit acum, aleasă de client
     $termen  = date('Y-m-d H:i:s', time() + $setari['termen_plata_ore'] * 3600);
-    $st = $pdo->prepare("INSERT INTO rezervari (sosire, plecare, nopti, persoane, nume, email, telefon, mesaj, total, status, ip, limba, cod, avans, termen_plata)
-                         VALUES (:sosire, :plecare, :nopti, :persoane, :nume, :email, :telefon, :mesaj, :total, 'in_asteptare', :ip, :limba, :cod, :avans, :termen)");
+    $st = $pdo->prepare("INSERT INTO rezervari (sosire, plecare, nopti, persoane, nume, email, telefon, mesaj, total, status, ip, limba, cod, avans, termen_plata, optiune_plata)
+                         VALUES (:sosire, :plecare, :nopti, :persoane, :nume, :email, :telefon, :mesaj, :total, 'in_asteptare', :ip, :limba, :cod, :avans, :termen, :optiune)");
     $st->execute([
         ':sosire' => $d['sosire'], ':plecare' => $d['plecare'], ':nopti' => $nopti,
         ':persoane' => $persoane, ':nume' => $d['nume'], ':email' => $d['email'],
         ':telefon' => $d['telefon'], ':mesaj' => $d['mesaj'], ':total' => $total,
         ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
         ':limba' => $GLOBALS['LIMBA'],
-        ':cod' => $cod, ':avans' => $avans, ':termen' => $termen,
+        ':cod' => $cod, ':avans' => $avans, ':termen' => $termen, ':optiune' => $optiune,
     ]);
     $id = $pdo->lastInsertId();
     } catch (PDOException $ex) {
@@ -204,7 +218,8 @@ function blocheaza_perioada(PDO $pdo, $sosire, $plecare, $nota)
 function anuleaza_expirate(PDO $pdo, array $setari)
 {
     $acum = date('Y-m-d H:i:s');
-    $st = $pdo->prepare("SELECT * FROM rezervari WHERE status = 'in_asteptare' AND termen_plata IS NOT NULL AND termen_plata < ?");
+    $st = $pdo->prepare("SELECT * FROM rezervari WHERE status = 'in_asteptare' AND termen_plata IS NOT NULL AND termen_plata < ?
+                           AND dovada_la IS NULL");   // cu dovadă de plată trimisă: decide proprietarul
     $st->execute([$acum]);
     $anulate = 0;
     foreach ($st->fetchAll() as $r) {
@@ -235,4 +250,69 @@ function trimite_mail_anulare_automata(array $r, array $setari)
         'E' => $E, 'T' => $T, 'v' => $v, 'setari' => $setari,
     ]);
     return trimite_mail_html($setari['email_proprietar'], "Anulată automat #{$r['id']} – {$v['{perioada}']} – {$r['nume']}", $html, $setari, $r['email']);
+}
+
+// ============================================================
+//  DOVADA DE PLATĂ
+//  Fișierele se păstrează ÎN AFARA public_html (nu pot fi deschise din browser),
+//  în folderul dovezi-plata de lângă public_html. Se văd doar din panou.
+// ============================================================
+function folder_dovezi()
+{
+    $folder = dirname(__DIR__, 2) . '/dovezi-plata';
+    if (!is_dir($folder)) {
+        @mkdir($folder, 0750, true);
+        @file_put_contents($folder . '/.htaccess', "Require all denied\n");
+    }
+    return $folder;
+}
+
+/**
+ * Salvează dovada de plată încărcată de client pentru rezervarea $r.
+ * Întoarce [true, ''] sau [false, cheia mesajului de eroare].
+ */
+function salveaza_dovada(PDO $pdo, array $r, array $fisier, array $setari)
+{
+    if (($fisier['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_INI_SIZE || ($fisier['size'] ?? 0) > 8 * 1024 * 1024) {
+        return [false, 'dov_err_mare'];
+    }
+    if (($fisier['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file($fisier['tmp_name'])) {
+        return [false, 'dov_err'];
+    }
+    $tipuri = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'application/pdf' => 'pdf'];
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($fisier['tmp_name']);
+    if (!isset($tipuri[$mime])) {
+        return [false, 'dov_err_tip'];
+    }
+    $nume = numar_proforma($r['id'], $setari) . '-' . date('Ymd-His') . '-' . bin2hex(random_bytes(3)) . '.' . $tipuri[$mime];
+    $cale = folder_dovezi() . '/' . $nume;
+    if (!move_uploaded_file($fisier['tmp_name'], $cale)) {
+        return [false, 'dov_err'];
+    }
+    @chmod($cale, 0640);
+    $acum = date('Y-m-d H:i:s');
+    $pdo->prepare("UPDATE rezervari SET dovada_fisier = ?, dovada_la = ? WHERE id = ?")->execute([$nume, $acum, $r['id']]);
+    $r['dovada_fisier'] = $nume;
+    $r['dovada_la'] = $acum;
+    trimite_mail_dovada($r, $cale, $mime, $setari);
+    return [true, ''];
+}
+
+/** Îl anunță pe proprietar că a sosit o dovadă de plată (cu fișierul atașat). */
+function trimite_mail_dovada(array $r, $cale, $mime, array $setari)
+{
+    $T = texte_limba('ro');
+    $E = $T['mailuri'];
+    $v = valori_mail($r, $setari, 'ro', $T);
+    $html = sablon_mail([
+        'limba' => 'ro', 'preheader' => "Dovadă de plată: {$r['nume']}, {$v['{avans}']}",
+        'titlu' => 'Dovadă de plată primită #' . $r['id'],
+        'intro' => "{$r['nume']} a trimis dovada de plată pentru {$v['{nr}']} ({$v['{perioada}']}), suma de {$v['{avans}']}. Fișierul e atașat. Verifică intrarea banilor în cont și apasă „Plată primită – confirmă” în panou. Rezervarea nu se mai anulează automat cât timp o verifici.",
+        'status' => ['asteptare', 'Dovadă de plată trimisă'],
+        'sectiuni' => [sectiune_detalii($r, $v, $E, true)],
+        'butoane' => [['Deschide panoul', SITE_URL . '/admin/', 'plin']],
+        'E' => $E, 'T' => $T, 'v' => $v, 'setari' => $setari,
+    ]);
+    return trimite_mail_html($setari['email_proprietar'], "Dovadă de plată #{$r['id']} – {$r['nume']} – {$v['{avans}']}", $html, $setari, $r['email'],
+                             [['cale' => $cale, 'nume' => basename($cale), 'tip' => $mime]]);
 }

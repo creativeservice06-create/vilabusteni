@@ -360,6 +360,19 @@ body.meniu-deschis .limbi summary { color: var(--brad) !important; text-shadow: 
 .info-avans svg { flex: none; width: 26px; height: 26px; margin-top: .1rem; fill: none; stroke: #8a5d0a; stroke-width: 1.8; stroke-linecap: round; }
 .info-avans strong { display: block; color: #4d3405; margin-bottom: .2rem; }
 .info-avans p { margin: 0; line-height: 1.5; }
+.optiuni-plata { border: 0; padding: 0; margin: .4rem 0 1.3rem; }
+.optiuni-plata legend { font-weight: 600; font-size: .95rem; margin-bottom: .55rem; padding: 0; }
+.optiune {
+  display: grid !important; grid-template-columns: auto 1fr auto; align-items: center; gap: .3rem .7rem;
+  margin: 0 0 .5rem !important; padding: .8rem .9rem; border: 1.5px solid var(--linie); border-radius: 8px;
+  background: #fff; cursor: pointer; font-weight: 500 !important;
+}
+.optiune:has(input[type=radio]:checked) { border-color: var(--brad); background: #f1f6f2; box-shadow: 0 0 0 1px var(--brad); }
+.optiune input[type=radio] { width: 20px; height: 20px; margin: 0; accent-color: var(--brad); }
+.optiune-suma { font-weight: 700; color: var(--brad); white-space: nowrap; }
+.optiune-camp { grid-column: 2 / -1; }
+.optiune-camp input { margin-top: .2rem !important; min-height: 44px !important; }
+.optiuni-nota { margin: .4rem 0 0; font-size: .88rem; color: #4d3405; background: #fbefd5; border-radius: 8px; padding: .7rem .85rem; line-height: 1.45; }
 .sumar-avans { display: block; margin-top: .6rem; padding-top: .6rem; border-top: 1px solid rgba(22, 74, 40, .15); color: #4d3405; }
 .rezervare-grila { display: grid; gap: 2rem; align-items: start; }
 .capcana { position: absolute; left: -9999px; }

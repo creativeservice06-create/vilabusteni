@@ -43,12 +43,13 @@ function db()
 
 /**
  * Condiția SQL pentru o rezervare care ține zilele ocupate:
- * confirmată, zile blocate manual, sau cerere care așteaptă plata și nu i-a expirat termenul.
+ * confirmată, zile blocate manual, sau cerere care așteaptă plata și nu i-a expirat termenul
+ * (ori pentru care clientul a trimis deja dovada de plată).
  */
 function conditie_ocupat()
 {
     $acum = date('Y-m-d H:i:s');
-    return "(status IN ('confirmata', 'blocat') OR (status = 'in_asteptare' AND termen_plata > '$acum'))";
+    return "(status IN ('confirmata', 'blocat') OR (status = 'in_asteptare' AND (termen_plata > '$acum' OR dovada_la IS NOT NULL)))";
 }
 
 /**

@@ -7,3 +7,6 @@ deploy/token.txt
 deploy/stare.json
 deploy/jurnal.log
 deploy/.lacat
+
+# Dovezile de plată încărcate (pe server stau lângă public_html)
+dovezi-plata/

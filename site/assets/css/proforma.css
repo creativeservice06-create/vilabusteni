@@ -1,6 +1,6 @@
 /* PROFORMA – arată ca o pagină A4 pe ecran și se tipărește curat (fără butoane) */
 body.proforma-pagina { background: #e7edee; padding: 0; }
-.bara-print { max-width: 820px; margin: 0 auto; padding: 1.2rem 1rem 0; display: flex; justify-content: flex-end; }
+.bara-print { max-width: 820px; margin: 0 auto; padding: 1.2rem 1rem 0; display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .6rem; }
 
 .document {
   position: relative; max-width: 820px; margin: 1rem auto 3rem; padding: clamp(1.4rem, 5vw, 3.2rem);
@@ -40,6 +40,17 @@ body.proforma-pagina { background: #e7edee; padding: 0; }
 .stampila-ok { color: var(--brad); }
 .stampila-anulat { color: var(--lemn); }
 
+/* Trimiterea dovezii de plată */
+.dovada { max-width: 820px; margin: -1.5rem auto 3rem; padding: 1.6rem clamp(1.4rem, 5vw, 3.2rem); background: #fff; border-radius: 4px; border-top: 4px solid var(--lemn); box-shadow: 0 10px 40px rgba(15, 47, 27, .08); }
+.dovada h2 { font-size: 1.5rem; color: var(--brad); margin-bottom: .4rem; }
+.dovada p { margin: 0 0 1rem; color: #36423f; }
+.dovada form { display: flex; flex-wrap: wrap; gap: .8rem; align-items: flex-end; }
+.dovada-fisier { flex: 1 1 260px; display: flex; flex-direction: column; gap: .4rem; font-weight: 600; font-size: .92rem; }
+.dovada-fisier input { padding: .6rem; border: 1.5px dashed var(--cer-adanc); border-radius: 8px; background: #f7fafa; font: inherit; font-weight: 400; }
+.dovada-mesaj { padding: .8rem 1rem; border-radius: 8px; }
+.dovada-ok { background: #dcebe3; color: var(--brad) !important; }
+.dovada-eroare { background: #f8e3dd; color: #6a2a1d !important; }
+
 @media (max-width: 600px) {
   .doc-cap { flex-direction: column; }
   .doc-titlu { text-align: left; }
@@ -54,7 +65,7 @@ body.proforma-pagina { background: #e7edee; padding: 0; }
 @media print {
   @page { size: A4; margin: 14mm; }
   body.proforma-pagina { background: #fff; }
-  .bara-print { display: none; }
+  .bara-print, .dovada { display: none; }
   .document { box-shadow: none; margin: 0; padding: 0; max-width: none; }
   .doc-tabel thead th, .doc-totaluri tr.de-plata th, .doc-totaluri tr.de-plata td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }

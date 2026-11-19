@@ -31,7 +31,7 @@ function trimite_mail_client(array $r, $tip, array $setari)
         $status  = ['asteptare', $E['status_asteptare']];
         $sectiuni[] = sectiune_detalii($r, $v, $E, true);
         $sectiuni[] = sectiune_plata($v, $E, $setari);
-        $butoane = [[$E['buton_proforma'], link_proforma($r), 'plin']];
+        $butoane = [[$E['buton_proforma'], link_proforma($r), 'plin'], [$E['buton_dovada'], link_proforma($r) . '#dovada', 'contur']];
     } elseif ($tip === 'confirmare') {
         $subiect = strtr($E['conf_subiect'], $v);
         $titlu   = $E['conf_titlu'];
@@ -114,7 +114,8 @@ function valori_mail(array $r, array $setari, $limba, array $T)
         '{total}'    => $bani($r['total']),
         '{avans}'    => $bani($avans),
         '{rest}'     => $bani($r['total'] - $avans),
-        '{procent}'  => (int) $setari['avans_procent'],
+        '{procent}'  => (int) $r['total'] > 0 ? (int) round($avans * 100 / $r['total']) : (int) $setari['avans_procent'],
+        '{integral}' => $avans >= (int) $r['total'],
         '{termen}'   => $termen,
         '{ore}'      => (int) $setari['termen_plata_ore'],
         '{in}'       => $setari['ora_check_in'],
@@ -144,12 +145,12 @@ function sectiune_detalii(array $r, array $v, array $E, $cu_avans)
         . rand_tabel($E['lbl_persoane'], e($v['{persoane}']))
         . rand_tabel($E['lbl_total'], e($v['{total}']), !$cu_avans);
     if ($cu_avans) {
-        $h .= rand_tabel(strtr($E['lbl_avans'], $v), e($v['{avans}']), true);
-        if ($v['{procent}'] < 100) $h .= rand_tabel($E['lbl_rest'], e($v['{rest}']));
+        $h .= rand_tabel($v['{integral}'] ? $E['lbl_integral'] : strtr($E['lbl_avans'], $v), e($v['{avans}']), true);
+        if (!$v['{integral}']) $h .= rand_tabel($E['lbl_rest'], e($v['{rest}']));
         $h .= rand_tabel($E['lbl_termen'], e($v['{termen}']));
     } else {
-        $h .= rand_tabel($E['lbl_platit'], e($v['{avans}']));
-        if ($v['{procent}'] < 100) $h .= rand_tabel($E['lbl_rest'], e($v['{rest}']));
+        $h .= rand_tabel($v['{integral}'] ? $E['lbl_platit_tot'] : $E['lbl_platit'], e($v['{avans}']));
+        if (!$v['{integral}']) $h .= rand_tabel($E['lbl_rest'], e($v['{rest}']));
     }
     return ['titlu' => $E['detalii_titlu'], 'html' => $h . '</table>'];
 }
@@ -315,22 +316,42 @@ function html_in_text($html)
     return trim(implode("\n", array_map('trim', explode("\n", $text))));
 }
 
-function trimite_mail_html($catre, $subiect, $html, array $setari, $raspuns_la)
+function trimite_mail_html($catre, $subiect, $html, array $setari, $raspuns_la, array $atasamente = [])
 {
-    $granita = 'vr' . bin2hex(random_bytes(8));
+    $alt = 'vr' . bin2hex(random_bytes(8));
+    $corp_alt = "--$alt\r\n"
+          . "Content-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n"
+          . chunk_split(base64_encode(html_in_text($html)))
+          . "--$alt\r\n"
+          . "Content-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n"
+          . chunk_split(base64_encode($html))
+          . "--$alt--\r\n";
+
+    if ($atasamente) {
+        // mail cu fișiere atașate: multipart/mixed care conține varianta text+HTML și fișierele
+        $mix = 'vm' . bin2hex(random_bytes(8));
+        $tip_continut = 'multipart/mixed; boundary="' . $mix . '"';
+        $corp = "--$mix\r\nContent-Type: multipart/alternative; boundary=\"$alt\"\r\n\r\n" . $corp_alt;
+        foreach ($atasamente as $a) {
+            if (!is_file($a['cale'])) continue;
+            $corp .= "--$mix\r\n"
+                   . "Content-Type: {$a['tip']}; name=\"{$a['nume']}\"\r\n"
+                   . "Content-Disposition: attachment; filename=\"{$a['nume']}\"\r\n"
+                   . "Content-Transfer-Encoding: base64\r\n\r\n"
+                   . chunk_split(base64_encode(file_get_contents($a['cale'])));
+        }
+        $corp .= "--$mix--\r\n";
+    } else {
+        $tip_continut = 'multipart/alternative; boundary="' . $alt . '"';
+        $corp = $corp_alt;
+    }
+
     $antete = [
         'From: ' . mb_encode_mimeheader($setari['nume_vila'], 'UTF-8') . ' <' . $setari['email_expeditor'] . '>',
         'Reply-To: ' . $raspuns_la,
         'MIME-Version: 1.0',
-        'Content-Type: multipart/alternative; boundary="' . $granita . '"',
+        'Content-Type: ' . $tip_continut,
     ];
-    $corp = "--$granita\r\n"
-          . "Content-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n"
-          . chunk_split(base64_encode(html_in_text($html)))
-          . "--$granita\r\n"
-          . "Content-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n"
-          . chunk_split(base64_encode($html))
-          . "--$granita--\r\n";
     $ok = @mail($catre, mb_encode_mimeheader($subiect, 'UTF-8', 'B'), $corp, implode("\r\n", $antete), '-f' . $setari['email_expeditor']);
     if (!$ok) error_log("Mailul către $catre nu a putut fi trimis.");
     return $ok;

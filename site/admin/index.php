@@ -124,7 +124,7 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
   <title>Administrare – <?= e($setari['nume_vila']) ?></title>
   <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
   <link rel="stylesheet" href="/assets/css/style.css?v=8">
-  <link rel="stylesheet" href="/assets/css/admin.css?v=2">
+  <link rel="stylesheet" href="/assets/css/admin.css?v=3">
 </head>
 <body class="admin">
 
@@ -202,7 +202,10 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
   <?php foreach ($lista as $r): ?>
     <?php
       $in_asteptare = $r['status'] === 'in_asteptare';
-      $expirat      = $in_asteptare && !empty($r['termen_plata']) && strtotime($r['termen_plata']) < time();
+      $expirat      = $in_asteptare && !empty($r['termen_plata']) && strtotime($r['termen_plata']) < time() && empty($r['dovada_la']);
+      $de_plata     = (int) ($r['avans'] ?? 0);
+      $integral     = $de_plata >= (int) $r['total'] && (int) $r['total'] > 0;
+      $procent_ales = (int) $r['total'] > 0 ? (int) round($de_plata * 100 / $r['total']) : 0;
       $pana_la_sosire = (int) round((strtotime($r['sosire']) - strtotime('today')) / 86400);
     ?>
     <article class="admin-card status-<?= e($r['status']) ?><?= $expirat ? ' expirat' : '' ?>">
@@ -211,7 +214,14 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
         <span class="admin-id">#<?= (int) $r['id'] ?><?php if ($r['status'] !== 'blocat'): ?> · <?= e(LIMBI[$r['limba'] ?? 'ro'] ?? 'Română') ?><?php endif; ?></span>
       </header>
 
-      <?php if ($in_asteptare && !empty($r['termen_plata'])): ?>
+      <?php if (!empty($r['dovada_la']) && $r['status'] !== 'blocat'): ?>
+        <p class="admin-alerta alerta-albastru">
+          Dovada de plată a fost trimisă <?= e(data_ora($r['dovada_la'])) ?>.
+          <a href="dovada.php?id=<?= (int) $r['id'] ?>" target="_blank"><strong>Vezi dovada</strong></a>
+          <?php if ($in_asteptare): ?><br>Verifică dacă banii au intrat în cont, apoi apasă <strong>Plată primită – confirmă</strong>. Nu se anulează automat.<?php endif; ?>
+        </p>
+      <?php endif; ?>
+      <?php if ($in_asteptare && !empty($r['termen_plata']) && empty($r['dovada_la'])): ?>
         <!-- Cât timp mai are clientul să plătească -->
         <p class="admin-alerta<?= $expirat ? ' alerta-rosu' : '' ?>">
           <?php if ($expirat): ?>
@@ -270,7 +280,7 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
           <div class="admin-bani">
             <div><span>Total sejur</span><strong><?= e(lei_admin($r['total'])) ?></strong></div>
             <div class="<?= $r['status'] === 'confirmata' ? 'bani-ok' : 'bani-asteptare' ?>">
-              <span><?= $r['status'] === 'confirmata' ? 'Avans plătit' : 'Avans de primit' ?> (<?= (int) $setari['avans_procent'] ?>%)</span>
+              <span><?= $integral ? ($r['status'] === 'confirmata' ? 'Plătit integral' : 'Plată integrală de primit') : (($r['status'] === 'confirmata' ? 'Avans plătit' : 'Avans de primit') . ' (' . $procent_ales . '%)') ?></span>
               <strong><?= e(lei_admin($r['avans'] ?? 0)) ?></strong>
             </div>
             <div><span>Rest la sosire</span><strong><?= e(lei_admin($r['total'] - (int) ($r['avans'] ?? 0))) ?></strong></div>

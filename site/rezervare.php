@@ -13,6 +13,7 @@ $trimis = false;
 $date = [
     'sosire' => '', 'plecare' => '', 'persoane' => 2,
     'nume' => '', 'email' => '', 'telefon' => '', 'mesaj' => '',
+    'plata' => 'avans', 'suma' => '',
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -25,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $titlu = t('rez_titlu') . ' – ' . $setari['nume_vila'];
-$scripturi = ['/assets/js/calendar.js?v=5'];
+$scripturi = ['/assets/js/calendar.js?v=6'];
 $pagina = 'rezervare';
 require __DIR__ . '/includes/header.php';
 
@@ -104,6 +105,29 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
         <label><?= e(t('f_mesaj')) ?>
           <textarea name="mesaj" rows="3" maxlength="1000"><?= e($date['mesaj']) ?></textarea>
         </label>
+        <!-- Cât plătește acum: avans minim / altă sumă / integral -->
+        <fieldset class="optiuni-plata" id="optiuni-plata" data-procent="<?= (int) $setari['avans_procent'] ?>">
+          <legend><?= e(t('plata_titlu')) ?></legend>
+          <label class="optiune">
+            <input type="radio" name="plata" value="avans" <?= $date['plata'] !== 'suma' && $date['plata'] !== 'integral' ? 'checked' : '' ?>>
+            <span class="optiune-text"><?= e(strtr(t('opt_avans'), ['{procent}' => $setari['avans_procent']])) ?></span>
+            <span class="optiune-suma" data-suma="avans"><?= e(t('opt_alege')) ?></span>
+          </label>
+          <label class="optiune">
+            <input type="radio" name="plata" value="suma" <?= $date['plata'] === 'suma' ? 'checked' : '' ?>>
+            <span class="optiune-text"><?= e(strtr(t('opt_suma'), ['{procent}' => $setari['avans_procent']])) ?></span>
+            <span class="optiune-camp">
+              <input type="text" inputmode="numeric" name="suma" value="<?= e($date['suma']) ?>" placeholder="<?= e(t('moneda')) ?>" aria-label="<?= e(t('f_suma')) ?>" autocomplete="off">
+            </span>
+          </label>
+          <label class="optiune">
+            <input type="radio" name="plata" value="integral" <?= $date['plata'] === 'integral' ? 'checked' : '' ?>>
+            <span class="optiune-text"><?= e(t('opt_integral')) ?></span>
+            <span class="optiune-suma" data-suma="integral"><?= e(t('opt_alege')) ?></span>
+          </label>
+          <p class="optiuni-nota"><?= e(t('plata_nota')) ?></p>
+        </fieldset>
+
         <label class="bifa">
           <input type="checkbox" name="accept" value="1" required>
           <span><?= t('f_accept', e(url('/termeni.php')), e(url('/confidentialitate.php'))) ?></span>
