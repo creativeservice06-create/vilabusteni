@@ -25,10 +25,7 @@
         <li><span><?= e(t('adresa')) ?></span><a href="<?= e($setari['harta_link']) ?>" target="_blank" rel="noopener"><?= e($setari['adresa']) ?></a></li>
       </ul>
       <?= iconite_sociale($setari) ?>
-      <?php if (card_activ($setari)): ?>
-        <!-- Metodele de plată (cerință Netopia). Siglele oficiale se pot pune în assets/images/plati/ -->
-        <p class="plati-acceptate"><?= e(t('plati_acceptate')) ?></p>
-      <?php endif; ?>
+
     </div>
 
     <nav class="subsol-linkuri" aria-label="<?= e(t('info_legale')) ?>">
@@ -40,6 +37,18 @@
       <a href="https://anpc.ro/" target="_blank" rel="noopener">ANPC</a>
       <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener"><?= e(t('anpc_sal')) ?></a>
     </nav>
+  </div>
+  <!-- Siglele obligatorii: NETOPIA (plata cu cardul) și pictograma ANPC SAL (Ordinul ANPC 449/2022) -->
+  <div class="subsol-insigne">
+    <?php if (card_activ($setari)): ?>
+      <a href="https://netopia-payments.com" target="_blank" rel="noopener" class="insigna-netopia" title="<?= e(t('plati_acceptate')) ?>">
+        <img src="/assets/images/plati/netopia-alb.svg" alt="NETOPIA Payments" width="133" height="50" loading="lazy">
+      </a>
+      <p class="plati-acceptate"><?= e(t('plati_acceptate')) ?></p>
+    <?php endif; ?>
+    <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener" class="insigna-anpc">
+      <img src="/assets/images/plati/anpc-sal.png" alt="ANPC – Soluționarea alternativă a litigiilor" width="250" height="61" loading="lazy">
+    </a>
   </div>
   <p class="subsol-firma">
     © <?= date('Y') ?> <?= e(t('firma', $setari['firma_nume'], $setari['firma_cui'], $setari['firma_reg_com'], $setari['firma_sediu'])) ?>

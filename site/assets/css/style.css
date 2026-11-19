@@ -447,7 +447,12 @@ button.cal-zi:hover { background: var(--cer); }
 .politica-anulare { max-width: 46rem; margin: -.4rem 0 1.8rem; font-size: .92rem; line-height: 1.55; color: var(--piatra); }
 .politica-anulare strong { color: var(--text); }
 .form-retragere label .mic { display: block; font-weight: 400; margin-top: .35rem; }
-.plati-acceptate { margin: .9rem 0 0; font-size: .85rem; opacity: .85; }
+/* Siglele din subsol: NETOPIA + ANPC SAL */
+.subsol-insigne { max-width: var(--latime); margin: 0 auto; padding: 1.4rem var(--margine) 1.3rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.6rem; }
+.subsol-insigne img { display: block; height: auto; }
+.insigna-netopia img { width: 120px; }
+.insigna-anpc img { width: 250px; max-width: 100%; border-radius: 10px; }
+.plati-acceptate { margin: 0; font-size: .85rem; opacity: .85; flex: 1 1 14rem; }
 
 /* ============================================================
    ECRANE MAI MARI

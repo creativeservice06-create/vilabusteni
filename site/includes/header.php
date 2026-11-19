@@ -40,7 +40,7 @@ $domeniu   = 'https://vilabusteni.ro';
   <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
   <link rel="preload" href="/assets/fonts/young-serif.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="/assets/fonts/instrument-sans.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="/assets/css/style.css?v=13">
+  <link rel="stylesheet" href="/assets/css/style.css?v=14">
 </head>
 <body class="pagina-<?= e($pagina ?: 'interioara') ?>">
 
