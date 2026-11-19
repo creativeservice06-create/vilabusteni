@@ -17,12 +17,18 @@ return [
     'whatsapp'       => '40728986882',
     'email_contact'  => 'contact@horoscoptravel.ro',
 
-    // Unde ajung notificările despre rezervări noi
-    'email_proprietar' => 'contact@horoscoptravel.ro, rezervari@vilabusteni.ro',   // mai multe adrese: separate prin virgulă
-    // Copie ascunsă a fiecărui mail trimis clienților (istoric în Inbox-ul acestei adrese; gol = fără copie)
-    'email_arhiva'     => 'rezervari@vilabusteni.ro',
-    // Adresa de pe care pleacă mailurile automate (trebuie creată în cPanel → Email Accounts)
-    'email_expeditor'  => 'rezervari@vilabusteni.ro',
+    // Mailurile: totul pleacă de pe contact@horoscoptravel.ro, prin serverul ei de mail.
+    // Parola NU e aici – se pune în config.php pe server: 'smtp_parola' => '...'
+    'smtp_server'    => 'mail.horoscoptravel.ro',
+    'smtp_port'      => 465,                         // SSL
+    'smtp_user'      => 'contact@horoscoptravel.ro', // de pe ea pleacă mailurile
+
+    // Unde ajung notificările despre rezervări (mai multe adrese: separate prin virgulă)
+    'email_proprietar' => 'contact@horoscoptravel.ro',
+    // Copie ascunsă a fiecărui mail trimis clienților, ca istoric (gol = fără copie)
+    'email_arhiva'     => 'contact@horoscoptravel.ro',
+    // Doar dacă serverul de mail nu răspunde: mailul pleacă de pe adresa site-ului
+    'email_expeditor_rezerva' => 'rezervari@vilabusteni.ro',
 
     // Firma (apare în subsol și în paginile legale)
     'firma_nume'     => 'Horoscop Travel S.R.L.',

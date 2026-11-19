@@ -346,16 +346,131 @@ function trimite_mail_html($catre, $subiect, $html, array $setari, $raspuns_la, 
         $corp = $corp_alt;
     }
 
+    $subiect_codat = mb_encode_mimeheader($subiect, 'UTF-8', 'B');
+    $smtp = config_smtp($setari);
+
+    // 1. Prin serverul de mail al adresei (autentificat) – varianta principală
+    if ($smtp) {
+        $antete = [
+            'Date: ' . date('r'),
+            'From: ' . mb_encode_mimeheader($setari['nume_vila'], 'UTF-8') . ' <' . $smtp['user'] . '>',
+            'To: ' . $catre,
+            'Subject: ' . $subiect_codat,
+            'Reply-To: ' . $raspuns_la,
+            'Message-ID: <' . bin2hex(random_bytes(12)) . '@' . substr(strrchr($smtp['user'], '@'), 1) . '>',
+            'MIME-Version: 1.0',
+            'Content-Type: ' . $tip_continut,
+        ];
+        $destinatari = array_merge(lista_adrese($catre), lista_adrese($copie_ascunsa));   // copia ascunsă: doar ca destinatar, nu în antet
+        $eroare = smtp_trimite($smtp, $destinatari, implode("\r\n", $antete) . "\r\n\r\n" . $corp);
+        if ($eroare === null) {
+            $GLOBALS['mail_trimis_prin'] = 'smtp';
+            return true;
+        }
+        error_log("SMTP: mailul către $catre nu a putut fi trimis: $eroare. Încerc varianta de rezervă.");
+        $GLOBALS['ultima_eroare_mail'] = $eroare;
+    }
+
+    // 2. Varianta de rezervă: serverul site-ului, de pe adresa domeniului vilabusteni.ro
     $antete = [
-        'From: ' . mb_encode_mimeheader($setari['nume_vila'], 'UTF-8') . ' <' . $setari['email_expeditor'] . '>',
+        'From: ' . mb_encode_mimeheader($setari['nume_vila'], 'UTF-8') . ' <' . $setari['email_expeditor_rezerva'] . '>',
         'Reply-To: ' . $raspuns_la,
         'MIME-Version: 1.0',
         'Content-Type: ' . $tip_continut,
     ];
     if ($copie_ascunsa !== '') {
-        $antete[] = 'Bcc: ' . $copie_ascunsa;   // istoricul mailurilor către clienți
+        $antete[] = 'Bcc: ' . $copie_ascunsa;
     }
-    $ok = @mail($catre, mb_encode_mimeheader($subiect, 'UTF-8', 'B'), $corp, implode("\r\n", $antete), '-f' . $setari['email_expeditor']);
-    if (!$ok) error_log("Mailul către $catre nu a putut fi trimis.");
+    $ok = @mail($catre, $subiect_codat, $corp, implode("\r\n", $antete), '-f' . $setari['email_expeditor_rezerva']);
+    $GLOBALS['mail_trimis_prin'] = $ok ? 'rezerva' : 'esuat';
+    if (!$ok) error_log("Mailul către $catre nu a putut fi trimis nici prin varianta de rezervă.");
     return $ok;
+}
+
+/** „a@x.ro, b@y.ro” → ['a@x.ro', 'b@y.ro'] */
+function lista_adrese($text)
+{
+    return array_values(array_filter(array_map('trim', explode(',', (string) $text))));
+}
+
+/**
+ * Datele serverului de mail (din setari.php) + parola (din config.php, doar pe server).
+ * Fără parolă → null (se folosește varianta de rezervă).
+ */
+function config_smtp(array $setari)
+{
+    static $config = null;
+    if ($config === null) {
+        $f = __DIR__ . '/../config.php';
+        $config = is_file($f) ? (require $f) : [];
+    }
+    $parola = (string) ($config['smtp_parola'] ?? '');
+    if ($parola === '' || empty($setari['smtp_server'])) {
+        return null;
+    }
+    return [
+        'server'  => $config['smtp_server_test'] ?? $setari['smtp_server'],
+        'port'    => (int) ($config['smtp_port_test'] ?? $setari['smtp_port']),
+        'user'    => $setari['smtp_user'],
+        'parola'  => $parola,
+        'verifica_ssl' => !($config['smtp_fara_verificare_ssl'] ?? false),
+    ];
+}
+
+/**
+ * Trimite un mesaj gata format prin SMTP cu SSL (portul 465) și autentificare.
+ * Întoarce null dacă a mers, sau textul erorii.
+ */
+function smtp_trimite(array $smtp, array $destinatari, $mesaj)
+{
+    $context = stream_context_create(['ssl' => [
+        'verify_peer' => $smtp['verifica_ssl'], 'verify_peer_name' => $smtp['verifica_ssl'],
+        'allow_self_signed' => !$smtp['verifica_ssl'],
+    ]]);
+    $con = @stream_socket_client('ssl://' . $smtp['server'] . ':' . $smtp['port'], $nr, $err, 20, STREAM_CLIENT_CONNECT, $context);
+    if (!$con) {
+        return "nu mă pot conecta la {$smtp['server']}:{$smtp['port']} ($err)";
+    }
+    stream_set_timeout($con, 20);
+
+    $citeste = function () use ($con) {
+        $raspuns = '';
+        while (($linie = fgets($con, 1024)) !== false) {
+            $raspuns .= $linie;
+            if (strlen($linie) < 4 || $linie[3] === ' ') break;   // ultima linie a răspunsului
+        }
+        return $raspuns;
+    };
+    $comanda = function ($text, $cod_asteptat) use ($con, $citeste) {
+        if ($text !== null) fwrite($con, $text . "\r\n");
+        $r = $citeste();
+        if (strpos($r, (string) $cod_asteptat) !== 0) {
+            throw new RuntimeException(trim($r) ?: 'serverul nu a răspuns');
+        }
+        return $r;
+    };
+
+    try {
+        $comanda(null, 220);
+        $comanda('EHLO vilabusteni.ro', 250);
+        $comanda('AUTH LOGIN', 334);
+        $comanda(base64_encode($smtp['user']), 334);
+        $comanda(base64_encode($smtp['parola']), 235);
+        $comanda('MAIL FROM:<' . $smtp['user'] . '>', 250);
+        foreach ($destinatari as $adresa) {
+            $comanda('RCPT TO:<' . $adresa . '>', 25);   // 250 sau 251
+        }
+        $comanda('DATA', 354);
+        // liniile care încep cu „.” se dublează (regula SMTP)
+        $mesaj = preg_replace('/^\./m', '..', str_replace(["\r\n", "\r"], "\n", $mesaj));
+        fwrite($con, str_replace("\n", "\r\n", $mesaj) . "\r\n.\r\n");
+        $comanda(null, 250);
+        fwrite($con, "QUIT\r\n");
+        fclose($con);
+        return null;
+    } catch (Throwable $ex) {
+        @fwrite($con, "QUIT\r\n");
+        @fclose($con);
+        return $ex->getMessage();
+    }
 }

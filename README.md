@@ -69,6 +69,13 @@ Parola se pune în `config.php` pe server: `'admin_parola' => '...'`.
 Mailul de confirmare include automat: perioada, prețul, adresa, link Google Maps, check-in/out, telefonul;
 plus detaliile de plată (dacă `iban` e completat în `setari.php`) și politica de anulare (dacă `politica_anulare` e completată în `lang/*.php`).
 
+## Mailurile
+
+Toate mailurile pleacă de pe **contact@horoscoptravel.ro**, prin serverul ei de mail (`mail.horoscoptravel.ro`, port 465, SSL),
+cu autentificare. Parola căsuței se pune doar pe server, în `config.php`: `'smtp_parola' => '...'`.
+Dacă serverul de mail nu răspunde, mailul pleacă de rezervă de pe `rezervari@vilabusteni.ro`, ca niciun client să nu rămână fără mail.
+Verificare: panou → jos → **Trimite mail de test**.
+
 ## Instalare pe server (o singură dată)
 
 1. cPanel → **MySQL Databases**: creezi baza `rezervari` și userul `site`, apoi le legi (All Privileges).

@@ -58,6 +58,25 @@ if ($logat && $pdo && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['act
             case 'confirma':    $mesaj = schimba_status($pdo, $id, 'confirmata', $setari); break;
             case 'anuleaza':    $mesaj = schimba_status($pdo, $id, 'anulata', $setari); break;
             case 'deblocheaza': $mesaj = schimba_status($pdo, $id, 'anulata', $setari); break;
+            case 'test_mail':
+                $GLOBALS['ultima_eroare_mail'] = null;
+                $html = sablon_mail([
+                    'limba' => 'ro', 'preheader' => 'Mail de test', 'titlu' => 'Mail de test',
+                    'intro' => 'Dacă citești asta, mailurile site-ului ajung corect. Trimis ' . date('d.m.Y H:i') . '.',
+                    'status' => ['confirmata', 'Test'], 'sectiuni' => [], 'butoane' => [['Deschide panoul', SITE_URL . '/admin/', 'plin']],
+                    'E' => texte_limba('ro')['mailuri'], 'T' => texte_limba('ro'), 'v' => ['{telefon}' => $setari['telefon']], 'setari' => $setari,
+                ]);
+                $ok = trimite_mail_html($setari['email_proprietar'], 'Mail de test – ' . $setari['nume_vila'], $html, $setari, $setari['email_contact']);
+                $prin = $GLOBALS['mail_trimis_prin'] ?? '';
+                if ($ok && $prin === 'smtp') {
+                    $mesaj = ['ok', "Mail de test trimis de pe {$setari['smtp_user']} către {$setari['email_proprietar']}. Verifică Inbox-ul (și Spam)."];
+                } elseif ($ok) {
+                    $motiv = config_smtp($setari) ? ('serverul de mail a răspuns: ' . ($GLOBALS['ultima_eroare_mail'] ?? 'eroare necunoscută')) : "lipsește 'smtp_parola' din config.php";
+                    $mesaj = ['eroare', "Mailul a plecat doar prin varianta de rezervă ({$setari['email_expeditor_rezerva']}), pentru că $motiv."];
+                } else {
+                    $mesaj = ['eroare', 'Mailul de test nu a putut fi trimis deloc. ' . ($GLOBALS['ultima_eroare_mail'] ?? '')];
+                }
+                break;
             case 'blocheaza':   $mesaj = blocheaza_perioada($pdo, $_POST['de_la'] ?? '', $_POST['pana_la'] ?? '', $_POST['nota'] ?? ''); break;
         }
     }
@@ -124,7 +143,7 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
   <title>Administrare – <?= e($setari['nume_vila']) ?></title>
   <link rel="icon" type="image/png" href="/assets/images/sigle/randunica-verde.png">
   <link rel="stylesheet" href="/assets/css/style.css?v=8">
-  <link rel="stylesheet" href="/assets/css/admin.css?v=3">
+  <link rel="stylesheet" href="/assets/css/admin.css?v=4">
 </head>
 <body class="admin">
 
@@ -328,6 +347,14 @@ function lei_admin($s) { return number_format((int) $s, 0, ',', '.') . ' lei'; }
     </article>
   <?php endforeach; ?>
   </div>
+
+  <!-- Verificarea mailurilor -->
+  <form method="post" class="admin-test-mail">
+    <input type="hidden" name="token" value="<?= e(token_formular()) ?>">
+    <input type="hidden" name="actiune" value="test_mail">
+    <span>Mailurile pleacă de pe <strong><?= e($setari['smtp_user']) ?></strong>.</span>
+    <button class="buton buton-contur">Trimite mail de test</button>
+  </form>
 
 <?php endif; ?>
 </main>

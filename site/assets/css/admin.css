@@ -116,3 +116,4 @@ body.admin { padding-bottom: 0; background: #eef3f4; }
 }
 .admin-alerta.alerta-albastru { background: #e1eef6; color: #17435c; }
 .admin-alerta a { color: inherit; }
+.admin-test-mail { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; margin-top: 2rem; padding: 1rem 1.2rem; background: #fff; border: 1px solid var(--linie); border-radius: 10px; font-size: .95rem; }
