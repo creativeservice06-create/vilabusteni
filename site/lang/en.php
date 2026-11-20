@@ -108,7 +108,7 @@ return [
     'confidentialitate' => 'Privacy policy',
     'cookies'         => 'Cookie policy',
     'anpc_sal'        => 'ANPC – alternative dispute resolution',
-    'firma'           => '%s, Tax ID %s, Trade Register no. %s, registered office: %s',
+    'firma_scurt'     => '%s, Tax ID %s, Trade Register no. %s',
     'contact_rapid'   => 'Quick contact',
     'suna'            => 'Call',
     'legal_doar_ro'   => 'This page is available in Romanian only. For any question, please write to us or call us.',

@@ -108,7 +108,7 @@ return [
     'confidentialitate' => 'Datenschutzerklärung',
     'cookies'         => 'Cookie-Richtlinie',
     'anpc_sal'        => 'ANPC – alternative Streitbeilegung',
-    'firma'           => '%s, Steuer-Nr. %s, Handelsregister-Nr. %s, Sitz: %s',
+    'firma_scurt'     => '%s, Steuer-Nr. %s, Handelsregister-Nr. %s',
     'contact_rapid'   => 'Schnellkontakt',
     'suna'            => 'Anrufen',
     'legal_doar_ro'   => 'Diese Seite ist nur auf Rumänisch verfügbar. Bei Fragen schreiben Sie uns oder rufen Sie uns an.',

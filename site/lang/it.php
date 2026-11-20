@@ -108,7 +108,7 @@ return [
     'confidentialitate' => 'Informativa sulla privacy',
     'cookies'         => 'Cookie policy',
     'anpc_sal'        => 'ANPC – risoluzione alternativa delle controversie',
-    'firma'           => '%s, codice fiscale %s, n. Registro delle Imprese %s, sede legale: %s',
+    'firma_scurt'     => '%s, codice fiscale %s, n. Registro delle Imprese %s',
     'contact_rapid'   => 'Contatto rapido',
     'suna'            => 'Chiama',
     'legal_doar_ro'   => 'Questa pagina è disponibile solo in rumeno. Per qualsiasi domanda scriveteci o chiamateci.',

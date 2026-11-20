@@ -121,7 +121,7 @@ return [
     'confidentialitate' => 'Politica de confidențialitate',
     'cookies'         => 'Politica de cookie-uri',
     'anpc_sal'        => 'ANPC – soluționarea alternativă a litigiilor',
-    'firma'           => '%s, CUI %s, Nr. Reg. Com. %s, sediul: %s',
+    'firma_scurt'     => '%s, CUI %s, Nr. Reg. Com. %s',
     'contact_rapid'   => 'Contact rapid',
     'suna'            => 'Sună',
     'legal_doar_ro'   => '',

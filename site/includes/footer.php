@@ -51,7 +51,7 @@
     </a>
   </div>
   <p class="subsol-firma">
-    © <?= date('Y') ?> <?= e(t('firma', $setari['firma_nume'], $setari['firma_cui'], $setari['firma_reg_com'], $setari['firma_sediu'])) ?>
+    © <?= date('Y') ?> <?= e(t('firma_scurt', $setari['firma_marca'], $setari['firma_cui'], $setari['firma_reg_com'])) ?>
   </p>
 </footer>
 
