@@ -31,7 +31,7 @@ $f = $setari;
 
   <h2>5. Cui le transmitem</h2>
   <p>Furnizorului de găzduire web (Claus Web SRL); procesatorului de plăți NETOPIA Payments (NETOPIA Financial Services S.A.), pentru plățile cu cardul,
-     care prelucrează datele plății ca operator independent; programului de facturare FGO, prin care emitem factura fiscală, transmisă apoi în sistemul RO e-Factura al ANAF.
+     care prelucrează datele plății ca operator independent; programului de facturare FGO, prin care emitem factura fiscală, transmisă apoi în sistemul RO e-Factura al ANAF; Meta Platforms Ireland Ltd. (Facebook), prin pixelul de măsurare, doar dacă ai acceptat cookie-urile de marketing.
      <span class="de-completat">[Alți destinatari, dacă e cazul – de ex. contabilul firmei.]</span> Nu vindem datele tale.</p>
 
   <h2>6. Drepturile tale</h2>

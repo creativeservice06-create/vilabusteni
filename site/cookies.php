@@ -13,7 +13,8 @@ require __DIR__ . '/includes/header.php';
      împotriva trimiterilor false. Se șterge când închizi browserul și nu necesită consimțământ.</p>
 
   <h2>Cookie-uri de marketing</h2>
-  <p>Dacă vom folosi instrumente de măsurare sau publicitate (de ex. Google Ads, Meta/Facebook), acestea vor fi
-     activate doar după ce îți dai acordul în bannerul de cookie-uri, iar această pagină va fi actualizată.</p>
+  <p>Folosim pixelul Meta (Facebook), care măsoară vizitele pe site și ne ajută să afișăm reclame relevante.
+     Pixelul pornește doar dacă apeși „Accept” în bannerul de cookie-uri. Poți schimba decizia oricând, ștergând
+     datele site-ului din browser. Cookie-urile pixelului sunt, de exemplu, <code>_fbp</code> și <code>_fbc</code>.</p>
 </section>
 <?php require __DIR__ . '/includes/footer.php'; ?>

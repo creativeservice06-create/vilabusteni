@@ -74,5 +74,15 @@
 <?php if (!empty($scripturi)) foreach ($scripturi as $s): ?>
 <script src="<?= e($s) ?>"></script>
 <?php endforeach; ?>
+<!-- Bannerul de cookie-uri: pixelul Meta pornește doar după „Accept” -->
+<div class="consimt" id="consimt" hidden role="region" aria-label="<?= e(t('cookie_text')) ?>">
+  <p><?= e(t('cookie_text')) ?> <a href="<?= e(url('/cookies.php')) ?>"><?= e(t('cookie_detalii')) ?></a></p>
+  <div class="consimt-butoane">
+    <button type="button" class="buton buton-contur" data-consimt="nu"><?= e(t('cookie_refuza')) ?></button>
+    <button type="button" class="buton buton-plin" data-consimt="da"><?= e(t('cookie_accepta')) ?></button>
+  </div>
+</div>
+<script>window.VR_PIXEL = <?= json_encode((string) ($setari['meta_pixel'] ?? '')) ?>;</script>
+<script src="/assets/js/consimt.js?v=1"></script>
 </body>
 </html>

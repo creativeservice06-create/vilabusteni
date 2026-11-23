@@ -30,6 +30,8 @@ return [
     // Alte notificări pentru proprietar (true = se trimit, false = nu). Rezervarea nouă se trimite mereu.
     'notifica_dovada'        => true,   // clientul a trimis dovada de plată (cu fișierul atașat)
     'notifica_anulare_auto'  => true,   // o rezervare s-a anulat automat (avans neplătit în 48h)
+    // Pixelul Meta (Facebook Ads). Se activează doar după acceptul vizitatorului în banner.
+    'meta_pixel'             => '1125358963706140',
     // Doar dacă serverul de mail nu răspunde: mailul pleacă de pe adresa site-ului
     'email_expeditor_rezerva' => 'rezervari@vilabusteni.ro',
 
