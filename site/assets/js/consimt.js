@@ -39,11 +39,15 @@
     });
   }
 
-  // Trimiterea formularului de rezervare = „Inițiere checkout” (doar dacă pixelul e pornit)
+  // „Inițiere checkout”, numărat când rezervarea e salvată:
+  // - ordin de plată: pagina cu confirmarea (încărcată după trimitere) trimite evenimentul;
+  // - card: browserul pleacă imediat spre Netopia, deci evenimentul se trimite la trimitere (cel mai bun efort).
+  if (window.VR_REZERVARE_TRIMISA && fbPornit) window.fbq('track', 'InitiateCheckout');
   var formular = document.querySelector('.form-rezervare');
   if (formular) {
     formular.addEventListener('submit', function () {
-      if (fbPornit && window.fbq) window.fbq('track', 'InitiateCheckout');
+      var metoda = formular.querySelector('input[name="metoda"]:checked');
+      if (fbPornit && metoda && metoda.value === 'card') window.fbq('track', 'InitiateCheckout');
     });
   }
 })();

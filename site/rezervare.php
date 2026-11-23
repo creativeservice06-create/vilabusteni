@@ -46,6 +46,8 @@ $link_telefon = '<a href="tel:' . e($setari['telefon_link']) . '">' . e(telefon(
 <section class="interior rezervare">
 
 <?php if ($trimis): ?>
+  <?php /* Rezervarea cu ordin de plată a fost salvată: pixelul o numără aici, la încărcarea paginii, ca să nu se piardă */ ?>
+  <script>window.VR_REZERVARE_TRIMISA = <?= $rezultat['metoda'] === 'transfer' ? 'true' : 'false' ?>;</script>
 
   <h1><?= e(t('rez_multumim')) ?></h1>
   <div class="mesaj-succes">
