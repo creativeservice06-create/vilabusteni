@@ -28,7 +28,7 @@ $token = $_SERVER['HTTP_VERIFICATION_TOKEN'] ?? '';
 $motiv = verifica_ipn($token, $corp);
 if ($motiv !== null) {
     error_log('Netopia IPN respins: ' . $motiv);
-    raspunde_ipn(401, ['errorType' => 2, 'errorCode' => 401, 'errorMessage' => 'verification failed: ' . $motiv]); // DEPANARE – de scos după test
+    raspunde_ipn(401, ['errorType' => 2, 'errorCode' => 401, 'errorMessage' => 'verification failed']);
     exit;
 }
 
