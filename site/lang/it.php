@@ -272,6 +272,7 @@ return [
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [
+        'firma' => '%s, codice fiscale %s, n. Registro delle Imprese %s, sede legale: %s',
         'exp_subiect' => 'La prenotazione {nr} è stata annullata – acconto non ricevuto',
         'exp_titlu' => 'La prenotazione è stata annullata automaticamente',
         'exp_intro' => 'Buongiorno {nume}, non abbiamo ricevuto l’acconto per la prenotazione {nr} ({perioada}) entro {ore} ore, quindi la prenotazione è stata annullata automaticamente e il periodo è stato liberato. Se hai già pagato, chiamaci al {telefon} e la riattiveremo subito, se il periodo è ancora libero.',

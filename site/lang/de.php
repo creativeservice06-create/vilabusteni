@@ -272,6 +272,7 @@ return [
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [
+        'firma' => '%s, Steuer-Nr. %s, Handelsregister-Nr. %s, Sitz: %s',
         'exp_subiect' => 'Buchung {nr} wurde storniert – Anzahlung nicht erhalten',
         'exp_titlu' => 'Ihre Buchung wurde automatisch storniert',
         'exp_intro' => 'Guten Tag {nume}, wir haben die Anzahlung für die Buchung {nr} ({perioada}) nicht innerhalb von {ore} Stunden erhalten. Die Buchung wurde daher automatisch storniert und der Zeitraum freigegeben. Falls Sie bereits bezahlt haben, rufen Sie uns bitte unter {telefon} an – wir reaktivieren die Buchung sofort, sofern der Zeitraum noch frei ist.',

@@ -272,6 +272,7 @@ return [
 
     // Mailurile (în {acolade} se pun automat valorile)
     'mailuri' => [
+        'firma' => '%s, Tax ID %s, Trade Register no. %s, registered office: %s',
         'exp_subiect' => 'Booking {nr} has been cancelled – deposit not received',
         'exp_titlu' => 'Your booking was cancelled automatically',
         'exp_intro' => 'Hello {nume}. We did not receive the deposit for booking {nr} ({perioada}) within {ore} hours, so the booking was cancelled automatically and the dates were released. If you have already paid, please call us on {telefon} and we will reactivate it straight away, if the dates are still free.',
