@@ -15,16 +15,16 @@ return [
     'telefon_int'    => '+40 728 986 882',   // afișat pe versiunile în alte limbi
     'telefon_link'   => '+40728986882',
     'whatsapp'       => '40728986882',
-    'email_contact'  => 'contact@horoscoptravel.ro',
+    'email_contact'  => 'rezervari@vilabusteni.ro',
 
-    // Mailurile: totul pleacă de pe contact@horoscoptravel.ro, prin serverul ei de mail.
+    // Mailurile: totul pleacă de pe rezervari@vilabusteni.ro, prin serverul de mail al domeniului.
     // Parola NU e aici – se pune în config.php pe server: 'smtp_parola' => '...'
-    'smtp_server'    => 'mail.horoscoptravel.ro',
+    'smtp_server'    => 'mail.vilabusteni.ro',
     'smtp_port'      => 465,                         // SSL
-    'smtp_user'      => 'contact@horoscoptravel.ro', // de pe ea pleacă mailurile
+    'smtp_user'      => 'rezervari@vilabusteni.ro', // de pe ea pleacă mailurile
 
     // Unde ajung notificările despre rezervări (mai multe adrese: separate prin virgulă)
-    'email_proprietar' => 'contact@horoscoptravel.ro',
+    'email_proprietar' => 'rezervari@vilabusteni.ro, contact@horoscoptravel.ro',
     // Copie ascunsă a fiecărui mail trimis clienților, ca istoric (gol = fără copie)
     'email_arhiva'     => '',
     // Alte notificări pentru proprietar (true = se trimit, false = nu). Rezervarea nouă se trimite mereu.

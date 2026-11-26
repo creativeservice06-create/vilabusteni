@@ -8,7 +8,7 @@ return [
     'db_user' => 'vilabust_site',
     'db_pass' => 'PAROLA_USERULUI_BAZEI_DE_DATE',
 
-    // Parola căsuței contact@horoscoptravel.ro (pentru trimiterea mailurilor)
+    // Parola căsuței rezervari@vilabusteni.ro (pentru trimiterea mailurilor)
     'smtp_parola' => 'PAROLA_CASUTEI_DE_MAIL',
 
     // Parola panoului de administrare (vilabusteni.ro/admin/) – lungă, doar a ta
